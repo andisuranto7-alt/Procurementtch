@@ -550,7 +550,7 @@
       .btn-pica:hover { background: #bd8c07; border-color: #97700a; color: #fff; box-shadow: 0 4px 12px rgba(201, 162, 39, .42); }
       .pica-overlay { position: fixed; inset: 0; z-index: 300; background: rgba(9, 28, 56, .58); display: flex; align-items: flex-start; justify-content: center; padding: 18px 12px; overflow-y: auto; }
       .pica-overlay[hidden] { display: none; }
-      .pica-sheet { background: var(--bg-grad); width: min(1020px, 100%); margin: auto 0; border-radius: 18px; border: 1px solid var(--line-strong); box-shadow: 0 30px 70px rgba(6, 22, 48, .35); animation: picaIn .25s ease; }
+      .pica-sheet { background: var(--bg-grad); width: min(1160px, 100%); margin: auto 0; border-radius: 18px; border: 1px solid var(--line-strong); box-shadow: 0 30px 70px rgba(6, 22, 48, .35); animation: picaIn .25s ease; }
       @keyframes picaIn { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
       .pica-head { position: sticky; top: 0; z-index: 2; display: flex; align-items: flex-start; gap: 12px; padding: 16px 20px 14px; background: linear-gradient(120deg, #ffffff, #e9f2fd); border-bottom: 3px solid var(--gold-2); border-radius: 17px 17px 0 0; }
       .pica-head h2 { margin: 0; font-size: 26px; letter-spacing: 2px; color: var(--brand-dark); display: flex; align-items: center; gap: 10px; }
@@ -586,9 +586,14 @@
       .pt-bar .seg-pp { background: var(--accent); }
       .pt-bar .seg-sf { background: var(--gold-2); }
       .pt-bar .seg-method { background: #f5a623; }
-      /* IDENTIFICATION: fishbone SVG */
-      .pica-fish { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; box-shadow: var(--shadow); padding: 10px 8px 4px; }
-      .pica-fish svg { display: block; width: 100%; height: auto; }
+      /* IDENTIFICATION: fishbone SVG (5 faktor + uji korelasi; area diagram
+         bisa di-scroll horizontal khusus di layar kecil agar label utuh) */
+      .pica-fish { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; box-shadow: var(--shadow); padding: 10px 8px 4px; overflow-x: auto; }
+      .pica-fish svg { display: block; width: 100%; height: auto; min-width: 1020px; }
+      .pica-fish-legend { margin-top: 10px; font-size: 12.5px; color: var(--muted); text-align: center; }
+      .pica-fish-legend .lg-x { color: #e02323; font-weight: 800; font-size: 14px; }
+      .pica-fish-legend .lg-v { color: #1fae5f; font-weight: 800; font-size: 14px; }
+      .pica-fish-concl { margin: 9px 0 0; text-align: center; font-size: 13.5px; color: var(--brand-dark); background: #fdf6e0; border: 1px solid #ecd9a0; border-radius: 10px; padding: 9px 12px; }
       /* CORRECTIVE: alur 3 langkah bergambar */
       .pica-steps { display: flex; gap: 8px; align-items: stretch; flex-wrap: wrap; }
       .pica-step { flex: 1 1 200px; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; box-shadow: var(--shadow); padding: 13px 14px; }
@@ -910,9 +915,11 @@
           <section aria-label="Identification">
             <div class="pica-sec-head">
               <span class="pica-letter">I</span>
-              <div><h3>IDENTIFICATION</h3><p>Akar penyebab — diagram fishbone 4M</p></div>
+              <div><h3>IDENTIFICATION</h3><p>Akar penyebab — diagram fishbone 5 faktor + uji korelasi</p></div>
             </div>
             <div class="pica-fish" id="picaFish"></div>
+            <div class="pica-fish-legend"><span class="lg-x">&#10005;</span> = akar masalah terbukti dari data &nbsp;&middot;&nbsp; <span class="lg-v">&#10003;</span> = bukan penyebab (tidak berkorelasi)</div>
+            <p class="pica-fish-concl">Akar dominan: <b>METHOD</b> — delay dicegah dari stok 2HK &amp; jadwal produksi, bukan ditangani setelah jatuh tempo.</p>
           </section>
 
           <!-- C — CORRECTIVE -->
@@ -1925,57 +1932,135 @@
           + '<div class="pt-bar" aria-hidden="true"><i class="seg-method" style="width:' + (s.method / s.total * 100).toFixed(1) + '%"></i></div></div>'
           + '</div>';
       }
-      /* Fishbone 4M: kepala DELAY DI di kanan, tulang Method ditebalkan &
-         diberi label DOMINAN karena porsinya terbesar pada donat 4M. */
+      /* Fishbone 5 faktor + UJI KORELASI (pola contoh resmi): kepala ikan
+         berupa AWAN MERAH berisi pernyataan masalah + angka dinamis dari
+         data (total item, rincian per kategori, vendor terbanyak). Faktor:
+         atas ENVIRONMENT + METHODE, bawah MAN + MACHINE + MATERIAL, kotak
+         kategori biru toska. Tiap faktor berisi rantai penyebab: teks hitam
+         (penyebab utama) → teks biru (sub-penyebab) menuju tulang utama.
+         Uji korelasi berbasis data: METHODE ✗ prioritas 1 (problem Method
+         terbanyak) & MAN ✗ prioritas 2 (disiplin update 2DS/eskalasi) —
+         keduanya dengan kotak merah akar terverifikasi; MATERIAL, MACHINE
+         & ENVIRONMENT ✓ (tidak berkorelasi / tidak dominan pada data). */
       function picaFishSVG(s) {
         var M = s.perM4;
-        function lab(name, n) { return name + ' · ' + fmt(n); }
+        var pctM = picaPct(M.Method, s.total);
+        var pp = s.perCat['Press Part'], sf = s.perCat['Surface Finish'];
+        var topTxt = s.top ? ('Terbanyak: ' + s.top.abbr + ' · ' + fmt(s.top.items) + ' item') : 'Tidak ada item delay';
         var o = [];
-        o.push('<svg viewBox="0 0 760 344" role="img" aria-label="Diagram fishbone penyebab DELAY DI: Method ' + fmt(M.Method) + ' item, Machine ' + fmt(M.Machine) + ' item, Man ' + fmt(M.Man) + ' item, Material ' + fmt(M.Material) + ' item">');
-        /* Tulang punggung + panah ke kepala */
-        o.push('<line x1="24" y1="176" x2="548" y2="176" stroke="#44536b" stroke-width="3.5" stroke-linecap="round"/>');
-        o.push('<polygon points="552,176 534,166 534,186" fill="#44536b"/>');
-        /* Kepala: DELAY DI */
-        o.push('<rect x="556" y="124" width="180" height="104" rx="14" fill="#fdecec" stroke="#e0524a" stroke-width="2"/>');
-        o.push('<text x="646" y="170" text-anchor="middle" font-size="24" font-weight="700" fill="#b91c1c">DELAY DI</text>');
-        o.push('<text x="646" y="196" text-anchor="middle" font-size="12.5" fill="#8a3b3b">DI lewat jatuh tempo,</text>');
-        o.push('<text x="646" y="213" text-anchor="middle" font-size="12.5" fill="#8a3b3b">belum terkirim vendor</text>');
-        /* METHOD — atas kiri, DOMINAN (tulang tebal + pil label emas) */
-        o.push('<line x1="296" y1="176" x2="168" y2="52" stroke="#f5a623" stroke-width="5" stroke-linecap="round"/>');
-        o.push('<line x1="265" y1="146" x2="207" y2="146" stroke="#f5a623" stroke-width="2"/>');
-        o.push('<text x="201" y="150" text-anchor="end" font-size="12" fill="#44536b">Follow up setelah telat</text>');
-        o.push('<line x1="238" y1="120" x2="180" y2="120" stroke="#f5a623" stroke-width="2"/>');
-        o.push('<text x="174" y="124" text-anchor="end" font-size="12" fill="#44536b">Problem 4M tak diisi</text>');
-        o.push('<line x1="211" y1="95" x2="153" y2="95" stroke="#f5a623" stroke-width="2"/>');
-        o.push('<text x="147" y="99" text-anchor="end" font-size="12" fill="#44536b">Tanpa early warning</text>');
-        o.push('<line x1="186" y1="69" x2="128" y2="69" stroke="#f5a623" stroke-width="2"/>');
-        o.push('<text x="122" y="73" text-anchor="end" font-size="11.5" fill="#44536b">Stok 2HK tak dijaga</text>');
-        o.push('<rect x="60" y="10" width="216" height="34" rx="17" fill="#fbf3d9" stroke="#e3d194" stroke-width="1.5"/>');
-        o.push('<text x="168" y="33" text-anchor="middle" font-size="14" font-weight="700" fill="#8a6d1f">METHOD · DOMINAN · ' + picaPct(M.Method, s.total) + '%</text>');
-        /* MACHINE — atas kanan */
-        o.push('<line x1="466" y1="176" x2="356" y2="52" stroke="#14b8a6" stroke-width="3.5" stroke-linecap="round"/>');
-        o.push('<line x1="433" y1="139" x2="393" y2="139" stroke="#14b8a6" stroke-width="2"/>');
-        o.push('<text x="387" y="143" text-anchor="end" font-size="12" fill="#44536b">Downtime mesin</text>');
-        o.push('<line x1="398" y1="99" x2="358" y2="99" stroke="#14b8a6" stroke-width="2"/>');
-        o.push('<text x="352" y="103" text-anchor="end" font-size="11.5" fill="#44536b">Kapasitas &amp; antrian SF</text>');
-        o.push('<text x="356" y="33" text-anchor="middle" font-size="16" font-weight="700" fill="#0f766e">' + lab('MACHINE', M.Machine) + '</text>');
-        /* MAN — bawah kiri */
-        o.push('<line x1="296" y1="176" x2="168" y2="300" stroke="#2f7fe0" stroke-width="3.5" stroke-linecap="round"/>');
-        o.push('<line x1="258" y1="213" x2="198" y2="213" stroke="#2f7fe0" stroke-width="2"/>');
-        o.push('<text x="192" y="217" text-anchor="end" font-size="12" fill="#44536b">PIC tak update laporan</text>');
-        o.push('<line x1="219" y1="250" x2="159" y2="250" stroke="#2f7fe0" stroke-width="2"/>');
-        o.push('<text x="153" y="254" text-anchor="end" font-size="12" fill="#44536b">Komitmen kirim lemah</text>');
-        o.push('<text x="168" y="328" text-anchor="middle" font-size="16" font-weight="700" fill="#0b3b82">' + lab('MAN', M.Man) + '</text>');
-        /* MATERIAL — bawah kanan */
-        o.push('<line x1="466" y1="176" x2="356" y2="300" stroke="#94a9c4" stroke-width="3.5" stroke-linecap="round"/>');
-        o.push('<line x1="433" y1="213" x2="393" y2="213" stroke="#94a9c4" stroke-width="2"/>');
-        o.push('<text x="387" y="217" text-anchor="end" font-size="12" fill="#44536b">RM belum siap</text>');
-        o.push('<line x1="400" y1="250" x2="360" y2="250" stroke="#94a9c4" stroke-width="2"/>');
-        o.push('<text x="354" y="254" text-anchor="end" font-size="12" fill="#44536b">RM datang telat</text>');
-        o.push('<text x="356" y="328" text-anchor="middle" font-size="16" font-weight="700" fill="#647691">' + lab('MATERIAL', M.Material) + '</text>');
+        var HALO = ' style="paint-order:stroke" stroke="#ffffff" stroke-width="3" stroke-linejoin="round"';
+        function tx(x, y, size, fill, weight, txt, anchor, halo) {
+          return '<text x="' + x + '" y="' + y + '" font-size="' + size + '" fill="' + fill + '" font-weight="' + weight + '" text-anchor="' + (anchor || 'start') + '"' + (halo ? HALO : '') + '>' + txt + '</text>';
+        }
+        function catBox(x, y, w, name, count) {
+          var g = '<rect x="' + x + '" y="' + y + '" width="' + w + '" height="52" rx="6" fill="#2596b4" stroke="#17748e" stroke-width="1.5"/>';
+          if (count != null) {
+            g += tx(x + w / 2, y + 23, 15, '#ffffff', 700, name, 'middle');
+            g += tx(x + w / 2, y + 41, 10.5, '#dff4fa', 600, count, 'middle');
+          } else {
+            g += tx(x + w / 2, y + 32, 15, '#ffffff', 700, name, 'middle');
+          }
+          return g;
+        }
+        function xMark(x, y, sc) {
+          return '<g stroke="#e02323" stroke-width="' + (9 * sc) + '" stroke-linecap="round">'
+            + '<line x1="' + x + '" y1="' + y + '" x2="' + (x + 44 * sc) + '" y2="' + (y + 44 * sc) + '"/>'
+            + '<line x1="' + (x + 44 * sc) + '" y1="' + y + '" x2="' + x + '" y2="' + (y + 44 * sc) + '"/></g>';
+        }
+        function badge(cx, cy, n) {
+          return '<ellipse cx="' + cx + '" cy="' + cy + '" rx="16" ry="12.5" fill="#f3f4f6" stroke="#6b7280" stroke-width="1.5"/>'
+            + tx(cx, cy + 5, 14, '#111827', 800, n, 'middle');
+        }
+        function check(x, y) {
+          return '<path d="M' + x + ' ' + (y + 14) + ' L' + (x + 13) + ' ' + (y + 28) + ' L' + (x + 40) + ' ' + y + '" fill="none" stroke="#1fae5f" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"/>';
+        }
+        function redBox(x, y, w, h, lines, size) {
+          var g = '<rect x="' + x + '" y="' + y + '" width="' + w + '" height="' + h + '" rx="4" fill="#ffffff" stroke="#e02323" stroke-width="2.5"/>';
+          lines.forEach(function (ln, i) { g += tx(x + 12, y + 24 + i * ((size || 13) + 6), size || 13, '#d61f1f', 700, ln); });
+          return g;
+        }
+        o.push('<svg viewBox="0 0 1240 700" role="img" aria-label="Diagram fishbone uji korelasi penyebab DELAY DI: total ' + fmt(s.total) + ' item delay (Press Part ' + fmt(pp) + ', Surface Finish ' + fmt(sf) + '). Akar masalah terbukti: Methode prioritas 1 (' + fmt(M.Method) + ' item, ' + pctM + '%) dan Man prioritas 2. Material, Machine dan Environment tidak berkorelasi.">');
+        /* Tulang punggung + ekor + panah ke kepala */
+        o.push('<polygon points="26,360 4,336 12,360 4,384" fill="#374151"/>');
+        o.push('<line x1="24" y1="360" x2="918" y2="360" stroke="#374151" stroke-width="3.5" stroke-linecap="round"/>');
+        o.push('<polygon points="922,360 900,348 900,372" fill="#374151"/>');
+        /* Tulang diagonal kategori */
+        o.push('<line x1="470" y1="66" x2="610" y2="360" stroke="#374151" stroke-width="3.5" stroke-linecap="round"/>');
+        o.push('<line x1="860" y1="66" x2="905" y2="360" stroke="#374151" stroke-width="4.5" stroke-linecap="round"/>');
+        o.push('<line x1="520" y1="360" x2="415" y2="634" stroke="#374151" stroke-width="3.5" stroke-linecap="round"/>');
+        o.push('<line x1="770" y1="360" x2="690" y2="634" stroke="#374151" stroke-width="3.5" stroke-linecap="round"/>');
+        o.push('<line x1="895" y1="360" x2="975" y2="634" stroke="#374151" stroke-width="3.5" stroke-linecap="round"/>');
+        /* Kepala: AWAN MERAH berisi pernyataan masalah + angka dinamis */
+        o.push('<g fill="#e02323">'
+          + '<rect x="974" y="300" width="214" height="100" rx="20"/>'
+          + '<circle cx="978" cy="322" r="42"/><circle cx="1022" cy="292" r="54"/><circle cx="1088" cy="284" r="60"/>'
+          + '<circle cx="1150" cy="300" r="52"/><circle cx="1184" cy="342" r="40"/><circle cx="1154" cy="398" r="48"/>'
+          + '<circle cx="1086" cy="418" r="54"/><circle cx="1014" cy="410" r="48"/><circle cx="976" cy="376" r="38"/></g>');
+        o.push(tx(1065, 330, 29, '#ffffff', 800, 'DELAY DI', 'middle'));
+        o.push(tx(1065, 358, 16.5, '#ffffff', 700, fmt(s.total) + ' item delay', 'middle'));
+        o.push(tx(1065, 381, 12.5, '#ffe1e1', 600, 'Press Part ' + fmt(pp) + ' + Surface Finish ' + fmt(sf), 'middle'));
+        o.push(tx(1065, 404, 13, '#ffffff', 700, topTxt, 'middle'));
+        /* ===== ENVIRONMENT (atas kiri) — ✓ tidak berkorelasi ===== */
+        o.push(catBox(330, 14, 190, 'ENVIRONMENT', null));
+        o.push(check(250, 114));
+        o.push(tx(300, 140, 13, '#1f2937', 700, 'Hari kerja terpotong libur', 'start', true));
+        o.push(tx(300, 166, 12, '#1e6fd9', 600, 'kendala armada / cuaca saat kirim', 'start', true));
+        /* ===== METHODE (atas kanan) — ✗ prioritas 1, DOMINAN ===== */
+        o.push(catBox(745, 14, 180, 'METHODE', fmt(M.Method) + ' item · ' + pctM + '%'));
+        o.push(xMark(556, 84, 1));
+        o.push(badge(578, 150, '1'));
+        o.push(redBox(610, 80, 240, 98, [
+          'Tidak ada metode early warning &amp;',
+          'penjadwalan berbasis forecast:',
+          'produksi mulai setelah DI terbit,',
+          'stok 2HK tidak dijaga'
+        ], 13));
+        o.push(tx(600, 210, 13, '#1f2937', 700, 'Stok FG/WIP di bawah standar 2HK', 'start', true));
+        o.push(tx(600, 234, 12, '#1e6fd9', 600, 'item delay mayoritas stok FG 0 /', 'start', true));
+        o.push(tx(600, 256, 12, '#1e6fd9', 600, 'tidak mencukupi', 'start', true));
+        o.push(tx(600, 288, 13, '#1f2937', 700, 'Pengiriman menunggu qty penuh', 'start', true));
+        o.push(tx(600, 312, 12, '#1e6fd9', 600, 'tidak mau split delivery', 'start', true));
+        /* ===== MAN (bawah kiri) — ✗ prioritas 2 ===== */
+        o.push(catBox(300, 634, 170, 'MAN', fmt(M.Man) + ' item'));
+        o.push(xMark(18, 432, 0.92));
+        o.push(badge(39, 492, '2'));
+        o.push(redBox(70, 428, 310, 76, [
+          'PIC vendor tidak disiplin update 2DS &amp;',
+          'tidak eskalasi dini — delay baru',
+          'dilaporkan setelah jatuh tempo'
+        ], 12.5));
+        o.push('<line x1="380" y1="465" x2="478" y2="465" stroke="#44536b" stroke-width="1.6"/>');
+        o.push('<polygon points="484,465 472,460 472,470" fill="#44536b"/>');
+        o.push(tx(70, 540, 13, '#1f2937', 700, 'Operator &amp; QC kurang saat volume order naik', 'start', true));
+        o.push(tx(70, 564, 12, '#1e6fd9', 600, 'tenaga packing &amp; armada terbatas,', 'start', true));
+        o.push(tx(70, 586, 12, '#1e6fd9', 600, 'jadwal kirim tidak pasti', 'start', true));
+        /* ===== MACHINE (bawah tengah) — ✓ tidak berkorelasi ===== */
+        o.push(catBox(605, 634, 170, 'MACHINE', fmt(M.Machine) + ' item'));
+        o.push(check(506, 416));
+        o.push(tx(552, 436, 13, '#1f2937', 700, 'Kapasitas press &amp; bath', 'start', true));
+        o.push(tx(552, 458, 13, '#1f2937', 700, 'plating antri', 'start', true));
+        o.push(tx(552, 482, 12, '#1e6fd9', 600, 'breakdown mesin, die &amp;', 'start', true));
+        o.push(tx(552, 500, 12, '#1e6fd9', 600, 'mold bermasalah;', 'start', true));
+        o.push(tx(552, 518, 12, '#1e6fd9', 600, 'rework NG (buffing ulang,', 'start', true));
+        o.push(tx(552, 536, 12, '#1e6fd9', 600, 'recoating) makan kapasitas;', 'start', true));
+        o.push(tx(552, 554, 12, '#1e6fd9', 600, 'changeover sering — banyak', 'start', true));
+        o.push(tx(552, 572, 12, '#1e6fd9', 600, 'varian order kecil', 'start', true));
+        /* ===== MATERIAL (bawah kanan) — ✓ tidak dominan ===== */
+        o.push(catBox(890, 634, 170, 'MATERIAL', fmt(M.Material) + ' item'));
+        o.push(check(731, 492));
+        o.push(tx(775, 498, 13, '#1f2937', 700, 'RM coil/sheet telat', 'start', true));
+        o.push(tx(775, 520, 13, '#1f2937', 700, 'dari supplier baja', 'start', true));
+        o.push(tx(775, 546, 11.5, '#1e6fd9', 600, 'WIP press telat masuk ke SF', 'start', true));
+        o.push(tx(775, 566, 11.5, '#1e6fd9', 600, 'proses SF menunggu part datang', 'start', true));
+        o.push(tx(775, 586, 11.5, '#1e6fd9', 600, 'bahan pendukung habis (kimia', 'start', true));
+        o.push(tx(775, 606, 11.5, '#1e6fd9', 600, 'plating, abrasif buffing)', 'start', true));
+        o.push(tx(775, 626, 11.5, '#1e6fd9', 600, 'tertahan antrian antar-proses', 'start', true));
         /* Sendi tulang pada tulang punggung */
-        o.push('<circle cx="296" cy="176" r="4.5" fill="#ffffff" stroke="#44536b" stroke-width="2.5"/>');
-        o.push('<circle cx="466" cy="176" r="4.5" fill="#ffffff" stroke="#44536b" stroke-width="2.5"/>');
+        [520, 610, 770, 900].forEach(function (cx) {
+          o.push('<circle cx="' + cx + '" cy="360" r="4.5" fill="#ffffff" stroke="#374151" stroke-width="2.5"/>');
+        });
+        /* Label UJI KORELASI */
+        o.push(tx(24, 690, 19, '#111827', 800, 'UJI KORELASI'));
         o.push('</svg>');
         return o.join('');
       }
