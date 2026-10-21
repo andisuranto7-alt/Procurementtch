@@ -580,6 +580,9 @@
       .chg-list[hidden] { display: none; }
       /* Entri Aktivitas: ikon warna per tipe kejadian + pesan + waktu */
       .chg-list li.act-item { display: flex; gap: 9px; align-items: flex-start; }
+      .chg-list li.act-item[data-ev-idx] { cursor: pointer; border-radius: 8px; padding: 7px 8px 9px; margin: 0 -8px; }
+      .chg-list li.act-item[data-ev-idx]:hover { background: var(--hover); }
+      .chg-list li.act-item[data-ev-idx]:focus-visible { outline: 2px solid var(--accent-2); outline-offset: 1px; }
       .act-ico { width: 28px; height: 28px; border-radius: 8px; display: inline-flex; align-items: center; justify-content: center; flex: 0 0 auto; margin-top: 1px; }
       .act-ico svg { width: 16px; height: 16px; }
       .act-body { flex: 1 1 auto; min-width: 0; }
@@ -609,6 +612,7 @@
       .ev-toast-stack:not(:empty) { margin-top: 10px; }
       .ev-card {
         display: flex; gap: 10px; align-items: flex-start;
+        cursor: pointer; pointer-events: auto;
         background: rgba(255, 255, 255, .8);
         -webkit-backdrop-filter: blur(12px) saturate(1.25);
         backdrop-filter: blur(12px) saturate(1.25);
@@ -619,6 +623,8 @@
         transition: opacity .55s ease, transform .55s ease;
       }
       .ev-card.ev-out { opacity: 0; transform: translateY(-10px); animation: none; }
+      .ev-card:focus-visible { outline: 2px solid var(--accent-2); outline-offset: 2px; }
+      .ev-hint { display: block; margin-top: 4px; font-size: 10.5px; font-weight: 700; letter-spacing: .5px; color: var(--muted); }
       @keyframes evIn { from { opacity: 0; transform: translateY(16px) scale(.96); } to { opacity: 1; transform: none; } }
       @keyframes evBob { from { transform: translateY(0); } to { transform: translateY(-5px); } }
       .ev-ico { width: 34px; height: 34px; border-radius: 10px; display: inline-flex; align-items: center; justify-content: center; flex: 0 0 auto; }
@@ -632,6 +638,38 @@
       @media (prefers-reduced-motion: reduce) {
         .ev-card { animation: none; transition: none; }
       }
+
+      /* ---------- Modal Detail Kejadian (LIVE_Events) ----------
+         Dibuka dari klik kartu pop-up aktivitas atau entri tab Aktivitas.
+         Gaya menyatu dengan modal Cek Stok & PICA: lembar terang di atas
+         backdrop navy, header sticky, HP layar penuh. */
+      .evm-overlay { position: fixed; inset: 0; z-index: 320; background: rgba(9, 28, 56, .58); display: flex; align-items: flex-start; justify-content: center; padding: 18px 12px; overflow-y: auto; }
+      .evm-overlay[hidden] { display: none; }
+      .evm-sheet { background: var(--bg-grad); width: min(560px, 100%); margin: auto 0; border-radius: 18px; border: 1px solid var(--line-strong); box-shadow: 0 30px 70px rgba(6, 22, 48, .35); animation: picaIn .25s ease; }
+      .evm-head { position: sticky; top: 0; z-index: 2; display: flex; align-items: center; gap: 12px; padding: 15px 20px 13px; background: linear-gradient(120deg, #ffffff, #e9f2fd); border-bottom: 3px solid var(--gold-2); border-radius: 17px 17px 0 0; }
+      .evm-head .ev-ico { width: 40px; height: 40px; border-radius: 11px; }
+      .evm-head .ev-ico svg { width: 22px; height: 22px; }
+      .evm-head-txt { flex: 1 1 auto; min-width: 0; }
+      .evm-head h2 { margin: 0; font-size: 19px; letter-spacing: 1.2px; color: var(--brand-dark); }
+      .evm-head p { margin: 2px 0 0; font-size: 11.5px; font-weight: 700; letter-spacing: .7px; }
+      .evm-head .stock-close { margin-left: 0; }
+      .evm-body { padding: 16px 20px 22px; }
+      .evm-msg { margin: 0 0 6px; font-size: 14.5px; line-height: 1.5; color: var(--ink); background: var(--surface); border: 1px solid var(--line); border-radius: 12px; box-shadow: var(--shadow); padding: 11px 14px; overflow-wrap: anywhere; }
+      .evm-rows { display: flex; flex-direction: column; }
+      .evm-row { display: flex; gap: 12px; padding: 7px 2px; border-bottom: 1px dashed var(--line); font-size: 14px; align-items: baseline; }
+      .evm-row:last-child { border-bottom: 0; }
+      .evm-row .k { flex: 0 0 132px; font-size: 12px; font-weight: 700; letter-spacing: .4px; color: var(--muted); }
+      .evm-row .v { flex: 1 1 auto; min-width: 0; color: var(--ink); font-weight: 600; overflow-wrap: anywhere; font-variant-numeric: tabular-nums; }
+      .evm-stock-btn { margin-top: 16px; width: 100%; justify-content: center; min-height: 46px; }
+      @media (max-width: 760px) {
+        .evm-overlay { padding: 0; }
+        .evm-sheet { width: 100%; min-height: 100dvh; margin: 0; border: 0; border-radius: 0; }
+        .evm-head { border-radius: 0; padding: 13px 14px 11px; }
+        .evm-body { padding: 13px 12px 18px; }
+        .evm-row { flex-direction: column; gap: 1px; }
+        .evm-row .k { flex: 0 0 auto; }
+      }
+      @media (prefers-reduced-motion: reduce) { .evm-sheet { animation: none; } }
 
       /* ---------- PICA: tombol sendiri di header & papan visual (modal) ----------
          Visual-first: diagram SVG + kartu bergambar, teks hanya label pendek.
@@ -868,7 +906,7 @@
         padding: 18px 14px 14px;
         overflow-y: auto;
       }
-      .sb-brand { display: flex; align-items: center; gap: 11px; padding: 2px 6px 14px; border-bottom: 1px solid var(--line); }
+      .sb-brand { display: flex; align-items: center; gap: 11px; padding: 2px 6px 14px; border-bottom: 1px solid var(--line); flex-wrap: wrap; row-gap: 9px; }
       .sb-brand .logo-chip { padding: 5px 8px; border-radius: 9px; }
       .sb-brand .logo-chip img { height: 34px; }
       .sb-brand h2 { margin: 0; font-size: 19px; font-weight: 700; letter-spacing: 1.6px; color: var(--brand-dark); line-height: 1.1; }
@@ -921,7 +959,48 @@
         .sb-toggle { display: inline-flex; }
       }
       @media (prefers-reduced-motion: reduce) {
-        .sidebar, .sb-backdrop { transition: none; }
+        .sidebar, .sb-backdrop, body { transition: none; }
+      }
+
+      /* ---------- Sidebar desktop: auto-hide + pin + peek ----------
+         Hanya ≥1200px. body.sb-hidden menggeser sidebar keluar layar dan
+         padding-left body menyusut bersamaan (transisi sinkron) sehingga
+         konten melebar mengisi ruangnya. #sbEdge = strip pemicu tak
+         terlihat selebar 16px di tepi kiri; #sbPeek = tombol melayang
+         kecil di pojok kiri atas — keduanya hanya aktif saat sidebar
+         sembunyi. Mode drawer (<1200px) tidak tersentuh sama sekali. */
+      .sb-head-btns { margin-left: auto; display: flex; gap: 4px; flex: 0 0 auto; align-self: flex-start; }
+      .sb-mini {
+        width: 32px; height: 32px; border-radius: 8px; padding: 0;
+        border: 1px solid transparent; background: transparent; color: var(--muted);
+        cursor: pointer; display: inline-flex; align-items: center; justify-content: center;
+        transition: background .15s ease, color .15s ease, border-color .15s ease;
+      }
+      .sb-mini svg { width: 17px; height: 17px; }
+      .sb-mini:hover { background: var(--hover); color: var(--brand-dark); border-color: var(--line); }
+      .sb-mini:focus-visible { outline: 2px solid var(--accent-2); outline-offset: 1px; }
+      .sb-mini.is-on { background: var(--brand-soft); color: var(--brand); border-color: var(--line-strong); }
+      .sb-mini.is-on .pin-head { fill: currentColor; }
+      .sb-edge { display: none; position: fixed; top: 0; left: 0; bottom: 0; width: 16px; z-index: 205; }
+      .sb-peek {
+        display: none; position: fixed; top: 14px; left: 14px; z-index: 210;
+        width: 44px; height: 44px; border-radius: 50%;
+        border: 1px solid var(--line-strong); background: #fff; color: var(--brand-dark);
+        cursor: pointer; align-items: center; justify-content: center; padding: 0;
+        box-shadow: 0 6px 18px rgba(10, 42, 94, .18);
+      }
+      .sb-peek svg { width: 20px; height: 20px; }
+      .sb-peek:hover { background: var(--brand-soft); border-color: var(--accent); }
+      .sb-peek:focus-visible { outline: 2px solid var(--accent-2); outline-offset: 2px; }
+      @media (min-width: 1200px) {
+        body { transition: padding-left .32s cubic-bezier(.22, .8, .3, 1); }
+        .sidebar { transition: transform .32s cubic-bezier(.22, .8, .3, 1); }
+        .tch-watermark { transition: left .32s cubic-bezier(.22, .8, .3, 1); }
+        body.sb-hidden { padding-left: 0; }
+        body.sb-hidden .sidebar { transform: translateX(-105%); }
+        body.sb-hidden .tch-watermark { left: 0; }
+        body.sb-hidden .sb-edge { display: block; }
+        body.sb-hidden .sb-peek { display: inline-flex; }
       }
 
       /* ---------- Tombol & panel Cek Stok ---------- */
@@ -1006,6 +1085,14 @@
           <h2>ASAKAI</h2>
           <p>Procurement · PT Trimitra Chitrahasta</p>
         </div>
+        <div class="sb-head-btns">
+          <button type="button" class="sb-mini" id="sbPinBtn" aria-pressed="false" title="Tahan tampil — matikan sembunyi otomatis sidebar" aria-label="Tahan tampilkan sidebar (pin)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path class="pin-head" d="M9 3.5h6l-.8 5.2 2.3 2.3v1.6H7.5V11l2.3-2.3z"/><path d="M12 12.6V20"/></svg>
+          </button>
+          <button type="button" class="sb-mini" id="sbHideBtn" title="Sembunyikan sidebar" aria-label="Sembunyikan sidebar">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.5 5 8 12l6.5 7"/></svg>
+          </button>
+        </div>
       </div>
       <nav class="sb-nav" aria-label="Menu bagian laporan">
         <span class="sb-nav-label">NAVIGASI</span>
@@ -1046,6 +1133,13 @@
       </div>
     </aside>
     <div class="sb-backdrop" id="sbBackdrop"></div>
+    <!-- Pemicu tampil sidebar desktop saat sembunyi (auto-hide ≥1200px):
+         strip tepi kiri tak terlihat + tombol melayang di pojok kiri atas.
+         Keduanya hanya aktif saat body.sb-hidden (CSS). -->
+    <div class="sb-edge" id="sbEdge" aria-hidden="true"></div>
+    <button type="button" class="sb-peek" id="sbPeek" aria-label="Tampilkan sidebar" title="Tampilkan sidebar">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5.5 5 12 12l-6.5 7"/><path d="M12.5 5 19 12l-6.5 7"/></svg>
+    </button>
 
     <div class="wrap">
      <div class="fixed-top">
@@ -1213,6 +1307,24 @@
          di margin kiri & kanan halaman (di luar .wrap), diisi oleh JS -->
     <div class="ev-stack ev-left" id="evStackL" aria-hidden="true"></div>
     <div class="ev-stack ev-right" id="evStackR" aria-hidden="true"></div>
+
+    <!-- ================= DETAIL KEJADIAN (modal LIVE_Events) =================
+         Dibuka dari klik kartu pop-up aktivitas atau entri tab Aktivitas di
+         panel Riwayat. Isi dirender openEvModal() dari satu baris LIVE_Events
+         (Timestamp | Tipe | Vendor | Pesan | Detail). -->
+    <div class="evm-overlay" id="evModal" hidden role="dialog" aria-modal="true" aria-labelledby="evmTitle">
+      <div class="evm-sheet">
+        <div class="evm-head">
+          <span class="ev-ico" id="evmIco" aria-hidden="true"></span>
+          <div class="evm-head-txt">
+            <h2 id="evmTitle">DETAIL KEJADIAN</h2>
+            <p id="evmType"></p>
+          </div>
+          <button type="button" class="stock-close" id="evmClose" aria-label="Tutup detail kejadian">&times;</button>
+        </div>
+        <div class="evm-body" id="evmBody"></div>
+      </div>
+    </div>
 
     <!-- ================= CEK STOK (modal) =================
          Dibuka dari tombol Cek Stok (header & sidebar). Data stok TCH & SF
@@ -1809,7 +1921,9 @@
       /* Agregasi per vendor + Item Code untuk tabel detail: baris-baris
          dikelompokkan per vendor (semua item satu vendor berurutan) dan
          vendor diurutkan dari total OS terbesar. */
+      var totalDiFallbackRows = 0;   /* baris Total DI cadangan (agregasi terakhir) */
       function aggregatedItemRows(rows) {
+        totalDiFallbackRows = 0;
         var map = {}, order = [], vendorTotal = {};
         rows.forEach(function (r) {
           var key = r.vcode + '|' + r.item;
@@ -1843,6 +1957,17 @@
           if (r.detail) a._details[r.detail] = true;
         });
         order.forEach(function (a) {
+          /* Total DI (ketentuan 21 Okt 2026): Total Delay (pcs, Σ OS delay
+             dari LIVE_ItemExtra) + DI Hari Ini (pcs), per item+vendor.
+             Pasangan yang tidak ditemukan di data extra (atau komponennya
+             belum tersedia) memakai nilai Total DI lama (Σ os) apa adanya
+             sebagai cadangan — dihitung di totalDiFallbackRows. */
+          if (a.delayDiQty != null && a.diTodayQty != null) {
+            a.totalDi = a.delayDiQty + a.diTodayQty;
+          } else {
+            a.totalDi = a.totalPcs;
+            totalDiFallbackRows++;
+          }
           a.judgement = (a.fg != null && a.fg >= a.totalPcs) ? 'OK' : 'NG';
           a.problem = Object.keys(a._problems).join(', ');
           a.detail = Object.keys(a._details).join('; ');
@@ -2046,7 +2171,7 @@
             : 'Tidak ada item delay.';
         }
         var sig = q + '|' + (m4 || '') + '|' + chgSigStr() + '|' + catAgg.map(function (r) {
-          return r.vcode + ':' + r.item + ':' + r.totalPcs + ':' + (r.delayDi == null ? '-' : r.delayDi) + ':' + (r.delayDiQty == null ? '-' : r.delayDiQty) + ':' + (r.grQty == null ? '-' : r.grQty) + ':' + (r.dnOpen == null ? '-' : r.dnOpen) + ':' + (r.diTodayQty == null ? '-' : r.diTodayQty) + ':' + (r.diTodayCnt == null ? '-' : r.diTodayCnt) + ':' + (r.fg == null ? '-' : r.fg) + ':' + r.judgement + ':' + r.problem + ':' + r.detail;
+          return r.vcode + ':' + r.item + ':' + r.totalDi + ':' + (r.delayDi == null ? '-' : r.delayDi) + ':' + (r.delayDiQty == null ? '-' : r.delayDiQty) + ':' + (r.grQty == null ? '-' : r.grQty) + ':' + (r.dnOpen == null ? '-' : r.dnOpen) + ':' + (r.diTodayQty == null ? '-' : r.diTodayQty) + ':' + (r.diTodayCnt == null ? '-' : r.diTodayCnt) + ':' + (r.fg == null ? '-' : r.fg) + ':' + r.judgement + ':' + r.problem + ':' + r.detail;
         }).join(';');
         if (sig === state.rtSigs[t.cat]) return;
         state.rtSigs[t.cat] = sig;
@@ -2081,7 +2206,7 @@
             '<span class="c-item">' + esc(r.item) + '</span>' +
             '<span class="c-vendor">' + esc(r.vendorAbbr) + '</span>' +
             '<span class="c-name" title="' + esc(r.desc) + '">' + esc(r.desc) + '</span>' +
-            '<span class="c-di-pcs num">' + fmt(r.totalPcs) + '</span>' +
+            '<span class="c-di-pcs num">' + fmt(r.totalDi) + '</span>' +
             '<span class="c-delay-di num">' + numCell(r.delayDi) + (r.delayDiQty != null ? '<span class="di-qty">' + fmt(r.delayDiQty) + ' pcs</span>' : '') + '</span>' +
             '<span class="c-gr num">' + numCell(r.grQty) + '</span>' +
             '<span class="c-dnopen num">' + numCell(r.dnOpen) + '</span>' +
@@ -2485,9 +2610,9 @@
           list.innerHTML = '<li class="chg-empty">Belum ada aktivitas tercatat.</li>';
           return;
         }
-        list.innerHTML = eventEntries.map(function (e) {
+        list.innerHTML = eventEntries.map(function (e, idx) {
           var meta = evTypeMeta(e.tipe);
-          return '<li class="act-item">' +
+          return '<li class="act-item" data-ev-idx="' + idx + '" tabindex="0" role="button" title="Klik untuk melihat detail kejadian">' +
             '<span class="act-ico" style="color:' + meta.color + ';background:' + meta.bg + '">' + meta.icon + '</span>' +
             '<span class="act-body">' +
               '<span class="chg-time">' + esc(fmtHistTime(e.t, e.tsRaw)) + '</span>' +
@@ -2510,7 +2635,9 @@
         if (!wrap) return { left: 0, right: 0, w: w };
         var rect = wrap.getBoundingClientRect();
         var sb = 0;
-        if (w >= 1200) {
+        /* Sidebar sembunyi (auto-hide desktop): lebarnya tidak lagi
+           mengurangi margin — area konten sudah melebar penuh. */
+        if (w >= 1200 && !document.body.classList.contains('sb-hidden')) {
           var sbEl = $('sidebar');
           if (sbEl) sb = sbEl.offsetWidth || 0;
         }
@@ -2552,16 +2679,153 @@
         if (wide) evNextSide = evNextSide ? 0 : 1;
         var card = document.createElement('div');
         card.className = 'ev-card';
-        card.innerHTML = evCardHTML(e);
+        card.setAttribute('role', 'button');
+        card.setAttribute('tabindex', '0');
+        card.setAttribute('aria-label', 'Lihat detail kejadian: ' + (e.vendor ? e.vendor + ' — ' : '') + (e.pesan || evTypeMeta(e.tipe).label));
+        card.title = 'Klik untuk detail kejadian';
+        card.innerHTML = evCardHTML(e) + '<span class="ev-hint" aria-hidden="true">KLIK UNTUK DETAIL</span>';
         host.appendChild(card);
         evVisibleCount++;
-        setTimeout(function () { card.classList.add('ev-out'); }, EV_CARD_MS);
-        setTimeout(function () {
+        var removed = false;
+        function dismissCard() {
+          if (removed) return;
+          removed = true;
+          clearTimeout(fadeTimer);
+          clearTimeout(removeTimer);
           if (card.parentNode) card.parentNode.removeChild(card);
           evVisibleCount--;
           pumpEventPopups();
-        }, EV_CARD_MS + 650);
+        }
+        var fadeTimer = setTimeout(function () { card.classList.add('ev-out'); }, EV_CARD_MS);
+        var removeTimer = setTimeout(dismissCard, EV_CARD_MS + 650);
+        /* Klik kartu: batalkan timer memudarnya, keluarkan dari tumpukan
+           persis seperti penghapusan normal (antrean kartu lain tidak
+           terganggu), lalu buka modal detail kejadian. */
+        card.addEventListener('click', function () {
+          dismissCard();
+          openEvModal(e);
+        });
+        card.addEventListener('keydown', function (ev) {
+          if (ev.key === 'Enter' || ev.key === ' ') {
+            ev.preventDefault();
+            dismissCard();
+            openEvModal(e);
+          }
+        });
       }
+      /* ================= Modal Detail Kejadian (LIVE_Events) =================
+         Satu baris LIVE_Events dirender terstruktur: ikon+label tipe,
+         vendor, waktu lengkap WIB, pesan utuh, lalu rincian dari kolom
+         Detail yang dipecah per segmen " · " dan dipetakan awalannya ke
+         label baku. Bila rincian memuat Item Code, tampil tombol Cek Stok
+         yang menutup modal lalu membuka panel Cek Stok pada item itu.
+         Baris lama tanpa segmen "Item ..." tetap rapi — tombolnya cukup
+         tidak muncul. */
+      var ID_DAYS = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
+      function fmtEvWhen(e) {
+        if (!e.t) return e.tsRaw || '';
+        var wd = new Date(Date.UTC(e.t.y, e.t.mo - 1, e.t.d)).getUTCDay();
+        return ID_DAYS[wd] + ', ' + e.t.d + ' ' + MONTHS_ID[e.t.mo - 1] + ' ' + e.t.y +
+          ' · ' + pad2(e.t.h) + ':' + pad2(e.t.mi) + ':' + pad2(e.t.se) + ' WIB';
+      }
+      function parseEvDetail(e) {
+        var rows = [];
+        var itemCode = '';
+        var isDN = String(e.tipe || '').trim().toUpperCase() === 'DN_DIBUAT';
+        if (isDN) {
+          var mdn = /bikin DN\s+(\S+)/i.exec(e.pesan || '');
+          if (mdn) rows.push({ k: 'Nomor DN', v: mdn[1] });
+        }
+        var segs = String(e.detail || '').split('·').map(function (s) { return s.trim(); }).filter(Boolean);
+        segs.forEach(function (s) {
+          var m;
+          if ((m = /^DI\s+(.+)$/.exec(s))) rows.push({ k: 'Nomor DI', v: m[1] });
+          else if ((m = /^PO\s+(.+)$/.exec(s))) rows.push({ k: 'Nomor PO', v: m[1] });
+          else if ((m = /^Item\s+(.+)$/.exec(s))) { itemCode = m[1].trim(); rows.push({ k: 'Item Code', v: itemCode }); }
+          else if ((m = /^Qty\s+(.+)$/i.exec(s))) rows.push({ k: 'Qty', v: m[1] });
+          else if ((m = /^release\s+(.+)$/i.exec(s))) rows.push({ k: 'Tanggal Release DN', v: m[1] });
+          else if ((m = /^delivery\s+(.+)$/i.exec(s))) rows.push({ k: 'Tanggal Delivery', v: m[1] });
+          else if ((m = /^sebelumnya\s+(.+)$/i.exec(s))) rows.push({ k: 'Update Sebelumnya', v: m[1] });
+          else if ((m = /^terakhir\s+(.+)$/i.exec(s))) rows.push({ k: 'Terakhir Update', v: m[1] });
+          else if ((m = /^jendela cek\s+(.+)$/i.exec(s))) rows.push({ k: 'Jendela Cek', v: m[1] });
+          else if ((m = /^(.+?)\s+qty\s+([\d.,]+)\s*(?:pcs)?$/i.exec(s))) {
+            rows.push({ k: 'Part', v: m[1] });
+            rows.push({ k: 'Qty', v: m[2] });
+          }
+          else rows.push({ k: 'Rincian', v: s });
+        });
+        return { rows: rows, itemCode: itemCode };
+      }
+      var evModal = $('evModal');
+      function openEvModal(e) {
+        if (!e || !evModal) return;
+        var meta = evTypeMeta(e.tipe);
+        var ico = $('evmIco');
+        ico.setAttribute('style', 'color:' + meta.color + ';background:' + meta.bg);
+        ico.innerHTML = meta.icon;
+        var typeEl = $('evmType');
+        typeEl.textContent = meta.label;
+        typeEl.setAttribute('style', 'color:' + meta.color);
+        var parsed = parseEvDetail(e);
+        var h = '';
+        if (e.pesan) h += '<p class="evm-msg">' + esc(e.pesan) + '</p>';
+        h += '<div class="evm-rows">';
+        if (e.vendor) h += '<div class="evm-row"><span class="k">VENDOR</span><span class="v">' + esc(e.vendor) + '</span></div>';
+        h += '<div class="evm-row"><span class="k">WAKTU</span><span class="v">' + esc(fmtEvWhen(e)) + '</span></div>';
+        parsed.rows.forEach(function (r) {
+          h += '<div class="evm-row"><span class="k">' + esc(r.k.toUpperCase()) + '</span><span class="v">' + esc(r.v) + '</span></div>';
+        });
+        h += '</div>';
+        if (parsed.itemCode) {
+          h += '<button type="button" class="btn evm-stock-btn" id="evmStockBtn" data-ev-item="' + esc(parsed.itemCode) + '">' +
+            '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="width:18px;height:18px"><path d="M21 8.2 12 3.5 3 8.2v7.6L12 20.5l9-4.7z"/><path d="M3 8.2l9 4.7 9-4.7"/><path d="M12 12.9v7.6"/></svg>' +
+            'Cek Stok Item Ini</button>';
+        }
+        $('evmBody').innerHTML = h;
+        evModal.hidden = false;
+        evModal.scrollTop = 0;
+        document.body.style.overflow = 'hidden';
+        var cb = $('evmClose');
+        if (cb && cb.focus) cb.focus();
+      }
+      function closeEvModal() {
+        if (!evModal || evModal.hidden) return;
+        evModal.hidden = true;
+        document.body.style.overflow = '';
+      }
+      if (evModal) {
+        $('evmClose').addEventListener('click', closeEvModal);
+        evModal.addEventListener('click', function (ev) { if (ev.target === evModal) closeEvModal(); });
+        $('evmBody').addEventListener('click', function (ev) {
+          var btn = ev.target && ev.target.closest ? ev.target.closest('[data-ev-item]') : null;
+          if (!btn) return;
+          var item = btn.getAttribute('data-ev-item');
+          closeEvModal();
+          openStock(item);
+        });
+        document.addEventListener('keydown', function (ev) {
+          if (ev.key === 'Escape' && !evModal.hidden) closeEvModal();
+        });
+      }
+      /* Entri tab Aktivitas di panel Riwayat juga membuka modal yang sama */
+      var actListEl = $('actList');
+      if (actListEl) {
+        function actEntryFromEvent(ev) {
+          var li = ev.target && ev.target.closest ? ev.target.closest('[data-ev-idx]') : null;
+          if (!li || !eventEntries) return null;
+          return eventEntries[+li.getAttribute('data-ev-idx')] || null;
+        }
+        actListEl.addEventListener('click', function (ev) {
+          var e = actEntryFromEvent(ev);
+          if (e) openEvModal(e);
+        });
+        actListEl.addEventListener('keydown', function (ev) {
+          if (ev.key !== 'Enter' && ev.key !== ' ') return;
+          var e = actEntryFromEvent(ev);
+          if (e) { ev.preventDefault(); openEvModal(e); }
+        });
+      }
+
       function enqueueEventPopups(list) {
         list.forEach(function (e) { evQueue.push(e); });
         pumpEventPopups();
@@ -2972,7 +3236,8 @@
           if (stockState.failed) {
             $('stockStatus').textContent = 'Data stok belum bisa dimuat saat ini. Periksa koneksi internet, lalu buka kembali panel ini atau klik Refresh Data.';
           } else if (stockState.lastQuery) {
-            runStockSearch(stockState.lastQuery);
+            if (stockState.pendingItem) stockDetailFor(stockState.pendingItem);
+            else runStockSearch(stockState.lastQuery);
           } else {
             $('stockStatus').textContent = 'Data stok siap — ketik item code atau nama part, lalu klik Cek.';
           }
@@ -3050,6 +3315,40 @@
         var h = '<button type="button" class="stock-back" id="stockBack">← Kembali ke hasil pencarian</button>';
         h += '<p class="stock-d-title">' + esc(item) + '</p>';
         if (desc) h += '<p class="stock-d-desc">' + esc(desc) + '</p>';
+        /* Delay Manifest — total delay item ini dari peta LIVE_ItemExtra
+           yang sama dengan tabel detail (Delay DI = count DI unik,
+           Delay DI Qty = Σ OS pcs), lintas vendor; rincian per vendor
+           tampil bila item dipakai lebih dari satu vendor. */
+        var exRows = [];
+        if (state.extraMap) {
+          Object.keys(state.extraMap).forEach(function (k) {
+            var seg = k.split('|');
+            if (seg[1] === item && state.extraMap[k]) exRows.push({ vcode: seg[0], ex: state.extraMap[k] });
+          });
+        }
+        var totDelayDi = 0, totDelayOs = 0, osKnown = false;
+        exRows.forEach(function (r) {
+          totDelayDi += r.ex.delayDi || 0;
+          if (r.ex.delayDiQty != null) { totDelayOs += r.ex.delayDiQty; osKnown = true; }
+        });
+        h += '<div class="stock-sec"><h3>DELAY MANIFEST</h3>';
+        if (!exRows.length || totDelayDi === 0) {
+          h += '<p class="none-note">Tidak ada delay</p>';
+        } else {
+          h += '<div class="stock-lines">';
+          h += '<div class="stock-line total"><span class="sl-name">Total Delay</span><span class="sl-qty">' +
+            fmt(totDelayDi) + ' DI' + (osKnown ? ' · ' + fmt(totDelayOs) + ' pcs' : '') + '</span></div>';
+          if (exRows.length > 1) {
+            exRows.slice().sort(function (a, b) { return (b.ex.delayDiQty || 0) - (a.ex.delayDiQty || 0); }).forEach(function (r) {
+              h += '<div class="stock-line"><span class="sl-name">' +
+                esc(shortVendor({ vcode: r.vcode, vname: '' })) + '<small>' + esc(r.vcode) + '</small>' +
+                '</span><span class="sl-qty">' + fmt(r.ex.delayDi || 0) + ' DI' +
+                (r.ex.delayDiQty != null ? ' · ' + fmt(r.ex.delayDiQty) + ' pcs' : '') + '</span></div>';
+            });
+          }
+          h += '</div>';
+        }
+        h += '</div>';
         /* a. Di TCH — per Sloc; label (FG) HANYA untuk Sloc 1110 */
         h += '<div class="stock-sec"><h3>DI TCH</h3>';
         if (tch) {
@@ -3091,10 +3390,31 @@
         $('stockBack').addEventListener('click', function () { runStockSearch(stockState.lastQuery); });
       }
       var stockOverlay = $('stockOverlay');
-      function openStock() {
+      /* Jalankan pencarian item code lalu langsung buka detailnya bila
+         item itu dikenal di indeks stok; bila tidak dikenal, hasil
+         pencarian normalnya yang tampil. */
+      function stockDetailFor(item) {
+        stockState.pendingItem = null;
+        runStockSearch(item);
+        var known = stockIndex().some(function (e) { return e.item === item; });
+        if (known) renderStockDetail(item);
+      }
+      function openStock(item) {
         stockOverlay.hidden = false;
         stockOverlay.scrollTop = 0;
         document.body.style.overflow = 'hidden';
+        if (typeof item === 'string' && item) {
+          /* Dibuka dari modal Detail Kejadian: cari item code itu dan
+             buka detail stoknya (menunggu data stok selesai dimuat bila
+             panel ini baru pertama kali dibuka). */
+          var qIn = $('stockQuery');
+          if (qIn) qIn.value = item;
+          stockState.lastQuery = item;
+          stockState.pendingItem = item;
+          if (stockState.loaded) stockDetailFor(item);
+          else if (!stockState.loading) loadStock(false);
+          return;
+        }
         if (!stockState.loaded && !stockState.loading) loadStock(false);
         else if (stockState.lastQuery) runStockSearch(stockState.lastQuery);
         var qEl = $('stockQuery');
@@ -3144,6 +3464,90 @@
       sidebar.addEventListener('click', function (e) {
         if (e.target && e.target.closest && e.target.closest('a.sb-link')) setDrawer(false);
       });
+
+      /* ================= Sidebar desktop: AUTO-HIDE (≥1200px saja) =================
+         Status tampil/sembunyi + flag pin, hanya berlaku di mode desktop.
+         Default saat halaman dimuat: sidebar TAMPIL, pin MATI. Mode
+         otomatis: ±4 detik tanpa interaksi dengan sidebar → sidebar
+         bergeser sembunyi (body.sb-hidden; padding-left body menyusut
+         bersamaan lewat CSS). Muncul lagi lewat strip tepi kiri (#sbEdge)
+         atau tombol tampilkan melayang (#sbPeek). Sembunyi manual (tombol chevron di
+         header sidebar) tetap sembunyi sampai user menampilkannya lagi;
+         timer tidak pernah menampilkan sidebar. Mode drawer (<1200px)
+         tidak disentuh: beralih ke sana menghapus seluruh status desktop,
+         dan beralih kembali ke desktop selalu mulai dari tampil. */
+      var SB_IDLE_MS = 4000;
+      var sbDeskMq = window.matchMedia ? window.matchMedia('(min-width: 1200px)') : { matches: false };
+      var sbPinned = false, sbIsHidden = false, sbHover = false, sbHideTimer = null;
+      var sbPinBtn = $('sbPinBtn'), sbHideBtn = $('sbHideBtn'), sbPeekBtn = $('sbPeek'), sbEdgeEl = $('sbEdge');
+      function sbDesktop() { return !!sbDeskMq.matches; }
+      function clearSbTimer() {
+        if (sbHideTimer) { clearTimeout(sbHideTimer); sbHideTimer = null; }
+      }
+      function armSbTimer() {
+        clearSbTimer();
+        if (!sbDesktop() || sbPinned || sbIsHidden) return;
+        sbHideTimer = setTimeout(function () {
+          sbHideTimer = null;
+          if (!sbDesktop() || sbPinned || sbIsHidden) return;
+          /* Kursor masih di atas sidebar / fokus masih di dalamnya:
+             tunda lagi — hitungan hanya berjalan tanpa interaksi. */
+          if (sbHover || (document.activeElement && sidebar.contains(document.activeElement))) {
+            armSbTimer();
+            return;
+          }
+          setSbHidden(true);
+        }, SB_IDLE_MS);
+      }
+      function setSbHidden(hidden) {
+        if (!sbDesktop()) {
+          sbIsHidden = false;
+          document.body.classList.remove('sb-hidden');
+          return;
+        }
+        sbIsHidden = hidden;
+        document.body.classList.toggle('sb-hidden', hidden);
+        if (hidden) clearSbTimer();
+        else if (!sbPinned) armSbTimer();
+        /* Margin pop-up LIVE_Events dihitung dari area konten terbaru:
+           hitung segera (perkiraan) dan sekali lagi setelah transisi
+           geser selesai agar posisi tumpukan tepat. */
+        layoutEvStacks();
+        setTimeout(function () { layoutEvStacks(); pumpEventPopups(); }, 360);
+      }
+      if (sbHideBtn) sbHideBtn.addEventListener('click', function () { setSbHidden(true); });
+      if (sbPinBtn) sbPinBtn.addEventListener('click', function () {
+        sbPinned = !sbPinned;
+        sbPinBtn.classList.toggle('is-on', sbPinned);
+        sbPinBtn.setAttribute('aria-pressed', sbPinned ? 'true' : 'false');
+        if (sbPinned) {
+          clearSbTimer();
+          if (sbIsHidden) setSbHidden(false);
+        } else {
+          armSbTimer();
+        }
+      });
+      if (sbPeekBtn) sbPeekBtn.addEventListener('click', function () { setSbHidden(false); });
+      if (sbEdgeEl) sbEdgeEl.addEventListener('pointerenter', function () {
+        if (sbIsHidden) setSbHidden(false);
+      });
+      sidebar.addEventListener('pointerenter', function () { sbHover = true; clearSbTimer(); });
+      sidebar.addEventListener('pointerleave', function () { sbHover = false; armSbTimer(); });
+      sidebar.addEventListener('pointermove', function () { armSbTimer(); });
+      sidebar.addEventListener('pointerdown', function () { armSbTimer(); });
+      sidebar.addEventListener('click', function () { armSbTimer(); });
+      sidebar.addEventListener('focusin', function () { armSbTimer(); });
+      function sbOnModeChange() {
+        clearSbTimer();
+        sbIsHidden = false;
+        sbHover = false;
+        document.body.classList.remove('sb-hidden');
+        if (sbDesktop()) armSbTimer();
+        setTimeout(function () { layoutEvStacks(); }, 80);
+      }
+      if (sbDeskMq.addEventListener) sbDeskMq.addEventListener('change', sbOnModeChange);
+      else if (sbDeskMq.addListener) sbDeskMq.addListener(sbOnModeChange);
+      armSbTimer();
       $('sbRefreshBtn').addEventListener('click', function () { setDrawer(false); loadLive(); });
       $('sbPicaBtn').addEventListener('click', function () { setDrawer(false); openPica(); });
       $('sbStockBtn').addEventListener('click', function () { setDrawer(false); openStock(); });
