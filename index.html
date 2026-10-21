@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-    <meta name="color-scheme" content="light dark" />
+    <meta name="color-scheme" content="light" />
     <link rel="icon" href="data:," />
     <title>Laporan ASAKAI — Komparasi Delay Manifest vs 2 Days Stock Vendor</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -11,21 +11,22 @@
     <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
     <style>
       :root {
-        --bg: #eef1f8;
-        --bg-grad: linear-gradient(160deg, #f4f6fb 0%, #eaeff7 100%);
+        color-scheme: light;
+        --bg: #eff1f4;
+        --bg-grad: linear-gradient(180deg, #f7f8fa 0%, #ebedf1 100%);
         --surface: #ffffff;
-        --surface-2: #f7f9fd;
-        --hover: #eef3fb;
+        --surface-2: #f6f8fb;
+        --hover: #edf2f9;
         --ink: #16233c;
         --ink-2: #44536b;
-        --muted: #71809a;
-        --line: #e2e8f0;
-        --line-strong: #c3cede;
-        --brand: #16295c;
-        --brand-dark: #0f1e3d;
-        --brand-soft: #e8edf7;
-        --navy-solid: #16295c;
-        --navy-grad: linear-gradient(120deg, #16295c 0%, #0f1e3d 78%);
+        --muted: #6d7c94;
+        --line: #dfe4ec;
+        --line-strong: #c2cddd;
+        --brand: #0b3b82;
+        --brand-dark: #0a2a5e;
+        --brand-soft: #e7edf6;
+        --navy-solid: #0a2a5e;
+        --navy-grad: linear-gradient(120deg, #0b3b82 0%, #0a2a5e 82%);
         --gold: #c9a227;
         --gold-2: #d4a017;
         --gold-ink: #8a6d1f;
@@ -37,8 +38,8 @@
         --live: #1c8a44;
         --off: #b91c1c;
         --orange: #a35b00;
-        --shadow: 0 1px 2px rgba(15, 30, 61, .05), 0 10px 28px rgba(15, 30, 61, .08);
-        --radius: 13px;
+        --shadow: 0 1px 2px rgba(10, 42, 94, .05), 0 10px 26px rgba(10, 42, 94, .07);
+        --radius: 14px;
         /* Kolom tabel running: No | Item | Vendor | Part | DI pcs | RM | WIP | FG | Judgement | Problem 4M | Detail.
            SEMUA lebar kolom FIXED (px) — satu geometri yang sama persis untuk header & baris
            di kedua tabel detail, agar garis batas kolom segaris dari atas ke bawah. */
@@ -46,37 +47,6 @@
         /* Freeze panes: lebar kolom No (offset sticky kolom Item Code) + lebar minimum tabel agar bisa di-scroll horizontal */
         --no-w: 44px;
         --rtw: 1560px;
-      }
-      @media (prefers-color-scheme: dark) {
-        :root {
-          --bg: #0a1224;
-          --bg-grad: linear-gradient(160deg, #0d1730 0%, #080f22 100%);
-          --surface: #111c36;
-          --surface-2: #16233f;
-          --hover: #1a2a4d;
-          --ink: #e9eef7;
-          --ink-2: #b6c2d8;
-          --muted: #8494b0;
-          --line: #263457;
-          --line-strong: #3a4c78;
-          --brand: #7ea2e8;
-          --brand-dark: #a9c2f2;
-          --brand-soft: #1b2a4d;
-          --navy-solid: #16295c;
-          --navy-grad: linear-gradient(120deg, #1b3268 0%, #0d1830 78%);
-          --gold: #d4a017;
-          --gold-2: #e3c565;
-          --gold-ink: #e3c565;
-          --gold-bg: #2e2a14;
-          --red: #f0938c;
-          --red-bg: #3d2321;
-          --green: #5fd3a5;
-          --green-bg: #123527;
-          --live: #4cc472;
-          --off: #f0938c;
-          --orange: #f2b25c;
-          --shadow: 0 1px 2px rgba(0,0,0,.35), 0 10px 28px rgba(0,0,0,.3);
-        }
       }
       * { box-sizing: border-box; }
       html { -webkit-text-size-adjust: 100%; }
@@ -89,6 +59,7 @@
         font-family: "IBM Plex Sans", "Segoe UI", system-ui, -apple-system, sans-serif;
         font-size: 15px;
         line-height: 1.45;
+        -webkit-font-smoothing: antialiased;
       }
       .wrap {
         width: 100%; max-width: 100%; margin: 0;
@@ -105,11 +76,11 @@
       /* ---------- Header ---------- */
       .topbar {
         background: var(--navy-grad);
-        border: 1px solid #0a1730;
+        border: 1px solid #071f42;
         border-bottom: 3px solid var(--gold);
         border-radius: var(--radius);
-        box-shadow: 0 12px 30px rgba(15, 30, 61, .22);
-        padding: 16px 20px;
+        box-shadow: 0 14px 32px rgba(10, 42, 94, .26), inset 0 1px 0 rgba(255, 255, 255, .14);
+        padding: 18px 22px;
         display: flex;
         flex-wrap: wrap;
         gap: 14px 22px;
@@ -129,9 +100,9 @@
       .logo-chip img { display: block; height: 46px; width: auto; }
       .titles h1 {
         margin: 0;
-        font-size: 26px;
+        font-size: 27px;
         font-weight: 700;
-        letter-spacing: .8px;
+        letter-spacing: 1px;
         line-height: 1.15;
         color: #fff;
       }
@@ -157,14 +128,16 @@
       .dataper strong { color: #fff; font-weight: 600; }
       .btn {
         display: inline-flex; align-items: center; gap: 8px;
-        font: inherit; font-size: 14px; font-weight: 600;
+        font: inherit; font-size: 14px; font-weight: 700;
         padding: 9px 16px; min-height: 42px;
-        border-radius: 9px; border: 1px solid rgba(255, 255, 255, .4);
-        background: rgba(255, 255, 255, .06); color: #fff;
+        border-radius: 9px; border: 1px solid #a97e0e;
+        background: var(--gold-2); color: #241a02;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, .22);
         cursor: pointer;
+        transition: background .18s ease, border-color .18s ease, box-shadow .18s ease;
       }
       .btn svg { width: 16px; height: 16px; flex: 0 0 auto; }
-      .btn:hover { border-color: var(--gold-2); color: #f0d98c; background: rgba(212, 160, 23, .12); }
+      .btn:hover { border-color: #8a6d1f; color: #241a02; background: #e3b62e; box-shadow: 0 4px 12px rgba(0, 0, 0, .26); }
       .btn:focus-visible { outline: 2px solid var(--gold-2); outline-offset: 2px; }
       .btn:disabled { opacity: .55; cursor: wait; }
       .btn .spin { animation: rot 1s linear infinite; }
@@ -215,6 +188,19 @@
          baris data pertama kedua tabel mulai pada posisi vertikal yang persis sama */
       @media (min-width: 981px) {
         .rt-row-top .rt-head { min-height: 142px; align-content: flex-start; }
+      }
+      /* HP (lebar ≤980px): halaman mengalir & di-scroll utuh — blok atas tidak
+         lagi meng-scroll internal, jadi semua grafik terlihat penuh dan bisa
+         diklik setelah meng-scroll halaman, dan klik grafik bisa
+         smooth-scroll ke tabel yang bertumpuk. Tiap tabel detail dibatasi
+         tingginya agar jendela running text-nya tetap berjalan sendiri. */
+      @media (max-width: 980px) {
+        .wrap { height: auto; min-height: 100dvh; }
+        .fixed-top { max-height: none; overflow-y: visible; }
+        .rt-stack { flex: 0 0 auto; }
+        .rt-row-top { flex: 0 0 auto; }
+        .rt-stack .rt-panel { flex: 0 0 auto; }
+        .rt-scroll { flex: 0 0 auto; height: 58dvh; }
       }
       .rt-head {
         flex: 0 0 auto;
@@ -387,14 +373,15 @@
       /* ---------- Panel grafik Pareto & donat 4M (kompak) ---------- */
       .charts { margin-top: 12px; flex: 0 0 auto; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
       .charts.pareto-row, .charts.two-col { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-      .chart-card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); box-shadow: var(--shadow); padding: 10px 12px 9px; min-width: 0; }
-      .chart-card h3 { margin: 0; font-size: 13px; font-weight: 700; letter-spacing: .4px; color: var(--ink); display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
-      .chart-card h3 .tot { color: var(--gold-ink); font-variant-numeric: tabular-nums; white-space: nowrap; font-size: 12px; letter-spacing: 0; }
+      .chart-card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); box-shadow: var(--shadow); padding: 11px 13px 10px; min-width: 0; transition: box-shadow .2s ease, border-color .2s ease; }
+      .chart-card:hover { border-color: var(--line-strong); box-shadow: 0 2px 4px rgba(10, 42, 94, .05), 0 14px 32px rgba(10, 42, 94, .10); }
+      .chart-card h3 { margin: 0; font-size: 13px; font-weight: 700; letter-spacing: .5px; color: var(--brand-dark); display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+      .chart-card h3 .tot { color: var(--gold-ink); background: var(--gold-bg); border: 1px solid #eadfae; border-radius: 999px; padding: 2px 9px; font-weight: 700; font-variant-numeric: tabular-nums; white-space: nowrap; font-size: 12px; letter-spacing: 0; }
       .chart-card .sub { margin: 2px 0 2px; font-size: 11px; color: var(--muted); }
       /* Kartu Pareto dirampingkan: tinggi total ±setengah dari sebelumnya */
       .chart-card.pareto-card { padding: 6px 10px 5px; }
       .chart-card.pareto-card h3 { font-size: 11.5px; letter-spacing: .3px; }
-      .chart-card.pareto-card h3 .tot { font-size: 11px; }
+      .chart-card.pareto-card h3 .tot { font-size: 11px; padding: 1px 8px; }
       .chart-card.pareto-card .sub { margin: 1px 0 1px; font-size: 9.5px; line-height: 1.3; }
       .chart-card.pareto-card .chart-empty { padding: 12px 8px; font-size: 11.5px; }
       .chart-svg { display: block; width: 100%; height: auto; }
@@ -414,11 +401,56 @@
       .lg-dot { width: 10px; height: 10px; border-radius: 3px; flex: 0 0 auto; }
       .lg-label { flex: 1 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
       .lg-val { font-variant-numeric: tabular-nums; font-weight: 600; color: var(--ink); white-space: nowrap; }
+
+      /* ---------- Grafik bisa diklik: lompat & saring ke tabel detail ---------- */
+      .p-hit { cursor: pointer; outline: none; }
+      .p-hit .p-bar { transition: filter .15s ease; }
+      .p-hit:hover .p-bar, .p-hit:focus-visible .p-bar { filter: brightness(1.28) saturate(1.08); }
+      .p-hit:hover .p-xlab, .p-hit:focus-visible .p-xlab { fill: var(--brand); }
+      .p-hit:focus-visible .p-bar { stroke: var(--gold-2); stroke-width: 1.2; }
+      .p-line, .p-dot { pointer-events: none; }
+      .d-seg { cursor: pointer; outline: none; transition: filter .15s ease; }
+      .d-seg:hover, .d-seg:focus-visible { filter: brightness(1.14); }
+      .donut-legend li.lg-hit { cursor: pointer; border-radius: 7px; padding: 3px 7px; margin: -1px -7px; outline: none; transition: background .15s ease; }
+      .donut-legend li.lg-hit:hover, .donut-legend li.lg-hit:focus-visible { background: var(--hover); }
+
+      /* Chip filter Problem 4M aktif (dari klik donat) pada header panel detail */
+      .filter-chip {
+        display: inline-flex; align-items: center; gap: 8px;
+        background: var(--gold-bg); color: var(--gold-ink);
+        border: 1px solid #e3d194; border-radius: 999px;
+        font-size: 12.5px; font-weight: 600; padding: 4px 6px 4px 12px;
+        white-space: nowrap;
+      }
+      .filter-chip[hidden] { display: none; }
+      .filter-chip b { font-weight: 700; }
+      .filter-chip button {
+        width: 22px; height: 22px; border-radius: 50%; border: 0;
+        background: rgba(138, 109, 31, .14); color: var(--gold-ink);
+        font: inherit; font-size: 15px; line-height: 1; cursor: pointer;
+        display: inline-flex; align-items: center; justify-content: center; padding: 0;
+      }
+      .filter-chip button:hover { background: rgba(138, 109, 31, .3); color: var(--ink); }
+      .filter-chip button:focus-visible { outline: 2px solid var(--gold-2); outline-offset: 1px; }
+
+      /* Sorotan sesaat pada panel & grup vendor tujuan klik grafik */
+      .rt-panel.flash { animation: panelFlash 1.7s ease; }
+      @keyframes panelFlash {
+        0%, 55% { box-shadow: 0 0 0 3px rgba(212, 160, 23, .65), 0 12px 30px rgba(10, 42, 94, .16); }
+        100% { box-shadow: var(--shadow); }
+      }
+      .rt-vendor.flash-v { animation: vendorFlash 1.7s ease; }
+      @keyframes vendorFlash {
+        0%, 55% { background: #f2d98c; }
+        100% { background: var(--brand-soft); }
+      }
       @media (max-width: 980px) { .charts, .charts.pareto-row, .charts.two-col { grid-template-columns: 1fr; } }
 
       @media (prefers-reduced-motion: reduce) {
         .rt-track { animation: none; }
         .rt-head h2 .rt-dot, .live-badge .dot, .btn .spin { animation: none; }
+        .rt-panel.flash, .rt-vendor.flash-v { animation: none; }
+        .p-hit .p-bar, .d-seg, .chart-card, .btn { transition: none; }
       }
 
       /* ---------- Responsif: kolom sekunder disembunyikan bertahap ---------- */
@@ -486,12 +518,12 @@
       <section class="charts pareto-row" aria-label="Grafik Pareto Item delay per vendor">
         <div class="chart-card pareto-card">
           <h3>PARETO ITEM DELAY — PRESS PART <span class="tot" id="totPress"></span></h3>
-          <p class="sub">Bar = jumlah Item delay semua vendor · garis emas = kumulatif %</p>
+          <p class="sub">Bar = jumlah Item delay semua vendor · garis emas = kumulatif % · klik batang untuk detail vendor</p>
           <div id="paretoPress"><div class="chart-empty">Memuat data…</div></div>
         </div>
         <div class="chart-card pareto-card">
           <h3>PARETO ITEM DELAY — SURFACE FINISH <span class="tot" id="totSF"></span></h3>
-          <p class="sub">Bar = jumlah Item delay semua vendor · garis emas = kumulatif %</p>
+          <p class="sub">Bar = jumlah Item delay semua vendor · garis emas = kumulatif % · klik batang untuk detail vendor</p>
           <div id="paretoSF"><div class="chart-empty">Memuat data…</div></div>
         </div>
       </section>
@@ -499,10 +531,12 @@
       <section class="charts two-col" aria-label="Grafik donat Problem 4M per tipe vendor">
         <div class="chart-card">
           <h3>PROBLEM 4M — SURFACE FINISH</h3>
+          <p class="sub">Klik segmen atau legenda untuk menyaring tabel detail</p>
           <div id="donutSF"><div class="chart-empty">Memuat data…</div></div>
         </div>
         <div class="chart-card">
           <h3>PROBLEM 4M — PRESS PART</h3>
+          <p class="sub">Klik segmen atau legenda untuk menyaring tabel detail</p>
           <div id="donutPress"><div class="chart-empty">Memuat data…</div></div>
         </div>
       </section>
@@ -518,6 +552,7 @@
             <input type="search" id="rtSearch" placeholder="Cari part: item code, nama part, atau vendor…" aria-label="Cari part pada tabel detail item delay" autocomplete="off" />
             <button type="button" class="rt-clear" id="rtSearchClear" aria-label="Hapus pencarian">&times;</button>
           </div>
+          <span class="filter-chip" id="chipPress" hidden><span>Problem 4M: <b id="chipPressVal"></b></span><button type="button" id="chipPressClear" aria-label="Hapus filter Problem 4M pada tabel Press Part">&times;</button></span>
           <span class="rt-note" id="rtNotePress">Memuat data…</span>
         </div>
        <div class="rt-scroll" id="rtScrollPress" tabindex="0" aria-label="Tabel detail item delay Press Part — dapat di-scroll">
@@ -545,6 +580,7 @@
       <section class="rt-panel" aria-label="Tabel detail item delay Surface Finish">
         <div class="rt-head">
           <h2><span class="rt-dot" aria-hidden="true"></span>DETAIL ITEM DELAY — SURFACE FINISH</h2>
+          <span class="filter-chip" id="chipSF" hidden><span>Problem 4M: <b id="chipSFVal"></b></span><button type="button" id="chipSFClear" aria-label="Hapus filter Problem 4M pada tabel Surface Finish">&times;</button></span>
           <span class="rt-note" id="rtNoteSF">Memuat data…</span>
         </div>
        <div class="rt-scroll" id="rtScrollSF" tabindex="0" aria-label="Tabel detail item delay Surface Finish — dapat di-scroll">
@@ -911,7 +947,7 @@
       }
 
       /* ================= State & agregasi ================= */
-      var state = { rows: [], updatedAt: '', loading: false, rtSigs: {}, query: '' };
+      var state = { rows: [], updatedAt: '', loading: false, rtSigs: {}, query: '', m4Filter: { 'Press Part': null, 'Surface Finish': null } };
 
       function numCell(v) { return v == null ? '—' : fmt(v); }
 
@@ -994,7 +1030,7 @@
         var W = 360, H = 102, ml = 42, mr = 26, mt = 9, mb = 31;
         var pw = W - ml - mr, ph = H - mt - mb, maxItems = list[0].items || 1;
         var out = ['<svg class="chart-svg" viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="Grafik Pareto Item delay ' + esc(cat) + '">'];
-        out.push('<defs><linearGradient id="paretoGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#4a6da8"/><stop offset="1" stop-color="#16295c"/></linearGradient></defs>');
+        out.push('<defs><linearGradient id="paretoGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#4a74b8"/><stop offset="1" stop-color="#0a2a5e"/></linearGradient></defs>');
         out.push('<text class="p-axis" transform="rotate(-90 9 ' + (mt + ph / 2) + ')" x="9" y="' + (mt + ph / 2) + '" text-anchor="middle">Item</text>');
         [0, 0.25, 0.5, 0.75, 1].forEach(function (f) {
           var y = (mt + ph - f * ph).toFixed(1);
@@ -1010,9 +1046,17 @@
           var cx = x + bw / 2, cy = mt + ph - (total ? (cum / total) * ph : 0);
           var ab = shortVendor(v).slice(0, 8).toUpperCase();
           var cumTxt = (total ? Math.round(cum / total * 1000) / 10 : 0).toLocaleString('id-ID');
-          out.push('<rect class="p-bar" x="' + (x + bw * 0.005).toFixed(1) + '" y="' + y.toFixed(1) + '" width="' + Math.max(1, bw * 0.99).toFixed(1) + '" height="' + h.toFixed(1) + '"><title>' + esc(v.vname || v.vcode) + ' — ' + fmt(v.items) + ' Item delay · kumulatif ' + cumTxt + '%</title></rect>');
+          /* Batang + label angka + label vendor dibungkus satu grup klik:
+             klik di mana pun pada grup menyaring tabel detail ke vendor ini. */
+          out.push('<g class="p-hit" data-drill="vendor" data-cat="' + esc(cat) + '" data-vcode="' + esc(v.vcode) + '" data-vname="' + esc(v.vname || v.vcode) + '" tabindex="0" focusable="true" role="button" aria-label="Lihat detail item delay vendor ' + esc(v.vname || v.vcode) + '">');
+          out.push('<title>Klik untuk lihat detail ' + esc(v.vname || v.vcode) + ' — ' + fmt(v.items) + ' item delay · kumulatif ' + cumTxt + '%</title>');
+          /* Area sentuh transparan selebar slot vendor (batang s.d. label) —
+             seluruh kolom vendor bisa diklik, bukan hanya piksel batangnya. */
+          out.push('<rect class="p-hitarea" x="' + x.toFixed(1) + '" y="0" width="' + bw.toFixed(1) + '" height="' + H + '" fill="#ffffff" fill-opacity="0" pointer-events="all"/>');
+          out.push('<rect class="p-bar" x="' + (x + bw * 0.005).toFixed(1) + '" y="' + y.toFixed(1) + '" width="' + Math.max(1, bw * 0.99).toFixed(1) + '" height="' + h.toFixed(1) + '"/>');
           out.push('<text class="p-xlab" x="' + cx.toFixed(1) + '" y="' + (y - 2.5).toFixed(1) + '" text-anchor="middle">' + fmt(v.items) + '</text>');
           out.push('<text class="p-xlab" x="' + cx.toFixed(1) + '" y="' + (mt + ph + 5) + '" text-anchor="end" transform="rotate(-42 ' + cx.toFixed(1) + ' ' + (mt + ph + 5) + ')">' + esc(ab) + '</text>');
+          out.push('</g>');
           pts.push(cx.toFixed(1) + ',' + cy.toFixed(1));
           dots += '<circle class="p-dot" cx="' + cx.toFixed(1) + '" cy="' + cy.toFixed(1) + '" r="1.4"/>';
         });
@@ -1059,13 +1103,13 @@
           var n = counts[d.key];
           if (!n) return;
           var frac = n / total;
-          segs += '<circle cx="59" cy="59" r="44" fill="none" stroke="' + d.color + '" stroke-width="17" pathLength="100" stroke-dasharray="' + Math.max(0, frac * 100 - 0.8).toFixed(2) + ' ' + (100 - frac * 100 + 0.8).toFixed(2) + '" stroke-dashoffset="' + (-start).toFixed(2) + '" transform="rotate(-90 59 59)"><title>' + d.label + ': ' + n + ' item</title></circle>';
+          segs += '<circle class="d-seg" data-drill="m4" data-cat="' + esc(cat) + '" data-m4="' + d.key + '" tabindex="0" focusable="true" role="button" aria-label="Saring tabel ' + esc(cat) + ' berdasarkan Problem 4M ' + d.label + '" cx="59" cy="59" r="44" fill="none" stroke="' + d.color + '" stroke-width="17" pathLength="100" stroke-dasharray="' + Math.max(0, frac * 100 - 0.8).toFixed(2) + ' ' + (100 - frac * 100 + 0.8).toFixed(2) + '" stroke-dashoffset="' + (-start).toFixed(2) + '" transform="rotate(-90 59 59)"><title>Klik untuk menyaring Problem 4M ' + d.label + ' — ' + n + ' item (' + esc(cat) + ')</title></circle>';
           start += frac * 100;
         });
         var legend = M4_DEFS.map(function (d) {
           var n = counts[d.key];
           var pct = total ? (Math.round(n / total * 1000) / 10).toLocaleString('id-ID') : '0';
-          return '<li><span class="lg-dot" style="background:' + d.color + '"></span><span class="lg-label">' + d.label + '</span><span class="lg-val">' + fmt(n) + ' · ' + pct + '%</span></li>';
+          return '<li class="lg-hit" data-drill="m4" data-cat="' + esc(cat) + '" data-m4="' + d.key + '" tabindex="0" focusable="true" role="button" aria-label="Saring tabel ' + esc(cat) + ' berdasarkan Problem 4M ' + d.label + '" title="Klik untuk menyaring Problem 4M: ' + d.label + '"><span class="lg-dot" style="background:' + d.color + '"></span><span class="lg-label">' + d.label + '</span><span class="lg-val">' + fmt(n) + ' · ' + pct + '%</span></li>';
         }).join('');
         return '<div class="donut-wrap"><svg class="donut-svg" viewBox="0 0 118 118" role="img" aria-label="Donat Problem 4M ' + esc(cat) + '">' + segs +
           '<text class="donut-total" x="59" y="58" text-anchor="middle">' + fmt(total) + '</text>' +
@@ -1101,22 +1145,27 @@
          panel; header kolom menempel tetap di atas jendela berjalan.
          Penomoran & ringkasan header dihitung per panel. */
       var DETAIL_TABLES = [
-        { cat: 'Press Part', note: 'rtNotePress', track: 'rtTrackPress', match: function (r) { return r.cat !== 'Surface Finish'; } },
-        { cat: 'Surface Finish', note: 'rtNoteSF', track: 'rtTrackSF', match: function (r) { return r.cat === 'Surface Finish'; } }
+        { cat: 'Press Part', note: 'rtNotePress', track: 'rtTrackPress', scroll: 'rtScrollPress', chip: 'chipPress', chipVal: 'chipPressVal', chipClear: 'chipPressClear', match: function (r) { return r.cat !== 'Surface Finish'; } },
+        { cat: 'Surface Finish', note: 'rtNoteSF', track: 'rtTrackSF', scroll: 'rtScrollSF', chip: 'chipSF', chipVal: 'chipSFVal', chipClear: 'chipSFClear', match: function (r) { return r.cat === 'Surface Finish'; } }
       ];
       function renderTable(t, catAll, catAgg, q) {
         var vendorCount = {};
         catAgg.forEach(function (r) { vendorCount[r.vcode] = (vendorCount[r.vcode] || 0) + 1; });
+        var m4 = state.m4Filter[t.cat] || null;
         if (q) {
           $(t.note).textContent = catAgg.length
             ? fmt(catAgg.length) + ' dari ' + fmt(catAll.length) + ' item cocok untuk "' + state.query.trim() + '" · running dijeda selama pencarian'
             : 'Tidak ada item yang cocok untuk "' + state.query.trim() + '"';
+        } else if (m4) {
+          $(t.note).textContent = catAgg.length
+            ? fmt(catAgg.length) + ' dari ' + fmt(catAll.length) + ' item · filter Problem 4M: ' + m4 + ' · running dijeda selama filter aktif'
+            : 'Tidak ada item dengan Problem 4M ' + m4 + ' pada kategori ini.';
         } else {
           $(t.note).textContent = catAgg.length
             ? fmt(catAgg.length) + ' item delay · ' + fmt(Object.keys(vendorCount).length) + ' vendor · dikelompokkan per vendor (total OS terbesar dulu) · bisa di-scroll · arahkan kursor untuk jeda'
             : 'Tidak ada item delay.';
         }
-        var sig = q + '|' + catAgg.map(function (r) {
+        var sig = q + '|' + (m4 || '') + '|' + catAgg.map(function (r) {
           return r.vcode + ':' + r.item + ':' + r.totalPcs + ':' + (r.fg == null ? '-' : r.fg) + ':' + r.judgement + ':' + r.problem + ':' + r.detail;
         }).join(';');
         if (sig === state.rtSigs[t.cat]) return;
@@ -1126,7 +1175,9 @@
           track.style.animation = 'none';
           track.innerHTML = q
             ? '<div class="rt-empty">Tidak ada part yang cocok dengan pencarian "' + esc(state.query.trim()) + '". Hapus pencarian untuk melihat semua item delay.</div>'
-            : '<div class="rt-empty">Tidak ada item delay saat ini.</div>';
+            : (m4
+              ? '<div class="rt-empty">Tidak ada part dengan Problem 4M ' + esc(m4) + ' pada kategori ini. Hapus filter untuk melihat semua item delay.</div>'
+              : '<div class="rt-empty">Tidak ada item delay saat ini.</div>');
           return;
         }
         /* Baris dikelompokkan per vendor: baris judul vendor (singkatan —
@@ -1135,7 +1186,7 @@
         catAgg.forEach(function (r) {
           if (r.vcode !== lastVendor) {
             lastVendor = r.vcode;
-            html += '<div class="rt-vendor"><span class="rv-name">' + esc(r.vendorAbbr) + ' — ' + esc(r.vname || r.vcode) + '</span>' +
+            html += '<div class="rt-vendor" data-vcode="' + esc(r.vcode) + '"><span class="rv-name">' + esc(r.vendorAbbr) + ' — ' + esc(r.vname || r.vcode) + '</span>' +
               '<span class="rv-meta">' + fmt(vendorCount[r.vcode]) + ' item · total OS ' + fmt(r.vendorTotal) + ' pcs</span></div>';
           }
           no++;
@@ -1158,9 +1209,10 @@
             '<span class="c-detail" title="' + esc(r.detail) + '">' + (r.detail ? esc(r.detail) : '-') + '</span>' +
             '</div>';
         });
-        if (q) {
-          /* Selama pencarian: tampilkan hasil sekali saja tanpa running,
-             supaya part yang dicari bisa dibaca & di-scroll dengan tenang. */
+        if (q || m4) {
+          /* Selama pencarian / filter 4M aktif: tampilkan hasil sekali saja
+             tanpa running, supaya part hasil saringan bisa dibaca & di-scroll
+             dengan tenang. */
           track.innerHTML = html;
           track.style.animation = 'none';
         } else {
@@ -1186,9 +1238,15 @@
           });
         }
         DETAIL_TABLES.forEach(function (t) {
+          var rows = agg.filter(t.match);
+          /* Filter Problem 4M dari klik donat: berbasis data — label 4M baris
+             agregat berasal dari classify4M (problem kosong = Method), jadi
+             baris Method tanpa teks problem ikut tertangkap. */
+          var m4 = state.m4Filter[t.cat];
+          if (m4) rows = rows.filter(function (r) { return r.problem.split(', ').indexOf(m4) !== -1; });
           renderTable(t,
             allAgg.filter(t.match),
-            agg.filter(t.match),
+            rows,
             q);
         });
       }
@@ -1268,6 +1326,101 @@
         rtSearchEl.value = '';
         applyQuery();
         rtSearchEl.focus();
+      });
+
+      /* ================= Klik grafik → lompat & saring tabel detail =================
+         Pareto: klik batang / label angka / label vendor menyaring tabel
+         kategorinya ke vendor itu lewat kotak pencarian yang sudah ada (nama
+         vendor sebagai kata kunci — tombol × pencarian mengembalikan semua
+         item). Donat 4M: klik segmen / legenda menyaring panel kategorinya
+         berdasarkan Problem 4M (state.m4Filter, berbasis classify4M) dan
+         menampilkan chip filter yang bisa dihapus dengan tombol ×-nya.
+         Handler dipasang dengan delegasi pada document, jadi tetap bekerja
+         setelah grafik digambar ulang (tarikan LIVE / Refresh / snapshot). */
+      function tableForChartCat(cat) {
+        return cat === 'Surface Finish' ? DETAIL_TABLES[1] : DETAIL_TABLES[0];
+      }
+      function syncChips() {
+        DETAIL_TABLES.forEach(function (t) {
+          var chip = $(t.chip);
+          if (!chip) return;
+          var m4 = state.m4Filter[t.cat];
+          chip.hidden = !m4;
+          if (m4) $(t.chipVal).textContent = m4;
+        });
+      }
+      function clearM4Filters() {
+        state.m4Filter = { 'Press Part': null, 'Surface Finish': null };
+        syncChips();
+      }
+      function focusTable(t, vcode) {
+        var scrollEl = $(t.scroll);
+        if (!scrollEl) return;
+        var panel = scrollEl.closest ? (scrollEl.closest('.rt-panel') || scrollEl) : scrollEl;
+        if (panel.scrollIntoView) panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        panel.classList.remove('flash');
+        void panel.offsetWidth;
+        panel.classList.add('flash');
+        setTimeout(function () { panel.classList.remove('flash'); }, 1800);
+        var track = $(t.track);
+        var target = null;
+        if (track) {
+          target = (vcode && track.querySelector('.rt-vendor[data-vcode="' + vcode + '"]')) || track.querySelector('.rt-vendor');
+        }
+        if (!target) return;
+        target.classList.add('flash-v');
+        setTimeout(function () { target.classList.remove('flash-v'); }, 1800);
+        requestAnimationFrame(function () {
+          var cols = scrollEl.querySelector('.rt-cols');
+          var colsH = cols ? cols.offsetHeight : 0;
+          var delta = target.getBoundingClientRect().top - scrollEl.getBoundingClientRect().top;
+          var top = Math.max(0, scrollEl.scrollTop + delta - colsH - 2);
+          if (typeof scrollEl.scrollTo === 'function') scrollEl.scrollTo({ top: top, behavior: 'smooth' });
+          else scrollEl.scrollTop = top;
+        });
+      }
+      function drillVendor(cat, vcode, vname) {
+        clearM4Filters();
+        rtSearchEl.value = vname || vcode || '';
+        applyQuery();
+        focusTable(tableForChartCat(cat), vcode);
+      }
+      function drillM4(cat, key) {
+        rtSearchEl.value = '';
+        state.query = '';
+        $('rtSearchBox').classList.remove('has-q');
+        rtScrollEls.forEach(function (el) { el.classList.remove('searching'); });
+        clearM4Filters();
+        var t = tableForChartCat(cat);
+        state.m4Filter[t.cat] = key;
+        syncChips();
+        render();
+        rtScrollEls.forEach(function (el) { el.scrollTop = 0; });
+        focusTable(t, null);
+      }
+      function handleDrill(el) {
+        var kind = el.getAttribute('data-drill');
+        if (kind === 'vendor') drillVendor(el.getAttribute('data-cat'), el.getAttribute('data-vcode'), el.getAttribute('data-vname'));
+        else if (kind === 'm4') drillM4(el.getAttribute('data-cat'), el.getAttribute('data-m4'));
+      }
+      document.addEventListener('click', function (e) {
+        var el = e.target && e.target.closest ? e.target.closest('[data-drill]') : null;
+        if (el) handleDrill(el);
+      });
+      document.addEventListener('keydown', function (e) {
+        if (e.key !== 'Enter' && e.key !== ' ' && e.key !== 'Spacebar') return;
+        var el = e.target && e.target.closest ? e.target.closest('[data-drill]') : null;
+        if (!el) return;
+        e.preventDefault();
+        handleDrill(el);
+      });
+      DETAIL_TABLES.forEach(function (t) {
+        var btn = $(t.chipClear);
+        if (btn) btn.addEventListener('click', function () {
+          state.m4Filter[t.cat] = null;
+          syncChips();
+          render();
+        });
       });
 
       /* Scroll manual panel detail: running text dijeda sesaat selama
