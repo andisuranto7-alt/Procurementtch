@@ -1137,6 +1137,130 @@
         .stock-hit .sh-desc { flex: 1 1 100%; order: 3; white-space: normal; }
       }
       @media (prefers-reduced-motion: reduce) { .stock-sheet { animation: none; } }
+
+      /* ---------- Tanya Data: tombol melayang & panel chat ----------
+         Asisten data lokal — menjawab hanya dari state halaman yang
+         sudah termuat (tanpa server/AI). Tombol di pojok kanan bawah:
+         tidak menabrak tumpukan kartu .ev-card (di margin, mulai dari
+         atas), toast perubahan (mengalir di bawah header), maupun
+         #sbPeek/strip sidebar (kiri). Panel ±380px di kanan bawah;
+         di HP menjadi lembar lebar penuh di bagian bawah. z-index di
+         bawah overlay Cek Stok (310) & Detail Kejadian (320) supaya
+         tombol "Lihat detail lengkap" dari chat membuka modal di
+         atas panel chat. */
+      .chat-fab {
+        position: fixed; right: 18px; bottom: calc(18px + env(safe-area-inset-bottom, 0px)); z-index: 290;
+        display: inline-flex; align-items: center; gap: 8px;
+        font: inherit; font-size: 14.5px; font-weight: 700; letter-spacing: .2px;
+        padding: 12px 18px; min-height: 48px; border-radius: 999px;
+        border: 1px solid #1f6bd0; background: var(--accent); color: #fff;
+        box-shadow: 0 10px 26px rgba(10, 42, 94, .28);
+        cursor: pointer; transition: background .18s ease, box-shadow .18s ease;
+      }
+      .chat-fab svg { width: 19px; height: 19px; flex: 0 0 auto; }
+      .chat-fab:hover { background: #1f6bd0; box-shadow: 0 14px 30px rgba(10, 42, 94, .34); }
+      .chat-fab:focus-visible { outline: 2px solid var(--accent-2); outline-offset: 2px; }
+      .chat-fab[hidden] { display: none; }
+      .chat-panel {
+        position: fixed; right: 18px; bottom: calc(18px + env(safe-area-inset-bottom, 0px)); z-index: 300;
+        width: min(380px, calc(100vw - 24px));
+        height: min(580px, calc(100dvh - 110px));
+        display: flex; flex-direction: column;
+        background: var(--bg-grad);
+        border: 1px solid var(--line-strong); border-radius: 16px;
+        box-shadow: 0 30px 70px rgba(6, 22, 48, .35);
+        overflow: hidden;
+        animation: picaIn .22s ease;
+      }
+      .chat-panel[hidden] { display: none; }
+      .chat-head {
+        flex: 0 0 auto; display: flex; align-items: flex-start; gap: 10px;
+        padding: 13px 16px 11px;
+        background: linear-gradient(120deg, #ffffff, #e9f2fd);
+        border-bottom: 3px solid var(--accent);
+      }
+      .chat-head h2 { margin: 0; font-size: 16.5px; letter-spacing: .4px; color: var(--brand-dark); }
+      .chat-head p { margin: 2px 0 0; font-size: 12.5px; color: var(--ink-2); }
+      .chat-head .stock-close { width: 38px; height: 38px; font-size: 20px; }
+      .chat-msgs {
+        flex: 1 1 auto; min-height: 0; overflow-y: auto;
+        padding: 14px 12px; display: flex; flex-direction: column; gap: 9px;
+        scrollbar-width: thin; scrollbar-color: var(--line-strong) transparent;
+      }
+      .chat-msgs::-webkit-scrollbar { width: 8px; }
+      .chat-msgs::-webkit-scrollbar-thumb { background: var(--line-strong); border-radius: 99px; }
+      .chat-msg {
+        max-width: 88%; font-size: 14px; line-height: 1.5;
+        padding: 10px 13px; border-radius: 14px; overflow-wrap: anywhere;
+      }
+      .chat-msg p { margin: 0 0 6px; }
+      .chat-msg p:last-child { margin-bottom: 0; }
+      .chat-msg.user {
+        align-self: flex-end; background: var(--accent); color: #fff;
+        border-bottom-right-radius: 5px; white-space: pre-wrap;
+      }
+      .chat-msg.bot {
+        align-self: flex-start; background: var(--surface);
+        border: 1px solid var(--line); box-shadow: var(--shadow);
+        border-bottom-left-radius: 5px; color: var(--ink);
+      }
+      .chat-msg .chat-item-code { font-family: "IBM Plex Mono", ui-monospace, monospace; font-weight: 600; color: var(--brand-dark); }
+      .chat-line { display: flex; align-items: baseline; gap: 10px; padding: 4px 0; border-bottom: 1px dashed var(--line); font-size: 13.5px; }
+      .chat-line:last-child { border-bottom: 0; }
+      .chat-line > span { flex: 1 1 auto; min-width: 0; color: var(--ink-2); }
+      .chat-line > span small { display: block; font-size: 11.5px; color: var(--muted); }
+      .chat-line > b { flex: 0 0 auto; font-variant-numeric: tabular-nums; color: var(--brand-dark); white-space: nowrap; }
+      .chat-sec-t { margin: 8px 0 2px; font-size: 11.5px; font-weight: 700; letter-spacing: .6px; color: var(--brand); }
+      .chat-sec-t:first-child { margin-top: 0; }
+      .chat-note { margin: 8px 0 0; font-size: 11.5px; color: var(--muted); }
+      .chat-chips { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 9px; }
+      .chat-chip {
+        font: inherit; font-size: 13px; font-weight: 600; color: var(--brand);
+        background: var(--brand-soft); border: 1px solid var(--line-strong);
+        border-radius: 999px; padding: 8px 13px; min-height: 38px; cursor: pointer;
+        transition: background .15s ease, border-color .15s ease;
+      }
+      .chat-chip:hover { background: var(--hover); border-color: var(--accent); }
+      .chat-chip:focus-visible { outline: 2px solid var(--accent-2); outline-offset: 1px; }
+      .chat-act {
+        display: inline-flex; align-items: center; gap: 7px; margin-top: 9px;
+        font: inherit; font-size: 13.5px; font-weight: 700; color: #fff;
+        background: var(--accent); border: 1px solid #1f6bd0; border-radius: 9px;
+        padding: 9px 14px; min-height: 40px; cursor: pointer;
+      }
+      .chat-act:hover { background: #1f6bd0; }
+      .chat-act:focus-visible { outline: 2px solid var(--accent-2); outline-offset: 1px; }
+      .chat-pick {
+        display: flex; align-items: baseline; gap: 9px; width: 100%;
+        font: inherit; font-size: 13.5px; text-align: left; cursor: pointer;
+        background: var(--surface-2); border: 1px solid var(--line); border-radius: 10px;
+        padding: 8px 11px; margin-top: 7px; color: var(--ink);
+      }
+      .chat-pick:hover { border-color: var(--accent); background: var(--brand-soft); }
+      .chat-pick:focus-visible { outline: 2px solid var(--accent-2); outline-offset: 1px; }
+      .chat-pick .cp-code { font-family: "IBM Plex Mono", ui-monospace, monospace; font-size: 13px; font-weight: 600; color: var(--brand-dark); white-space: nowrap; }
+      .chat-pick .cp-desc { flex: 1 1 auto; min-width: 0; font-size: 12.5px; color: var(--ink-2); }
+      .chat-form {
+        flex: 0 0 auto; display: flex; gap: 8px; padding: 11px 12px;
+        background: var(--surface); border-top: 1px solid var(--line);
+      }
+      .chat-form input {
+        flex: 1 1 auto; min-width: 0; font: inherit; font-size: 14.5px;
+        border: 1px solid var(--line-strong); border-radius: 10px;
+        background: var(--surface-2); color: var(--ink); padding: 10px 12px; min-height: 46px;
+      }
+      .chat-form input:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px rgba(47, 127, 224, .16); background: #fff; }
+      .chat-form .btn { flex: 0 0 auto; min-height: 46px; padding: 9px 18px; }
+      @media (max-width: 760px) {
+        .chat-fab { right: 14px; bottom: calc(14px + env(safe-area-inset-bottom, 0px)); }
+        .chat-panel {
+          left: 0; right: 0; bottom: 0; width: auto;
+          height: min(76dvh, calc(100dvh - 60px));
+          border-radius: 18px 18px 0 0; border-bottom: 0;
+        }
+        .chat-msg { max-width: 94%; }
+      }
+      @media (prefers-reduced-motion: reduce) { .chat-panel { animation: none; } }
     </style>
   </head>
   <body>
@@ -1425,6 +1549,30 @@
           <div class="stock-detail" id="stockDetail" hidden></div>
         </div>
       </div>
+    </div>
+
+    <!-- ================= TANYA DATA (chat asisten data lokal) =================
+         Tombol melayang di pojok kanan bawah + panel chat. Asisten LOKAL:
+         menjawab hanya dari data LIVE yang sudah dimuat halaman (state
+         yang sama dengan Cek Stok) — tanpa server, tanpa AI eksternal,
+         tanpa kunci apa pun. Riwayat chat hanya selama sesi halaman. -->
+    <button type="button" class="chat-fab" id="chatFab" aria-haspopup="dialog" aria-expanded="false" title="Tanya data laporan: stok, delay, vendor">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 11.5a8.5 8.5 0 0 1-8.5 8.5c-1.5 0-3-.4-4.2-1.1L3 20l1.1-5.3A8.5 8.5 0 1 1 21 11.5z"/><path d="M8.5 10.5h7M8.5 13.5h4.5"/></svg>
+      <span>Tanya Data</span>
+    </button>
+    <div class="chat-panel" id="chatPanel" hidden role="dialog" aria-labelledby="chatTitle">
+      <div class="chat-head">
+        <div>
+          <h2 id="chatTitle">Tanya Data — Asisten Laporan</h2>
+          <p>Menjawab dari data LIVE yang sedang tampil di laporan ini</p>
+        </div>
+        <button type="button" class="stock-close" id="chatClose" aria-label="Tutup panel Tanya Data">&times;</button>
+      </div>
+      <div class="chat-msgs" id="chatMsgs" aria-live="polite"></div>
+      <form class="chat-form" id="chatForm">
+        <input type="text" id="chatInput" placeholder="Tanya stok, delay, vendor…" aria-label="Tulis pertanyaan tentang data laporan" autocomplete="off" />
+        <button type="submit" class="btn" id="chatSend">Kirim</button>
+      </form>
     </div>
 
     <!-- ================= PAPAN PICA (modal visual) =================
@@ -1753,6 +1901,12 @@
         function col(name) { return head.indexOf(name); }
         var cVC = col('vendor code'), cVN = col('vendor name'), cItem = col('item code'),
             cDesc = col('description'), cOS = col('os di');
+        var cDI = col('di number');
+        if (cDI < 0) {
+          for (var diH = 0; diH < head.length; diH++) {
+            if (head[diH].indexOf('di') !== -1 && head[diH].indexOf('number') !== -1) { cDI = diH; break; }
+          }
+        }
         var cDate = col('delivery date');
         if (cDate < 0) {
           for (var dh = 0; dh < head.length; dh++) {
@@ -1766,6 +1920,7 @@
         var todayStart = new Date(nowD.getFullYear(), nowD.getMonth(), nowD.getDate());
         if (cItem < 0 || cOS < 0) throw new Error('Header LIVE_Delay tidak dikenal');
         var agg = {}, order = [];
+        var diAll = {}, diByV = {};
         for (var i = 1; i < rows.length; i++) {
           var r = rows[i];
           var item = String(r[cItem] || '').trim();
@@ -1773,6 +1928,19 @@
           if (cDate >= 0) {
             var dDate = parseDelivDate(r[cDate]);
             if (dDate && dDate >= todayStart) continue;
+          }
+          /* Nomor DI dipertahankan sebagai himpunan unik (global & per
+             vendor) — satu DI bisa memuat banyak item, jadi hitungan DI
+             untuk jawaban chat tidak boleh menjumlah per item. */
+          if (cDI >= 0) {
+            var diNum = String(r[cDI] || '').trim();
+            if (diNum) {
+              diAll[diNum] = true;
+              var diVc = cVC >= 0 ? String(r[cVC] || '').trim() : '';
+              var dvSet = diByV[diVc];
+              if (!dvSet) dvSet = diByV[diVc] = {};
+              dvSet[diNum] = true;
+            }
           }
           var vc = cVC >= 0 ? String(r[cVC] || '').trim() : '';
           var key = vc + '|' + item;
@@ -1790,11 +1958,18 @@
           }
         }
         if (!order.length) throw new Error('LIVE_Delay tanpa baris data');
-        return order.map(function (k) {
+        var outRows = order.map(function (k) {
           var a = agg[k];
           delete a._best;
           return a;
         });
+        /* Retensi aditif: hitungan DI unik (global & per vendor) dari kolom
+           "DI Number" — baris keluaran di atas tidak berubah sama sekali,
+           hanya ada properti tambahan pada array hasil. */
+        var diByVCount = {};
+        Object.keys(diByV).forEach(function (k2) { diByVCount[k2] = Object.keys(diByV[k2]).length; });
+        outRows.diUnique = { total: Object.keys(diAll).length, byVendor: diByVCount };
+        return outRows;
       }
       /* LIVE_2DS kolom posisional: Vendor(nickname), Item Code, Part Name,
          RM, WIP, FG, Std 2HK, Judgement, Delay, Manifest, Kategori Problem, Detail Problem */
@@ -1983,7 +2158,7 @@
       }
 
       /* ================= State & agregasi ================= */
-      var state = { rows: [], ngRaw: [], updatedAt: '', loading: false, rtSigs: {}, query: '', m4Filter: { 'Press Part': null, 'Surface Finish': null }, extraMap: null };
+      var state = { rows: [], ngRaw: [], updatedAt: '', loading: false, rtSigs: {}, query: '', m4Filter: { 'Press Part': null, 'Surface Finish': null }, extraMap: null, diUnique: null };
 
       function numCell(v) { return v == null ? '—' : fmt(v); }
 
@@ -3208,7 +3383,9 @@
           if (meta.gi_last_date) stockState.giLastDate = meta.gi_last_date;
           if (meta.po_source) stockState.poSource = meta.po_source;
           state.ngRaw = parseNgRaw(csvs[2]);
-          state.rows = buildRows(parseDelayAgg(csvs[1]), parseNgMap(csvs[2]), state.extraMap);
+          var delayAggLive = parseDelayAgg(csvs[1]);
+          if (delayAggLive.diUnique) state.diUnique = delayAggLive.diUnique;
+          state.rows = buildRows(delayAggLive, parseNgMap(csvs[2]), state.extraMap);
           /* Panel Cek Stok yang sedang terbuka ikut disegarkan datanya */
           if (stockState.loaded && !$('stockOverlay').hidden) loadStock(true);
           noteDataset(state.rows, true);
@@ -3990,6 +4167,549 @@
       $('stockResults').addEventListener('click', function (e) {
         var el = e.target && e.target.closest ? e.target.closest('[data-stock-item]') : null;
         if (el) renderStockDetail(el.getAttribute('data-stock-item'));
+      });
+
+      /* ================= TANYA DATA — asisten data lokal =================
+         Chat tanya-jawab yang menjawab HANYA dari data LIVE yang sudah
+         dimuat halaman ini: state.rows & state.extraMap (delay / DI hari
+         ini), state.ngRaw (2DS SPEED), stockState.tch / .sf / .supply /
+         .itemPO (tab LIVE_Stock* & LIVE_Item*), stockIndex(),
+         nickByCode, VENDOR_ABBR, dan eventEntries (LIVE_Events). TIDAK
+         ada panggilan API/AI eksternal dan tidak ada kunci tertanam.
+         Data stok lazy-load seperti Cek Stok: panel pertama dibuka →
+         loadStock() dipicu; pertanyaan yang datang selagi stok dimuat
+         ditahan (chatPending) lalu dijawab begitu data siap. Riwayat
+         chat hanya di memori sesi halaman (tidak disimpan ke storage).
+         Parser niat Bahasa Indonesia, tidak peka kapital; semua angka
+         dihitung dari state saat pertanyaan diajukan, format ribuan
+         id-ID memakai fmt() yang sudah ada. */
+      var chatFab = $('chatFab'), chatPanel = $('chatPanel'), chatMsgs = $('chatMsgs'),
+          chatInput = $('chatInput'), chatForm = $('chatForm');
+      var chatOpened = false;    /* pesan pembuka sudah ditampilkan */
+      var chatAnswered = false;  /* jawaban pertama sesi sudah diberi catatan "Data per" */
+      var chatIdxCache = null, chatIdxStamp = '';
+      var chatWaitTimer = null;
+
+      function chatStamp() {
+        return (stockState.loaded ? 'L' : '-') + '|' + state.rows.length + '|' +
+          (stockState.tch ? Object.keys(stockState.tch).length : 0) + '|' +
+          (stockState.sf ? Object.keys(stockState.sf).length : 0) + '|' +
+          (state.extraMap ? Object.keys(state.extraMap).length : 0) + '|' +
+          (stockState.itemPO ? Object.keys(stockState.itemPO).length : 0);
+      }
+      /* Indeks item gabungan (kode → {item, desc}) dari indeks stok yang
+         sudah ada + baris delay + peta extra/PO/supply. Dibangun malas
+         dan dibangun ulang hanya bila sumbernya berubah. */
+      function chatIndex() {
+        var st = chatStamp();
+        if (chatIdxCache && chatIdxStamp === st) return chatIdxCache;
+        var map = {}, lower = {}, order = [];
+        function get(item) {
+          var e = map[item];
+          if (!e) { e = map[item] = { item: item, desc: '' }; lower[item.toLowerCase()] = e; order.push(e); }
+          return e;
+        }
+        stockIndex().forEach(function (e) { var g = get(e.item); if (!g.desc && e.desc) g.desc = e.desc; });
+        state.rows.forEach(function (r) { var g = get(r.item); if (!g.desc && r.desc) g.desc = r.desc; });
+        if (state.extraMap) Object.keys(state.extraMap).forEach(function (k) { get(k.split('|')[1]); });
+        if (stockState.itemPO) Object.keys(stockState.itemPO).forEach(function (k) { get(k); });
+        if (stockState.supply) Object.keys(stockState.supply).forEach(function (k) { get(k); });
+        chatIdxCache = { map: map, lower: lower, order: order };
+        chatIdxStamp = st;
+        return chatIdxCache;
+      }
+      function chatScroll() {
+        if (window.requestAnimationFrame) requestAnimationFrame(function () { chatMsgs.scrollTop = chatMsgs.scrollHeight; });
+        else chatMsgs.scrollTop = chatMsgs.scrollHeight;
+      }
+      function chatAddUser(text) {
+        var d = document.createElement('div');
+        d.className = 'chat-msg user';
+        d.textContent = text;
+        chatMsgs.appendChild(d);
+        chatScroll();
+      }
+      function chatAddBot(html) {
+        var d = document.createElement('div');
+        d.className = 'chat-msg bot';
+        d.innerHTML = html;
+        chatMsgs.appendChild(d);
+        chatScroll();
+        return d;
+      }
+      /* Catatan kecil "Data per <waktu LIVE_Meta>" pada jawaban pertama
+         tiap sesi (dilewati bila jawaban sudah memuat cap waktunya). */
+      function chatWithNote(html) {
+        if (!chatAnswered) {
+          chatAnswered = true;
+          var t = fmtSyncTime(state.updatedAt);
+          if (t && html.indexOf('Data per') < 0) html += '<p class="chat-note">Data per ' + esc(t) + '</p>';
+        }
+        return html;
+      }
+      function chatIsoDate(iso) {
+        var p = String(iso || '').split('-');
+        if (p.length !== 3) return iso || '—';
+        return (+p[2]) + ' ' + (MONTHS_ID[+p[1] - 1] || '') + ' ' + p[0];
+      }
+      function chatExRows(item) {
+        var out = [];
+        if (state.extraMap) Object.keys(state.extraMap).forEach(function (k) {
+          var seg = k.split('|');
+          if (seg[1] === item && state.extraMap[k]) out.push({ vcode: seg[0], ex: state.extraMap[k] });
+        });
+        return out;
+      }
+
+      /* ---------- Seksi-seksi jawaban item ---------- */
+      function chatDelaySection(item) {
+        var exRows = chatExRows(item);
+        var h = '<p class="chat-sec-t">DELAY &amp; DI HARI INI</p>';
+        if (!exRows.length) return h + '<p>Tidak ada data delay / DI hari ini untuk item ini pada data yang termuat.</p>';
+        var totDi = 0, totQty = 0, qtyKnown = false, totCnt = 0, totTQty = 0;
+        exRows.forEach(function (r) {
+          totDi += r.ex.delayDi || 0;
+          if (r.ex.delayDiQty != null) { totQty += r.ex.delayDiQty; qtyKnown = true; }
+          totCnt += r.ex.diTodayCnt || 0;
+          totTQty += r.ex.diTodayQty || 0;
+        });
+        h += '<div class="chat-line"><span>Total Delay</span><b>' + fmt(totDi) + ' DI' + (qtyKnown ? ' · ' + fmt(totQty) + ' pcs' : '') + '</b></div>';
+        if (exRows.length > 1) {
+          exRows.slice().sort(function (a, b) { return (b.ex.delayDiQty || 0) - (a.ex.delayDiQty || 0); }).forEach(function (r) {
+            h += '<div class="chat-line"><span>' + esc(shortVendor({ vcode: r.vcode, vname: '' })) + '<small>' + esc(r.vcode) + '</small></span><b>' +
+              fmt(r.ex.delayDi || 0) + ' DI' + (r.ex.delayDiQty != null ? ' · ' + fmt(r.ex.delayDiQty) + ' pcs' : '') + '</b></div>';
+          });
+        }
+        h += '<div class="chat-line"><span>DI Hari Ini</span><b>' + fmt(totCnt) + ' DI · ' + fmt(totTQty) + ' pcs</b></div>';
+        if (exRows.length > 1) {
+          exRows.filter(function (r) { return (r.ex.diTodayCnt || 0) > 0 || (r.ex.diTodayQty || 0) > 0; })
+            .sort(function (a, b) { return (b.ex.diTodayQty || 0) - (a.ex.diTodayQty || 0); }).forEach(function (r) {
+              h += '<div class="chat-line"><span>' + esc(shortVendor({ vcode: r.vcode, vname: '' })) + '<small>DI hari ini · ' + esc(r.vcode) + '</small></span><b>' + fmt(r.ex.diTodayCnt || 0) + ' DI · ' + fmt(r.ex.diTodayQty || 0) + ' pcs</b></div>';
+            });
+        }
+        return h;
+      }
+      function chatStockSection(item) {
+        var h = '<p class="chat-sec-t">STOK</p>';
+        var any = false;
+        var tch = stockState.tch ? stockState.tch[item] : null;
+        if (tch) {
+          any = true;
+          var big = null;
+          tch.slocs.forEach(function (s) { if (!big || s.qty > big.qty) big = s; });
+          h += '<div class="chat-line"><span>Stok TCH' + (big ? '<small>Terbesar: Sloc ' + esc(big.sloc || '—') + (big.sloc === '1110' ? ' (FG)' : '') + ' · ' + fmt(big.qty) + ' pcs</small>' : '') + '</span><b>' + fmt(tch.total) + ' pcs</b></div>';
+        } else if (stockState.loaded) {
+          /* Data stok sudah termuat tapi item tidak ada di indeks stok TCH:
+             nyatakan eksplisit agar tidak dikira datanya belum dimuat.
+             (Bila stok memang belum termuat, alur chatPending yang menunggu
+             tetap berlaku seperti sebelumnya.) */
+          any = true;
+          h += '<p>Stok TCH: tidak ada stok tercatat di TCH.</p>';
+        }
+        state.ngRaw.filter(function (r) { return r.item === item; }).forEach(function (r) {
+          any = true;
+          var lab = r.nick || (r.vcode ? shortVendor({ vcode: r.vcode, vname: '' }) : 'Vendor');
+          h += '<div class="chat-line"><span>' + esc(lab) + '<small>Stok vendor SPEED (2DS)</small></span><b>FG ' + (r.fg == null ? '—' : fmt(r.fg) + ' pcs') + (r.judgement ? ' · ' + esc(r.judgement) : '') + '</b></div>';
+        });
+        var sf = stockState.sf ? stockState.sf[item] : null;
+        if (sf) {
+          any = true;
+          if (sf.rows.length > 1) h += '<div class="chat-line"><span>Stok vendor SF<small>Total semua vendor SF</small></span><b>' + fmt(sf.total) + ' pcs</b></div>';
+          sf.rows.forEach(function (r) {
+            h += '<div class="chat-line"><span>' + esc(r.vname || r.vcode) + '<small>Vendor SF · ' + esc(r.vcode) + '</small></span><b>' + fmt(r.qty) + ' pcs</b></div>';
+          });
+        }
+        if (!any) {
+          h += (!stockState.loaded && !stockState.failed)
+            ? '<p>Data stok masih dimuat — coba tanyakan lagi sebentar lagi.</p>'
+            : '<p>Item ini tidak tercatat di stok TCH, vendor SPEED, maupun vendor SF pada data yang termuat.</p>';
+        }
+        return h;
+      }
+      function chatPoSection(item) {
+        var h = '<p class="chat-sec-t">OS PO</p>';
+        if (!stockState.itemPO) return h + '<p>Data PO belum tersedia pada data yang termuat saat ini.</p>';
+        var pos = stockState.itemPO[item] || [];
+        if (!pos.length) return h + '<p>Tidak ada PO outstanding untuk item ini.</p>';
+        var tot = 0;
+        pos.forEach(function (p) { tot += p.os; });
+        h += '<div class="chat-line"><span>Total OS PO<small>' + fmt(pos.length) + ' PO outstanding</small></span><b>' + fmt(tot) + ' pcs</b></div>';
+        return h;
+      }
+      function chatSupplySection(item, detailed) {
+        var h = '<p class="chat-sec-t">SUPPLY KE SF / SUBCONT</p>';
+        if (!stockState.supply) return h + '<p>Data supply belum tersedia pada data yang termuat saat ini.</p>';
+        var sup = stockState.supply[item];
+        if (!sup || !sup.order.length) return h + '<p>Tidak ada supply tercatat untuk item ini pada jendela data GI yang termuat.</p>';
+        var nameMap = sfVendorNameByCode();
+        var lastIso = '', perSub = [];
+        sup.order.forEach(function (code) {
+          var days = sup.subs[code], tot = 0, last = '';
+          Object.keys(days).forEach(function (iso) { tot += days[iso]; if (iso > last) last = iso; if (iso > lastIso) lastIso = iso; });
+          perSub.push({ name: subcontName(code, nameMap), tot: tot, lastIso: last, lastQty: last ? days[last] : 0 });
+        });
+        if (detailed) {
+          perSub.forEach(function (s) {
+            h += '<div class="chat-line"><span>' + esc(s.name) + '<small>Total jendela data · terakhir ' + esc(chatIsoDate(s.lastIso)) + ' · ' + fmt(s.lastQty) + ' pcs</small></span><b>' + fmt(s.tot) + ' pcs</b></div>';
+          });
+        } else {
+          perSub.filter(function (s) { return s.lastIso === lastIso; }).forEach(function (s) {
+            h += '<div class="chat-line"><span>' + esc(s.name) + '<small>Supply terakhir · ' + esc(chatIsoDate(lastIso)) + '</small></span><b>' + fmt(s.lastQty) + ' pcs</b></div>';
+          });
+        }
+        return h;
+      }
+      function chatItemAnswer(item, focus) {
+        var idx = chatIndex();
+        var e = idx.map[item];
+        var desc = (e && e.desc) || '';
+        var h = '<p><span class="chat-item-code">' + esc(item) + '</span>' + (desc ? '<br>' + esc(desc) : '') + '</p>';
+        if (focus === 'stok') h += chatStockSection(item);
+        else if (focus === 'po') h += chatPoSection(item);
+        else if (focus === 'supply') h += chatSupplySection(item, true);
+        else if (focus === 'delay') h += chatDelaySection(item);
+        else h += chatDelaySection(item) + chatStockSection(item) + chatPoSection(item) + chatSupplySection(item, false);
+        h += '<button type="button" class="chat-act" data-chat-stock="' + esc(item) + '">Lihat detail lengkap</button>';
+        return h;
+      }
+      function chatPickList(list, intro) {
+        var h = '<p>' + esc(intro) + '</p>';
+        list.slice(0, 8).forEach(function (e) {
+          h += '<button type="button" class="chat-pick" data-chat-item="' + esc(e.item) + '"><span class="cp-code">' + esc(e.item) + '</span><span class="cp-desc">' + esc(e.desc || '') + '</span></button>';
+        });
+        return h;
+      }
+
+      /* ---------- Jawaban vendor ---------- */
+      function chatVendorMap() {
+        var map = {};
+        function add(vcode, vname) {
+          if (!vcode) return;
+          var e = map[vcode];
+          if (!e) e = map[vcode] = { vcode: vcode, vname: '', abbr: '' };
+          if (!e.vname && vname) e.vname = vname;
+          if (!e.abbr) e.abbr = VENDOR_ABBR[vcode] || nickByCode[vcode] || '';
+        }
+        state.rows.forEach(function (r) { add(r.vcode, r.vname); });
+        Object.keys(VENDOR_ABBR).forEach(function (c) { add(c, ''); });
+        Object.keys(nickByCode).forEach(function (c) { add(c, ''); });
+        state.ngRaw.forEach(function (r) { add(r.vcode, ''); });
+        if (stockState.sf) Object.keys(stockState.sf).forEach(function (k) {
+          stockState.sf[k].rows.forEach(function (r) { add(r.vcode, r.vname); });
+        });
+        if (stockState.itemPO) Object.keys(stockState.itemPO).forEach(function (k) {
+          stockState.itemPO[k].forEach(function (p) { add(p.vcode, p.vname); });
+        });
+        return map;
+      }
+      function chatFindVendor(msg) {
+        var up = ' ' + msg.toUpperCase().replace(/[^A-Z0-9]+/g, ' ') + ' ';
+        var map = chatVendorMap();
+        var codes = Object.keys(map), i, e, w;
+        for (i = 0; i < codes.length; i++) if (up.indexOf(' ' + codes[i] + ' ') >= 0) return map[codes[i]];
+        for (i = 0; i < codes.length; i++) {
+          e = map[codes[i]];
+          var ab = (e.abbr || '').toUpperCase();
+          if (ab.length >= 2 && up.indexOf(' ' + ab + ' ') >= 0) return e;
+        }
+        for (i = 0; i < codes.length; i++) {
+          e = map[codes[i]];
+          var words = String(e.vname || '').toUpperCase().replace(/[^A-Z0-9]+/g, ' ').split(/\s+/)
+            .filter(function (x) { return x && x !== 'PT' && x !== 'CV'; });
+          if (!words.length) continue;
+          /* Kata pertama nama vendor (kata mereknya, mis. DIAN, SURYA,
+             PRIUK) sebagai token utuh. */
+          if (words[0].length >= 3 && up.indexOf(' ' + words[0] + ' ') >= 0) return e;
+          /* Atau dua kata nama yang berurutan sama-sama disebut (mis.
+             "dian raya", "indo plating"). Satu kata generik di tengah/
+             akhir nama (INDONESIA, JAYA, PRIMA…) TIDAK cukup — supaya
+             pertanyaan umum tidak tersangkut ke vendor. */
+          for (w = 0; w + 1 < words.length; w++) {
+            if (words[w].length >= 3 && words[w + 1].length >= 3 &&
+                up.indexOf(' ' + words[w] + ' ') >= 0 && up.indexOf(' ' + words[w + 1] + ' ') >= 0) return e;
+          }
+        }
+        return null;
+      }
+      function chatVendorAnswer(v) {
+        var h = '<p><b>' + esc(v.abbr || v.vcode) + '</b>' + (v.vname ? ' — ' + esc(v.vname) : '') + '<br><span style="color:var(--muted);font-size:12.5px">Kode vendor ' + esc(v.vcode) + '</span></p>';
+        var parts = [];
+        var rows = state.rows.filter(function (r) { return r.vcode === v.vcode; });
+        if (rows.length) {
+          var totQty = 0, totDi = 0;
+          rows.forEach(function (r) {
+            totQty += (r.delayDiQty != null ? r.delayDiQty : (r.os || 0));
+            totDi += r.delayDi || 0;
+          });
+          /* Jumlah DI per vendor juga unik dari nomor DI di LIVE_Delay
+             (cadangan: jumlah delayDi per item bila unik belum tersedia). */
+          var diUniV = state.diUnique && state.diUnique.byVendor ? state.diUnique.byVendor[v.vcode] : null;
+          if (diUniV != null) totDi = diUniV;
+          parts.push('<p class="chat-sec-t">DELAY MANIFEST</p>' +
+            '<div class="chat-line"><span>Item delay<small>' + fmt(totDi) + ' DI delay</small></span><b>' + fmt(rows.length) + ' item · ' + fmt(totQty) + ' pcs</b></div>');
+        }
+        var ng = state.ngRaw.filter(function (r) {
+          if (r.vcode && r.vcode === v.vcode) return true;
+          var rn = (r.nick || '').toUpperCase();
+          return !!rn && (rn === (v.abbr || '').toUpperCase() || rn === (nickByCode[v.vcode] || '').toUpperCase());
+        });
+        if (ng.length) {
+          var ngBad = 0;
+          ng.forEach(function (r) { if (String(r.judgement || '').trim().toUpperCase() === 'NG') ngBad++; });
+          parts.push('<p class="chat-sec-t">2 DAYS STOCK (SPEED)</p>' +
+            '<div class="chat-line"><span>Item di 2DS<small>Judgement NG: ' + fmt(ngBad) + ' item</small></span><b>' + fmt(ng.length) + ' item</b></div>');
+        }
+        if (stockState.sf) {
+          var sfTot = 0, sfItems = 0;
+          Object.keys(stockState.sf).forEach(function (k) {
+            stockState.sf[k].rows.forEach(function (r) { if (r.vcode === v.vcode) { sfTot += r.qty; sfItems++; } });
+          });
+          if (sfItems) parts.push('<p class="chat-sec-t">STOK VENDOR SF</p>' +
+            '<div class="chat-line"><span>Stok FG di vendor ini<small>' + fmt(sfItems) + ' item tercatat</small></span><b>' + fmt(sfTot) + ' pcs</b></div>');
+        }
+        if (stockState.supply) {
+          var supTot = 0, supLast = '';
+          Object.keys(stockState.supply).forEach(function (k) {
+            var s = stockState.supply[k].subs[v.vcode];
+            if (!s) return;
+            Object.keys(s).forEach(function (iso) { supTot += s[iso]; if (iso > supLast) supLast = iso; });
+          });
+          if (supLast) parts.push('<p class="chat-sec-t">SUPPLY DITERIMA (GI KE SF)</p>' +
+            '<div class="chat-line"><span>Total supply jendela data<small>Terakhir ' + esc(chatIsoDate(supLast)) + '</small></span><b>' + fmt(supTot) + ' pcs</b></div>');
+        }
+        if (!parts.length) return h + '<p>Tidak ada data delay, 2DS, stok SF, maupun supply untuk vendor ini pada data yang sedang termuat di laporan.</p>';
+        return h + parts.join('');
+      }
+
+      /* ---------- Jawaban global ---------- */
+      function chatQtyOf(r) { return r.delayDiQty != null ? r.delayDiQty : (r.os || 0); }
+      function chatTotalDelayAnswer() {
+        var items = {}, totDi = 0, totQty = 0;
+        state.rows.forEach(function (r) {
+          items[r.item] = true;
+          totDi += r.delayDi || 0;
+          totQty += chatQtyOf(r);
+        });
+        /* Total DI harus UNIK dari nomor DI di LIVE_Delay: satu DI yang
+           memuat banyak item hanya terhitung sekali. Jumlah delayDi per
+           item+vendor (LIVE_ItemExtra) menghitungnya berulang, jadi hanya
+           dipakai sebagai cadangan bila hitungan unik belum tersedia. */
+        if (state.diUnique) totDi = state.diUnique.total;
+        var h = '<p class="chat-sec-t">TOTAL DELAY SAAT INI</p>' +
+          '<div class="chat-line"><span>Item delay (unik)</span><b>' + fmt(Object.keys(items).length) + ' item</b></div>' +
+          '<div class="chat-line"><span>Total DI delay</span><b>' + fmt(totDi) + ' DI</b></div>' +
+          '<div class="chat-line"><span>Total qty delay</span><b>' + fmt(totQty) + ' pcs</b></div>';
+        var t = fmtSyncTime(state.updatedAt);
+        if (t) h += '<p class="chat-note">Data per ' + esc(t) + '</p>';
+        return h;
+      }
+      function chatTopVendorAnswer() {
+        var byV = {};
+        state.rows.forEach(function (r) {
+          var e = byV[r.vcode];
+          if (!e) e = byV[r.vcode] = { vcode: r.vcode, vname: r.vname, items: {}, qty: 0 };
+          e.items[r.item] = true;
+          e.qty += chatQtyOf(r);
+        });
+        var list = Object.keys(byV).map(function (k) { var e = byV[k]; e.n = Object.keys(e.items).length; return e; })
+          .sort(function (a, b) { return b.n - a.n || b.qty - a.qty; }).slice(0, 5);
+        if (!list.length) return '<p>Tidak ada item delay pada data saat ini.</p>';
+        var h = '<p class="chat-sec-t">5 VENDOR DENGAN ITEM DELAY TERBANYAK</p>';
+        list.forEach(function (e, i) {
+          h += '<button type="button" class="chat-pick" data-chat-vendor="' + esc(e.vcode) + '"><span class="cp-code">' + (i + 1) + '. ' + esc(shortVendor({ vcode: e.vcode, vname: e.vname })) + '</span><span class="cp-desc">' + esc(e.vname || '') + '</span><b>' + fmt(e.n) + ' item · ' + fmt(e.qty) + ' pcs</b></button>';
+        });
+        h += '<p class="chat-note">Klik vendor untuk ringkasannya.</p>';
+        return h;
+      }
+      function chatTopItemAnswer() {
+        var byI = {};
+        state.rows.forEach(function (r) {
+          var e = byI[r.item];
+          if (!e) e = byI[r.item] = { item: r.item, desc: r.desc || '', qty: 0 };
+          e.qty += chatQtyOf(r);
+          if (!e.desc && r.desc) e.desc = r.desc;
+        });
+        var list = Object.keys(byI).map(function (k) { return byI[k]; })
+          .sort(function (a, b) { return b.qty - a.qty; }).slice(0, 5);
+        if (!list.length) return '<p>Tidak ada item delay pada data saat ini.</p>';
+        var h = '<p class="chat-sec-t">5 ITEM DENGAN QTY DELAY (PCS) TERBESAR</p>';
+        list.forEach(function (e) {
+          h += '<button type="button" class="chat-pick" data-chat-item="' + esc(e.item) + '"><span class="cp-code">' + esc(e.item) + '</span><span class="cp-desc">' + esc(e.desc || '') + '</span><b>' + fmt(e.qty) + ' pcs</b></button>';
+        });
+        h += '<p class="chat-note">Klik item untuk detailnya.</p>';
+        return h;
+      }
+      function chatBelumUpdateAnswer() {
+        if (!eventEntries) {
+          return '<p>Data aktivitas laporan belum termuat di halaman ini, jadi saya belum bisa memastikan vendor mana yang belum update 2DS. Status update vendor tampil di panel <b>Aktivitas</b> laporan (tombol Riwayat Perubahan di header) dan pada pop-up aktivitasnya.</p>';
+        }
+        var bad = eventEntries.filter(function (e) { return String(e.tipe || '').trim().toUpperCase() === 'VENDOR_BELUM_UPDATE'; });
+        if (!bad.length) {
+          return '<p>Pada data aktivitas yang termuat saat ini tidak ada catatan kejadian "belum update 2DS". Status update per vendor tampil di panel <b>Aktivitas</b> laporan (tombol Riwayat Perubahan di header) dan pop-up aktivitasnya — saya hanya menampilkan daftar bila memang tercatat di data aktivitas itu.</p>';
+        }
+        var h = '<p class="chat-sec-t">BELUM UPDATE 2DS — DARI AKTIVITAS LAPORAN</p>';
+        bad.slice(0, 12).forEach(function (e) {
+          h += '<div class="chat-line"><span><b style="color:var(--brand-dark)">' + esc(e.vendor || 'Vendor') + '</b><small>' + esc(e.pesan || 'Belum update 2DS') + '</small></span><b>' + esc(fmtHistTime(e.t, e.tsRaw)) + '</b></div>';
+        });
+        if (bad.length > 12) h += '<p class="chat-note">…dan ' + fmt(bad.length - 12) + ' catatan lain di panel Aktivitas.</p>';
+        return h;
+      }
+      function chatFallback() {
+        return '<p>Maaf, itu di luar data laporan ini. Saya asisten data laporan — bukan AI bebas — jadi saya hanya menjawab dari data LIVE yang sedang tampil di halaman ini: stok, delay, DI hari ini, OS PO, supply ke SF, dan ringkasan vendor.</p>' +
+          '<p>Coba format seperti ini:</p>' +
+          '<div class="chat-chips">' +
+          '<button type="button" class="chat-chip" data-chat-q="stok 29.Y02.50.007.01">stok 29.Y02.50.007.01</button>' +
+          '<button type="button" class="chat-chip" data-chat-q="delay IPTI">delay IPTI</button>' +
+          '<button type="button" class="chat-chip" data-chat-q="vendor paling banyak delay">vendor paling banyak delay</button>' +
+          '</div>';
+      }
+
+      /* ---------- Parser niat ---------- */
+      var CHAT_ITEM_RE = /\d{1,2}\.[A-Za-z0-9]+(?:\.[A-Za-z0-9]+)+/;
+      function chatFindItem(msg) {
+        var idx = chatIndex();
+        var m = CHAT_ITEM_RE.exec(msg);
+        if (m) {
+          var cand = m[0];
+          if (idx.map[cand]) return { item: cand, partial: null };
+          var lowC = cand.toLowerCase();
+          if (idx.lower[lowC]) return { item: idx.lower[lowC].item, partial: null };
+          var pref = idx.order.filter(function (e) { return e.item.toLowerCase().indexOf(lowC) === 0; });
+          if (pref.length === 1) return { item: pref[0].item, partial: null };
+          if (pref.length > 1) return { item: null, partial: pref };
+          return { item: cand, partial: null };
+        }
+        var toks = msg.split(/[\s,;]+/);
+        for (var i = 0; i < toks.length; i++) {
+          var t = toks[i];
+          if (!t) continue;
+          if (idx.map[t]) return { item: t, partial: null };
+          var lt = t.toLowerCase();
+          if (idx.lower[lt]) return { item: idx.lower[lt].item, partial: null };
+        }
+        return { item: null, partial: null };
+      }
+      var CHAT_STOP = { stok: 1, stock: 1, delay: 1, vendor: 1, item: 1, supply: 1, suplai: 1, berapa: 1, yang: 1, ada: 1, cek: 1, untuk: 1, dari: 1, ini: 1, itu: 1, hari: 1, total: 1, paling: 1, banyak: 1, terbanyak: 1, terbesar: 1, belum: 1, update: 1, tanya: 1, data: 1, part: 1, nama: 1, tolong: 1, tampilkan: 1, lihat: 1, info: 1, kondisi: 1, status: 1, jumlah: 1, material: 1, kode: 1, dengan: 1, dan: 1, semua: 1, saja: 1, siapa: 1, kapan: 1, apakah: 1, bagaimana: 1, gimana: 1,
+        /* Kata tanya / kata fungsi Bahasa Indonesia — disaring dari token
+           pencarian nama part supaya pertanyaan di luar data laporan
+           (mis. "apa itu fotosintesis") tidak tersangkut ke nama part
+           yang kebetulan memuatnya sebagai substring (mis. "apa" ⊂ "APAL"). */
+        apa: 1, atau: 1, adalah: 1, merupakan: 1, terjadi: 1, mengapa: 1, kenapa: 1, tidak: 1, bukan: 1, juga: 1, pada: 1, dong: 1, ya: 1, sih: 1, kok: 1 };
+      function chatNameSearch(msg) {
+        var words = msg.toLowerCase().split(/[^a-z0-9]+/).filter(function (w) { return w.length >= 3 && !CHAT_STOP[w]; });
+        if (!words.length) return [];
+        var idx = chatIndex();
+        var strong = [], weak = [];
+        idx.order.forEach(function (e) {
+          var d = (e.desc || '').toLowerCase();
+          if (!d) return;
+          if (words.every(function (w) { return d.indexOf(w) >= 0; })) { strong.push(e); return; }
+          if (words.some(function (w) { return d.indexOf(w) >= 0; })) weak.push(e);
+        });
+        return strong.length ? strong : weak;
+      }
+      function chatFocusOf(low) {
+        if (low.indexOf('stok') >= 0 || low.indexOf('stock') >= 0) return 'stok';
+        if (low.indexOf('supply') >= 0 || low.indexOf('suplai') >= 0) return 'supply';
+        if (/(^|[^a-z])po([^a-z]|$)/.test(low)) return 'po';
+        if (low.indexOf('delay') >= 0) return 'delay';
+        return null;
+      }
+      function chatAnswer(msg) {
+        var low = msg.toLowerCase();
+        var found = chatFindItem(msg);
+        if (!found.item && !found.partial) {
+          if (low.indexOf('belum update') >= 0 || (low.indexOf('belum') >= 0 && low.indexOf('update') >= 0)) return chatBelumUpdateAnswer();
+          var hasDelay = low.indexOf('delay') >= 0;
+          var hasTop = low.indexOf('terbanyak') >= 0 || low.indexOf('paling banyak') >= 0 || low.indexOf('terbesar') >= 0;
+          if (hasDelay && hasTop && low.indexOf('item') >= 0) return chatTopItemAnswer();
+          if (hasDelay && hasTop) return chatTopVendorAnswer();
+          if (low.indexOf('total delay') >= 0 || (low.indexOf('total') >= 0 && hasDelay)) return chatTotalDelayAnswer();
+        }
+        if (found.partial) return chatPickList(found.partial, 'Ada beberapa item yang kodenya diawali seperti itu — pilih salah satu:');
+        if (found.item) return chatItemAnswer(found.item, chatFocusOf(low));
+        var v = chatFindVendor(msg);
+        if (v) return chatVendorAnswer(v);
+        var hits = chatNameSearch(msg);
+        if (hits.length === 1) return chatItemAnswer(hits[0].item, chatFocusOf(low));
+        if (hits.length > 1) return chatPickList(hits, 'Ada ' + fmt(hits.length) + ' item yang namanya cocok — pilih salah satu:');
+        return chatFallback();
+      }
+
+      /* ---------- Alur buka/tutup & kirim ---------- */
+      function chatWelcome() {
+        chatAddBot('<p>Halo! Saya <b>Asisten Laporan</b> — tanyakan data yang sedang tampil di laporan ini: stok item, delay &amp; DI hari ini, OS PO, supply ke SF, atau ringkasan per vendor. Semua jawaban diambil dari data LIVE halaman ini.</p>' +
+          '<p>Contoh: <i>stok 29.Y02.50.007.01</i>, <i>delay IPTI</i>, atau ketik nama part-nya saja.</p>' +
+          '<div class="chat-chips">' +
+          '<button type="button" class="chat-chip" data-chat-focus="1">Stok item…</button>' +
+          '<button type="button" class="chat-chip" data-chat-q="Vendor paling banyak delay">Vendor paling banyak delay</button>' +
+          '<button type="button" class="chat-chip" data-chat-q="Total delay hari ini">Total delay hari ini</button>' +
+          '<button type="button" class="chat-chip" data-chat-q="Item delay terbanyak">Item delay terbanyak</button>' +
+          '</div>');
+      }
+      function chatSetOpen(open) {
+        chatPanel.hidden = !open;
+        chatFab.hidden = open;
+        chatFab.setAttribute('aria-expanded', open ? 'true' : 'false');
+        if (open) {
+          if (!chatOpened) {
+            chatOpened = true;
+            chatWelcome();
+            /* Data stok lazy-load seperti Cek Stok: picu muat saat panel
+               pertama dibuka agar jawaban bisa memakai data stok. */
+            if (!stockState.loaded && !stockState.loading) loadStock(false);
+          }
+          if (chatInput.focus) chatInput.focus();
+        }
+      }
+      function chatAsk(msg) {
+        msg = String(msg || '').trim();
+        if (!msg) return;
+        chatAddUser(msg);
+        chatInput.value = '';
+        if (!stockState.loaded && !stockState.failed) {
+          if (!stockState.loading) loadStock(false);
+          var bubble = chatAddBot('<p>Sedang memuat data stok dulu agar jawabannya lengkap…</p>');
+          var tries = 0;
+          if (chatWaitTimer) clearInterval(chatWaitTimer);
+          chatWaitTimer = setInterval(function () {
+            tries++;
+            if (stockState.loaded || stockState.failed || tries > 40) {
+              clearInterval(chatWaitTimer);
+              chatWaitTimer = null;
+              bubble.innerHTML = chatWithNote(chatAnswer(msg));
+              chatScroll();
+            }
+          }, 300);
+          return;
+        }
+        chatAddBot(chatWithNote(chatAnswer(msg)));
+      }
+      chatFab.addEventListener('click', function () { chatSetOpen(true); });
+      $('chatClose').addEventListener('click', function () { chatSetOpen(false); });
+      document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape' && !chatPanel.hidden) chatSetOpen(false);
+      });
+      chatForm.addEventListener('submit', function (e) {
+        e.preventDefault();
+        chatAsk(chatInput.value);
+      });
+      chatMsgs.addEventListener('click', function (e) {
+        var el = e.target && e.target.closest ? e.target.closest('[data-chat-q],[data-chat-focus],[data-chat-item],[data-chat-vendor],[data-chat-stock]') : null;
+        if (!el) return;
+        if (el.hasAttribute('data-chat-focus')) {
+          chatInput.value = 'stok ';
+          chatInput.focus();
+          return;
+        }
+        var q = el.getAttribute('data-chat-q');
+        if (q) { chatAsk(q); return; }
+        var it = el.getAttribute('data-chat-item');
+        if (it) { chatAsk(it); return; }
+        var vc = el.getAttribute('data-chat-vendor');
+        if (vc) { chatAsk(vc); return; }
+        var st = el.getAttribute('data-chat-stock');
+        if (st) { chatSetOpen(false); openStock(st); }
       });
 
       /* ================= Sidebar navigasi =================
