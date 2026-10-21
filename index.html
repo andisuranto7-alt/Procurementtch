@@ -273,6 +273,23 @@
       .rt-head h2 .rt-sub { font-size: 12.5px; font-weight: 500; letter-spacing: 0; color: var(--muted); }
       .rt-head .rt-note { margin-left: auto; font-size: 13px; color: var(--muted); }
 
+      /* Petunjuk klik 2× pada baris item tabel detail: satu baris kecil di
+         atas kedua panel; disembunyikan di layar kecil / perangkat sentuh
+         (di HP jalur detail item tetap lewat tombol Cek Stok). */
+      .rt-dbl-hint {
+        display: flex; align-items: center; gap: 7px;
+        margin: 0; padding: 0 2px;
+        font-size: 12.5px; font-weight: 600; color: var(--muted);
+      }
+      .rt-dbl-hint svg { width: 15px; height: 19px; flex: 0 0 auto; }
+      @media (max-width: 980px), (pointer: coarse) {
+        .rt-dbl-hint { display: none; }
+      }
+      /* Kursor pointer pada baris item hanya untuk pointer halus (mouse) */
+      @media (hover: hover) and (pointer: fine) {
+        .rt-row { cursor: pointer; }
+      }
+
       /* Petunjuk geser tabel: hanya tampil saat tabel memang lebih lebar dari
          panelnya (tablet & HP, ≤980px) — memberi tahu pengguna bahwa kolom
          lain digeser DI DALAM kotak tabel, bukan menggeser halaman. */
@@ -1282,6 +1299,7 @@
      </div>
 
      <div class="rt-stack" id="secDetail">
+      <p class="rt-dbl-hint"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><rect x="7" y="2.5" width="10" height="19" rx="5"/><path d="M12 6v4"/></svg>Klik 2× pada baris item untuk melihat detail stok, PO, DI, delay &amp; supply.</p>
       <div class="rt-row-top">
       <section class="rt-panel" aria-label="Tabel detail item delay Press Part">
         <div class="rt-head">
@@ -2255,7 +2273,7 @@
           var judge = r.judgement === 'OK'
             ? '<span class="badge green">OK</span>'
             : '<span class="badge red">NG</span>';
-          html += '<div class="rt-row' + (no % 2 ? ' alt' : '') + '">' +
+          html += '<div class="rt-row' + (no % 2 ? ' alt' : '') + '" data-item="' + esc(r.item) + '" title="Klik 2× untuk melihat detail item">' +
             '<span class="c-no num">' + no + '</span>' +
             '<span class="c-item">' + esc(r.item) + '</span>' +
             '<span class="c-vendor">' + esc(r.vendorAbbr) + '</span>' +
@@ -2333,6 +2351,26 @@
         equalizeRtHeads();
         renderPica();
       }
+
+      /* Klik 2× pada baris item tabel detail → buka detail stok item itu
+         lewat openStock() yang sama dengan tombol "Cek Stok Item Ini"
+         (termasuk lazy-load data stok & pendingItem). Delegasi pada track
+         persisten karena baris di-render ulang via innerHTML dan
+         digandakan untuk efek running — kedua salinan baris ikut bisa
+         diklik 2×. Baris judul vendor (.rt-vendor) tidak memicu apa pun,
+         dan klik biasa (1×) tetap tanpa aksi seperti sebelumnya. */
+      ['rtTrackPress', 'rtTrackSF'].forEach(function (id) {
+        var tr = $(id);
+        if (!tr) return;
+        tr.addEventListener('dblclick', function (e) {
+          var row = e.target && e.target.closest ? e.target.closest('.rt-row') : null;
+          if (!row) return;
+          var item = row.getAttribute('data-item');
+          if (!item) return;
+          e.preventDefault();
+          openStock(item);
+        });
+      });
 
       /* ================= Badge & muat data LIVE ================= */
       /* Zona waktu tampilan: timestamp sync pada LIVE_Meta (dan snapshot
@@ -3755,6 +3793,32 @@
           h += '</div>';
         }
         h += '</div>';
+        /* DI Manifest — DI hari ini item ini dari peta LIVE_ItemExtra yang
+           sama (diTodayCnt = jumlah DI, diTodayQty = Σ qty pcs), lintas
+           vendor; rincian per vendor tampil bila item dipakai lebih dari
+           satu vendor — pola persis seksi DELAY MANIFEST di atas. */
+        var totDiTodayCnt = 0, totDiTodayQty = 0;
+        exRows.forEach(function (r) {
+          totDiTodayCnt += r.ex.diTodayCnt || 0;
+          totDiTodayQty += r.ex.diTodayQty || 0;
+        });
+        h += '<div class="stock-sec"><h3>DI MANIFEST — DI HARI INI</h3>';
+        if (!exRows.length || (totDiTodayCnt === 0 && totDiTodayQty === 0)) {
+          h += '<p class="none-note">Tidak ada DI hari ini untuk item ini</p>';
+        } else {
+          h += '<div class="stock-lines">';
+          h += '<div class="stock-line total"><span class="sl-name">Total DI Hari Ini</span><span class="sl-qty">' +
+            fmt(totDiTodayCnt) + ' DI · ' + fmt(totDiTodayQty) + ' pcs</span></div>';
+          if (exRows.length > 1) {
+            exRows.slice().sort(function (a, b) { return (b.ex.diTodayQty || 0) - (a.ex.diTodayQty || 0); }).forEach(function (r) {
+              h += '<div class="stock-line"><span class="sl-name">' +
+                esc(shortVendor({ vcode: r.vcode, vname: '' })) + '<small>' + esc(r.vcode) + '</small>' +
+                '</span><span class="sl-qty">' + fmt(r.ex.diTodayCnt || 0) + ' DI · ' + fmt(r.ex.diTodayQty || 0) + ' pcs</span></div>';
+            });
+          }
+          h += '</div>';
+        }
+        h += '</div>';
         /* a. Di TCH — per Sloc; label (FG) HANYA untuk Sloc 1110 */
         h += '<div class="stock-sec"><h3>DI TCH</h3>';
         if (tch) {
@@ -3871,6 +3935,16 @@
         stockState.pendingItem = null;
         runStockSearch(item);
         var known = stockIndex().some(function (e) { return e.item === item; });
+        if (!known && state.extraMap) {
+          /* Item tidak ada di indeks stok, tetapi punya data delay / DI
+             hari ini di LIVE_ItemExtra → detail tetap dibuka (seksi stok
+             menampilkan catatan tidak ada, seksi DELAY & DI MANIFEST
+             terisi) supaya pengguna tidak mentok di pesan "tidak ada
+             item yang cocok". */
+          known = Object.keys(state.extraMap).some(function (k) {
+            return k.split('|')[1] === item;
+          });
+        }
         if (known) renderStockDetail(item);
       }
       function openStock(item) {
