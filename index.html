@@ -183,6 +183,14 @@
       .btn:focus-visible { outline: 2px solid var(--accent-2); outline-offset: 2px; }
       .btn:disabled { opacity: .55; cursor: wait; }
       .btn .spin { animation: rot 1s linear infinite; }
+      /* Toggle suara notifikasi di header: ikon speaker saja; keadaan mati
+         (class .is-off) menampilkan speaker bercoret dan warna redup. */
+      .btn-sound { background: #fff; color: var(--brand); border-color: var(--line-strong); box-shadow: var(--shadow); padding: 9px 12px; }
+      .btn-sound:hover { background: var(--brand-soft); color: var(--brand-dark); border-color: var(--accent); box-shadow: var(--shadow); }
+      .btn-sound .ico-off { display: none; }
+      .btn-sound.is-off { color: #93a5bb; }
+      .btn-sound.is-off .ico-on { display: none; }
+      .btn-sound.is-off .ico-off { display: block; }
       @keyframes rot { to { transform: rotate(360deg); } }
 
       .msg { margin: 10px 2px 0; font-size: 13.5px; color: var(--red); flex: 0 0 auto; }
@@ -1203,6 +1211,10 @@
           <button type="button" class="btn" id="refreshBtn">
             <svg id="refreshIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a9 9 0 1 1-2.64-6.36"/><path d="M21 3v6h-6"/></svg>
             Refresh Data
+          </button>
+          <button type="button" class="btn btn-sound" id="soundBtn" aria-pressed="true" aria-label="Suara notifikasi: menyala" title="Suara notifikasi">
+            <svg class="ico-on" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 5 6.5 9H3v6h3.5L11 19z"/><path d="M15 9.5a3.8 3.8 0 0 1 0 5"/><path d="M17.6 6.8a7.4 7.4 0 0 1 0 10.4"/></svg>
+            <svg class="ico-off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 5 6.5 9H3v6h3.5L11 19z"/><path d="m16 9.6 5 5.2M21 9.6l-5 5.2"/></svg>
           </button>
           <button type="button" class="btn btn-stock" id="stockBtn" aria-haspopup="dialog" title="Cek stok item di TCH dan di vendor (SPEED / SF)">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 8.2 12 3.5 3 8.2v7.6L12 20.5l9-4.7z"/><path d="M3 8.2l9 4.7 9-4.7"/><path d="M12 12.9v7.6"/></svg>
@@ -2372,6 +2384,120 @@
         $('liveBadgeText').textContent = text;
         if (timeText != null) $('dataPer').textContent = fmtSyncTime(timeText);
       }
+      /* ================= Suara notifikasi (WebAudio) =================
+         Chime lembut disintesis WebAudio API — tanpa file audio eksternal,
+         halaman tetap self-contained. Dua pola:
+         - 'info'  : chime naik ramah dua nada sine (880 → 1318,5 Hz,
+                     ±0,6 detik) untuk DN_DIBUAT, DI_BARU_HARI_INI,
+                     DI_BESOK_RELEASE, VENDOR_UPDATE_2DS, dan toast
+                     perubahan data vendor (BERUBAH).
+         - 'alert' : dua nada triangle lebih rendah menurun
+                     (392 → 311,1 Hz) untuk peringatan VENDOR_BELUM_UPDATE.
+         Volume rendah (gain puncak 0,15) dengan envelope memudar.
+         ATURAN BROWSER: AudioContext hanya boleh berjalan setelah
+         interaksi user — konteks dibuat/di-resume pada interaksi pertama
+         di halaman (klik/tap/keydown di mana pun). Sebelum ada interaksi,
+         pop-up tampil tanpa bunyi dan tanpa error (semua dibungkus
+         try/catch). Bunyi HANYA untuk kejadian BARU selama sesi berjalan:
+         muat pertama/sambutan tidak pernah memanggil requestChime.
+         Satu bunyi per gelombang refresh: gerbang waktu bersama dipakai
+         kedua sistem notifikasi, jadi pop-up kejadian + toast perubahan
+         pada refresh yang sama tidak bunyi dobel; banyak kejadian
+         sekaligus tetap satu bunyi. Toggle tombol speaker di header
+         (default MENYALA) — status sesi berjalan saja, tidak disimpan. */
+      var soundOn = true;
+      var audioCtx = null;      /* dibuat malas pada interaksi pertama */
+      var audioReady = false;   /* true setelah konteks berstatus running */
+      var lastChimeAt = 0;      /* gerbang satu bunyi per gelombang */
+      var soundLog = [];        /* jejak penjadwalan bunyi (verifikasi) */
+      function ensureAudio() {
+        try {
+          if (!audioCtx) {
+            var AC = window.AudioContext || window.webkitAudioContext;
+            if (!AC) return false;
+            audioCtx = new AC();
+          }
+          if (audioCtx.state === 'suspended') {
+            var rp = audioCtx.resume();
+            /* resume() tuntas asinkron setelah gestur: kunci status siap
+               begitu promise-nya selesai agar bunyi berikutnya lolos. */
+            if (rp && rp.then) rp.then(function () {
+              audioReady = audioCtx.state === 'running';
+            }, function () { /* ditolak browser: tetap tanpa bunyi */ });
+          }
+          audioReady = audioCtx.state === 'running';
+          return audioReady;
+        } catch (err) { return false; }
+      }
+      ['pointerdown', 'keydown', 'touchstart'].forEach(function (evtName) {
+        window.addEventListener(evtName, function () { ensureAudio(); }, { passive: true });
+      });
+      function chimeNote(freq, startAt, dur, type) {
+        var osc = audioCtx.createOscillator();
+        var gain = audioCtx.createGain();
+        osc.type = type;
+        osc.frequency.setValueAtTime(freq, startAt);
+        gain.gain.setValueAtTime(0.0001, startAt);
+        gain.gain.exponentialRampToValueAtTime(0.15, startAt + 0.02);
+        gain.gain.exponentialRampToValueAtTime(0.0001, startAt + dur);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start(startAt);
+        osc.stop(startAt + dur + 0.05);
+        return freq;
+      }
+      /* Jadwalkan satu pola bunyi sekarang. Mengembalikan true bila bunyi
+         benar-benar dijadwalkan (toggle menyala + konteks audio siap). */
+      function playNotifChime(kind) {
+        try {
+          if (!soundOn) return false;
+          if (!audioReady && !ensureAudio()) return false;
+          if (!audioCtx) return false;
+          var t0 = audioCtx.currentTime + 0.02;
+          var freqs = kind === 'alert'
+            ? [chimeNote(392, t0, 0.22, 'triangle'), chimeNote(311.13, t0 + 0.18, 0.36, 'triangle')]
+            : [chimeNote(880, t0, 0.26, 'sine'), chimeNote(1318.51, t0 + 0.16, 0.44, 'sine')];
+          soundLog.push({ kind: kind === 'alert' ? 'alert' : 'info', freqs: freqs, at: Date.now() });
+          if (soundLog.length > 20) soundLog.shift();
+          return true;
+        } catch (err) { return false; }
+      }
+      /* Pintu masuk kedua sistem notifikasi: maksimal satu bunyi per
+         gelombang (jendela 4 detik — jauh di bawah interval refresh). */
+      function requestChime(kind) {
+        var now = Date.now();
+        if (now - lastChimeAt < 4000) return false;
+        if (!playNotifChime(kind)) return false;
+        lastChimeAt = now;
+        return true;
+      }
+      var soundBtn = $('soundBtn');
+      function renderSoundBtn() {
+        if (!soundBtn) return;
+        soundBtn.classList.toggle('is-off', !soundOn);
+        soundBtn.setAttribute('aria-pressed', soundOn ? 'true' : 'false');
+        soundBtn.setAttribute('aria-label', 'Suara notifikasi: ' + (soundOn ? 'menyala' : 'mati'));
+      }
+      if (soundBtn) {
+        soundBtn.addEventListener('click', function () {
+          soundOn = !soundOn;
+          renderSoundBtn();
+          /* Klik tombol = interaksi user: menyalakan kembali langsung
+             membunyikan chime uji singkat agar terdengar statusnya. */
+          if (soundOn) { ensureAudio(); playNotifChime('info'); }
+        });
+      }
+      renderSoundBtn();
+      /* Pegangan verifikasi (probe): pola & gerbang bunyi bisa diuji
+         tanpa menunggu kejadian LIVE nyata. */
+      window.ASAKAI_SOUND = {
+        play: playNotifChime,
+        request: requestChime,
+        unlock: ensureAudio,
+        log: soundLog,
+        get on() { return soundOn; },
+        get ready() { return audioReady; }
+      };
       /* ================= Deteksi perubahan data antar-refresh =================
          Setiap tarikan LIVE yang SUKSES dibandingkan dengan baseline
          (dataset LIVE sukses sebelumnya). Load pertama (snapshot tertanam
@@ -2464,6 +2590,10 @@
         if (changeLog.length > 20) changeLog.length = 20;
         renderChangeLog();
         showChangeToast(timeStr, lines);
+        /* Toast perubahan data vendor ikut berbunyi (chime info yang
+           sama); gerbang gelombang mencegah bunyi dobel bila pop-up
+           kejadian LIVE_Events berbunyi pada refresh yang sama. */
+        requestChime('info');
       }
 
       /* ================= Riwayat Perubahan persisten (tab LIVE_Changes) =================
@@ -2984,6 +3114,14 @@
           var fresh = entries.filter(function (e) { return !evSeen[evKey(e)]; });
           if (!fresh.length) return;
           fresh.forEach(function (e) { evSeen[evKey(e)] = 1; });
+          /* Bunyi SATU kali untuk gelombang kejadian baru ini: pola
+             peringatan bila ada VENDOR_BELUM_UPDATE di dalamnya, selain
+             itu chime info. Cabang sambutan (evPrimed pertama) di atas
+             tidak pernah sampai ke sini — muat pertama tidak berbunyi. */
+          var hasAlert = fresh.some(function (e) {
+            return String(e.tipe == null ? '' : e.tipe).trim().toUpperCase() === 'VENDOR_BELUM_UPDATE';
+          });
+          requestChime(hasAlert ? 'alert' : 'info');
           /* Hanya kejadian BARU yang jadi pop-up; bila sekali tarik banyak
              yang baru, pop-up dibatasi 6 terbaru agar tidak membanjiri. */
           enqueueEventPopups(fresh.slice(0, 6).reverse());
