@@ -64,7 +64,10 @@
         -webkit-font-smoothing: antialiased;
       }
       .wrap {
-        width: 100%; max-width: 100%; margin: 0;
+        /* Lebar konten dibatasi 1760px & dipusatkan: di monitor/TV 1920px
+           layout 2 kolom tetap sejajar dan tidak melebar tak wajar; di
+           bawah itu halaman memakai lebar penuh seperti sebelumnya. */
+        width: 100%; max-width: 1760px; margin: 0 auto;
         padding: 14px 16px 16px;
         height: 100dvh;
         display: flex; flex-direction: column;
@@ -166,7 +169,7 @@
       .btn {
         display: inline-flex; align-items: center; gap: 8px;
         font: inherit; font-size: 14px; font-weight: 700;
-        padding: 9px 16px; min-height: 42px;
+        padding: 9px 16px; min-height: 44px;
         border-radius: 9px; border: 1px solid #1f6bd0;
         background: var(--accent); color: #fff;
         box-shadow: 0 2px 8px rgba(47, 127, 224, .28);
@@ -260,6 +263,21 @@
       .rt-head h2 .rt-sub { font-size: 12.5px; font-weight: 500; letter-spacing: 0; color: var(--muted); }
       .rt-head .rt-note { margin-left: auto; font-size: 13px; color: var(--muted); }
 
+      /* Petunjuk geser tabel: hanya tampil saat tabel memang lebih lebar dari
+         panelnya (tablet & HP, ≤980px) — memberi tahu pengguna bahwa kolom
+         lain digeser DI DALAM kotak tabel, bukan menggeser halaman. */
+      .rt-hint { display: none; }
+      @media (max-width: 980px) {
+        .rt-hint {
+          display: flex; align-items: center; gap: 7px;
+          flex: 0 0 auto;
+          padding: 7px 16px;
+          font-size: 12px; font-weight: 600; color: var(--gold-ink);
+          background: #fffdf2; border-bottom: 1px solid var(--line);
+        }
+        .rt-hint svg { width: 15px; height: 15px; flex: 0 0 auto; }
+      }
+
       /* Kotak pencarian part pada header panel detail */
       .rt-search {
         flex: 1 1 210px; max-width: 440px; min-width: 0;
@@ -282,7 +300,7 @@
       .rt-search input::-webkit-search-cancel-button { display: none; }
       .rt-clear {
         flex: 0 0 auto; display: none;
-        width: 28px; height: 28px; border-radius: 7px;
+        width: 32px; height: 32px; border-radius: 7px;
         border: 0; background: transparent; color: var(--muted);
         font: inherit; font-size: 18px; line-height: 1; cursor: pointer;
         align-items: center; justify-content: center; padding: 0;
@@ -511,7 +529,7 @@
       .chg-clear {
         font: inherit; font-size: 12px; font-weight: 600; cursor: pointer;
         border: 1px solid var(--line-strong); background: var(--surface-2); color: var(--ink-2);
-        border-radius: 999px; padding: 3px 10px;
+        border-radius: 999px; padding: 5px 12px; min-height: 32px;
       }
       .chg-clear:hover { background: var(--hover); color: var(--ink); }
       .chg-list { list-style: none; margin: 0; padding: 0; max-height: 300px; overflow-y: auto; display: flex; flex-direction: column; gap: 9px; }
@@ -531,7 +549,7 @@
       .chg-toast-lines { list-style: none; margin: 4px 0 0; padding: 0; display: flex; flex-direction: column; gap: 2px; }
       .chg-toast-lines li { font-size: 13px; color: var(--ink-2); }
       .chg-toast-x {
-        flex: 0 0 auto; width: 24px; height: 24px; border-radius: 50%; border: 0;
+        flex: 0 0 auto; width: 30px; height: 30px; border-radius: 50%; border: 0;
         background: rgba(138, 109, 31, .14); color: var(--gold-ink);
         font: inherit; font-size: 16px; line-height: 1; cursor: pointer;
         display: inline-flex; align-items: center; justify-content: center; padding: 0;
@@ -556,7 +574,7 @@
       .pica-head h2 { margin: 0; font-size: 26px; letter-spacing: 2px; color: var(--brand-dark); display: flex; align-items: center; gap: 10px; }
       .pica-head h2 svg { width: 26px; height: 26px; color: var(--gold-2); flex: 0 0 auto; }
       .pica-head p { margin: 3px 0 0; font-size: 13.5px; color: var(--ink-2); }
-      .pica-close { flex: 0 0 auto; margin-left: auto; width: 42px; height: 42px; border-radius: 50%; border: 1px solid var(--line-strong); background: #fff; color: var(--ink-2); font: inherit; font-size: 22px; line-height: 1; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; padding: 0; }
+      .pica-close { flex: 0 0 auto; margin-left: auto; width: 44px; height: 44px; border-radius: 50%; border: 1px solid var(--line-strong); background: #fff; color: var(--ink-2); font: inherit; font-size: 22px; line-height: 1; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; padding: 0; }
       .pica-close:hover { background: var(--red-bg); color: var(--red); border-color: #f0a49f; }
       .pica-close:focus-visible { outline: 2px solid var(--accent-2); outline-offset: 2px; }
       .pica-body { padding: 16px 20px 22px; display: flex; flex-direction: column; gap: 20px; }
@@ -590,6 +608,12 @@
          bisa di-scroll horizontal khusus di layar kecil agar label utuh) */
       .pica-fish { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; box-shadow: var(--shadow); padding: 10px 8px 4px; overflow-x: auto; }
       .pica-fish svg { display: block; width: 100%; height: auto; min-width: 1020px; }
+      /* Petunjuk geser fishbone — tampil hanya saat diagram memang lebih
+         lebar dari layarnya (≤1020px) dan harus digeser di dalam kotaknya. */
+      .pica-fish-hint { display: none; }
+      @media (max-width: 1020px) {
+        .pica-fish-hint { display: block; margin-top: 8px; text-align: center; font-size: 12px; font-weight: 600; color: var(--gold-ink); }
+      }
       .pica-fish-legend { margin-top: 10px; font-size: 12.5px; color: var(--muted); text-align: center; }
       .pica-fish-legend .lg-x { color: #e02323; font-weight: 800; font-size: 14px; }
       .pica-fish-legend .lg-v { color: #1fae5f; font-weight: 800; font-size: 14px; }
@@ -635,7 +659,12 @@
       @media (max-width: 760px) {
         .pica-tiles { grid-template-columns: 1fr; }
         .pica-prev-grid { grid-template-columns: 1fr; }
-        .pica-overlay { padding: 10px 6px; }
+        /* Modal PICA di HP tampil LAYAR PENUH: tanpa padding overlay & tanpa
+           sudut membulat, sehingga header modal (sticky) menempel di tepi
+           atas layar dan tombol tutup selalu terjangkau saat isi di-scroll. */
+        .pica-overlay { padding: 0; }
+        .pica-sheet { width: 100%; min-height: 100dvh; margin: 0; border: 0; border-radius: 0; }
+        .pica-head { border-radius: 0; }
         .pica-body { padding: 13px 12px 18px; }
         .pica-head { padding: 13px 14px 11px; }
         .pica-head h2 { font-size: 22px; }
@@ -654,7 +683,7 @@
       .filter-chip[hidden] { display: none; }
       .filter-chip b { font-weight: 700; }
       .filter-chip button {
-        width: 22px; height: 22px; border-radius: 50%; border: 0;
+        width: 26px; height: 26px; border-radius: 50%; border: 0;
         background: rgba(138, 109, 31, .14); color: var(--gold-ink);
         font: inherit; font-size: 15px; line-height: 1; cursor: pointer;
         display: inline-flex; align-items: center; justify-content: center; padding: 0;
@@ -702,28 +731,53 @@
       }
       @media (max-width: 640px) {
         .wrap { padding: 10px 10px 12px; }
+        /* Header HP: blok status & tombol memakai lebar penuh dan membungkus
+           rapi di bawah brand; semua target sentuh ≥44px (lihat .btn). */
+        .topbar { padding: 14px; gap: 12px 14px; }
+        .brand { gap: 11px; }
         .titles h1 { font-size: 21px; }
+        .titles p { font-size: 12.5px; }
         .logo-chip img { height: 36px; }
-        :root { --cols: minmax(0, 1fr) 44px 58px 64px 56px; --rtw: 0px; }
-        /* Di HP tabel mengikuti lebar panel (bertumpuk) — kunci lebar fixed dilepas,
-           geometri kolom tetap sama untuk kedua tabel */
-        .rt-cols, .rt-window, .rt-track { width: auto; min-width: 0; }
-        .rt-row .c-no, .rt-row .c-name,
-        .rt-cols .h-no, .rt-cols .h-name { display: none; }
+        .livebox { flex: 1 1 100%; }
+        .dataper { font-size: 13px; }
+        /* Tabel HP: geometri kolom kunci yang FIXED dan lebih lebar dari
+           panel — Item Code (kolom freeze) 138px, Vendor 84px, Part Name
+           164px, Total DI 66px, FG 58px, Judgement 76px. Sisa kolom
+           (RM/WIP/Problem/Detail tetap tersembunyi seperti tablet) dan
+           lebar ekstra digeser DI DALAM kotak tabel; petunjuknya tampil
+           lewat .rt-hint. Kolom No disembunyikan, Item Code jadi freeze. */
+        :root { --cols: 138px 84px 164px 66px 58px 76px; --rtw: 642px; }
+        .rt-row .c-no, .rt-cols .h-no { display: none; }
         /* Di HP kolom No tersembunyi — Item Code menjadi kolom freeze pertama */
         .rt-row .c-item, .rt-cols .h-item { left: 0; }
         .rt-window { min-height: 120px; }
-        .rt-cols { font-size: 11px; padding: 8px; column-gap: 5px; }
+        .rt-cols { font-size: 11.5px; padding: 9px 8px; column-gap: 8px; line-height: 1.2; }
         .rt-cols span { min-width: 0; overflow: hidden; }
-        .rt-row { font-size: 13px; padding: 9px 8px; column-gap: 5px; }
-        .rt-row .c-item { font-size: 11.5px; overflow: hidden; text-overflow: ellipsis; }
-        .rt-row .c-vendor { font-size: 11.5px; }
+        .rt-row { font-size: 13.5px; padding: 9px 8px; column-gap: 8px; }
+        .rt-row .c-item { font-size: 12.5px; overflow: hidden; text-overflow: ellipsis; }
+        .rt-row .c-vendor { font-size: 12.5px; }
+        .rt-row .c-name { -webkit-line-clamp: 2; }
         .rt-row .badge.sf { display: none; }
         .badge { font-size: 11.5px; padding: 3px 10px; }
+        .rt-head { padding: 10px 12px; }
+        .rt-head h2 { font-size: 15px; }
         .rt-head .rt-note { display: none; }
-        .rt-search { flex: 1 1 100%; max-width: none; order: 3; }
+        .rt-search { flex: 1 1 100%; max-width: none; order: 3; min-height: 44px; }
         .rt-vendor { font-size: 12.5px; padding: 7px 8px; gap: 6px; }
+        .rt-vendor .rv-name { left: 8px; }
         .rt-vendor .rv-meta { font-size: 11px; }
+        .rt-hint { padding: 7px 12px; }
+        /* Log "Perubahan Terakhir" di HP menjadi lembar bawah (bottom sheet):
+           selalu di dalam layar, lebar mengikuti layar, dan tidak menutupi
+           tombol-tombol header. Toast perubahan tetap mengalir di bawah
+           header (posisi aman, tidak menutupi tombol penting). */
+        .chg-panel { position: fixed; left: 10px; right: 10px; bottom: 10px; top: auto; width: auto; z-index: 260; max-height: 62dvh; display: flex; flex-direction: column; }
+        .chg-panel .chg-list { max-height: none; flex: 1 1 auto; min-height: 0; }
+        .chg-toast { padding: 10px 12px; }
+        /* Donat sedikit dirampingkan di HP kecil agar legenda tetap lega */
+        .donut-svg { width: 96px; height: 96px; }
+        .donut-wrap { gap: 10px; }
+        .donut-legend li { font-size: 11.5px; }
       }
     </style>
   </head>
@@ -812,6 +866,7 @@
           <span class="filter-chip" id="chipPress" hidden><span>Problem 4M: <b id="chipPressVal"></b></span><button type="button" id="chipPressClear" aria-label="Hapus filter Problem 4M pada tabel Press Part">&times;</button></span>
           <span class="rt-note" id="rtNotePress">Memuat data…</span>
         </div>
+        <div class="rt-hint" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M8.5 6.5 3.5 12l5 5.5"/><path d="M15.5 6.5l5 5.5-5 5.5"/></svg>Geser tabel ke samping untuk melihat semua kolom</div>
        <div class="rt-scroll" id="rtScrollPress" tabindex="0" aria-label="Tabel detail item delay Press Part — dapat di-scroll">
         <div class="rt-cols" aria-hidden="true">
           <span class="num h-no">No</span>
@@ -840,6 +895,7 @@
           <span class="filter-chip" id="chipSF" hidden><span>Problem 4M: <b id="chipSFVal"></b></span><button type="button" id="chipSFClear" aria-label="Hapus filter Problem 4M pada tabel Surface Finish">&times;</button></span>
           <span class="rt-note" id="rtNoteSF">Memuat data…</span>
         </div>
+        <div class="rt-hint" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M8.5 6.5 3.5 12l5 5.5"/><path d="M15.5 6.5l5 5.5-5 5.5"/></svg>Geser tabel ke samping untuk melihat semua kolom</div>
        <div class="rt-scroll" id="rtScrollSF" tabindex="0" aria-label="Tabel detail item delay Surface Finish — dapat di-scroll">
         <div class="rt-cols" aria-hidden="true">
           <span class="num h-no">No</span>
@@ -918,6 +974,7 @@
               <div><h3>IDENTIFICATION</h3><p>Akar penyebab — diagram fishbone 5 faktor + uji korelasi</p></div>
             </div>
             <div class="pica-fish" id="picaFish"></div>
+            <div class="pica-fish-hint" aria-hidden="true">&#8592; Geser diagram untuk melihat seluruh fishbone &#8594;</div>
             <div class="pica-fish-legend"><span class="lg-x">&#10005;</span> = akar masalah terbukti dari data &nbsp;&middot;&nbsp; <span class="lg-v">&#10003;</span> = bukan penyebab (tidak berkorelasi)</div>
             <p class="pica-fish-concl">Akar dominan: <b>METHOD</b> — delay dicegah dari stok 2HK &amp; jadwal produksi, bukan ditangani setelah jatuh tempo.</p>
           </section>
