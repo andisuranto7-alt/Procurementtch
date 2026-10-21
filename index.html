@@ -248,7 +248,7 @@
         .rt-stack { flex: 0 0 auto; }
         .rt-row-top { flex: 0 0 auto; }
         .rt-stack .rt-panel { flex: 0 0 auto; }
-        .rt-scroll { flex: 0 0 auto; height: 58dvh; }
+        .rt-scroll { flex: 0 0 auto; height: 62dvh; }
       }
       .rt-head {
         flex: 0 0 auto;
@@ -441,11 +441,13 @@
       /* ---------- Panel grafik Pareto & donat 4M (kompak) ---------- */
       .charts { margin-top: 12px; flex: 0 0 auto; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
       .charts.pareto-row, .charts.two-col { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-      /* Pasangan grafik per kategori dalam SATU grid: kolom kiri selalu
-         PRESS PART (Pareto di baris 1, donat Problem 4M-nya tepat di bawahnya
-         di baris 2), kolom kanan selalu SURFACE FINISH. Urutan DOM dibuat
-         berpasangan (Pareto PP → Donat PP → Pareto SF → Donat SF) supaya di
-         HP yang bertumpuk satu kolom urutannya tetap per kategori. */
+      /* Pasangan grafik per kategori dalam SATU grid dua baris: baris 1 =
+         kedua Pareto berdampingan (PP kiri, SF kanan), baris 2 (TENGAH) =
+         kedua donat Problem 4M berdampingan dalam panel RAMPING, baru di
+         bawah grid ini tabel detail mulai — supaya tabel naik & area
+         scroll-nya lebih tinggi. Penempatan desktop eksplisit lewat kelas
+         cell-*; urutan DOM = urutan tumpuk HP: Pareto PP → Pareto SF →
+         Donat PP → Donat SF → tabel. */
       .charts.chart-pairs { grid-template-columns: repeat(2, minmax(0, 1fr)); }
       .cell-pp-pareto { grid-column: 1; grid-row: 1; }
       .cell-pp-donut { grid-column: 1; grid-row: 2; }
@@ -489,8 +491,24 @@
       .donut-svg { width: 104px; height: 104px; flex: 0 0 auto; }
       .donut-total { fill: var(--ink); font-size: 19px; font-weight: 700; }
       .donut-cap { fill: var(--muted); font-size: 9.5px; }
+      /* Teks tengah donat tidak menangkap klik — klik tembus ke segmen ring */
+      .donut-total, .donut-cap { pointer-events: none; }
       .donut-legend { list-style: none; margin: 0; padding: 0; flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; gap: 4px; }
       .donut-legend li { display: flex; align-items: center; gap: 7px; font-size: 12px; color: var(--ink-2); }
+      /* Baris donat TENGAH dibuat RAMPING: panel lebih pendek (donat 84px,
+         legenda & teks diperkecil tapi tetap terbaca) agar tabel detail di
+         bawahnya mulai lebih tinggi dan area scroll-nya lebih lega. Ukuran
+         font di dalam SVG dinaikkan relatif terhadap viewBox supaya angka
+         total & keterangan tetap jelas pada donat yang lebih kecil. */
+      .chart-card.donut-card { padding: 8px 12px 9px; }
+      .chart-card.donut-card h3 { font-size: 12px; letter-spacing: .4px; }
+      .chart-card.donut-card .sub { margin: 1px 0 0; font-size: 10.5px; }
+      .donut-card .donut-wrap { padding-top: 3px; gap: 10px; }
+      .donut-card .donut-svg { width: 84px; height: 84px; }
+      .donut-card .donut-total { font-size: 24px; }
+      .donut-card .donut-cap { font-size: 12.5px; }
+      .donut-card .donut-legend { gap: 2px; }
+      .donut-card .donut-legend li { font-size: 11.5px; }
       .lg-dot { width: 10px; height: 10px; border-radius: 3px; flex: 0 0 auto; }
       .lg-label { flex: 1 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
       .lg-val { font-variant-numeric: tabular-nums; font-weight: 600; color: var(--ink); white-space: nowrap; }
@@ -661,6 +679,25 @@
       .evm-row .k { flex: 0 0 132px; font-size: 12px; font-weight: 700; letter-spacing: .4px; color: var(--muted); }
       .evm-row .v { flex: 1 1 auto; min-width: 0; color: var(--ink); font-weight: 600; overflow-wrap: anywhere; font-variant-numeric: tabular-nums; }
       .evm-stock-btn { margin-top: 16px; width: 100%; justify-content: center; min-height: 46px; }
+      /* Tombol Preview daftar item kejadian (segmen "Items: ..." pada
+         Detail) + tampilan daftarnya di dalam modal yang sama */
+      .evm-preview-btn { margin-top: 16px; width: 100%; justify-content: center; min-height: 46px; background: #fff; color: var(--brand); border-color: var(--line-strong); box-shadow: var(--shadow); }
+      .evm-preview-btn:hover { background: var(--brand-soft); color: var(--brand-dark); border-color: var(--accent); box-shadow: var(--shadow); }
+      .evm-preview-btn + .evm-stock-btn { margin-top: 10px; }
+      .evm-back { display: inline-flex; align-items: center; gap: 7px; font: inherit; font-size: 13.5px; font-weight: 700; color: var(--brand); background: #fff; border: 1px solid var(--line-strong); border-radius: 9px; padding: 9px 14px; min-height: 44px; cursor: pointer; margin-bottom: 12px; }
+      .evm-back:hover { background: var(--brand-soft); border-color: var(--accent); }
+      .evm-back:focus-visible { outline: 2px solid var(--accent-2); outline-offset: 1px; }
+      .evm-pv-ctx { margin: 0 0 2px; font-size: 13.5px; font-weight: 700; color: var(--brand-dark); overflow-wrap: anywhere; }
+      .evm-pv-sub { margin: 0 0 10px; font-size: 12.5px; color: var(--muted); }
+      .evm-pv-list { display: flex; flex-direction: column; max-height: 48dvh; overflow-y: auto; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; box-shadow: var(--shadow); padding: 4px 12px; }
+      .evm-pv-item { display: flex; align-items: baseline; gap: 10px; width: 100%; padding: 8px 2px; font: inherit; font-size: 14px; text-align: left; color: var(--ink); background: transparent; border: 0; border-bottom: 1px dashed var(--line); cursor: pointer; }
+      .evm-pv-item:last-of-type { border-bottom: 0; }
+      .evm-pv-item:hover { background: var(--hover); }
+      .evm-pv-item:focus-visible { outline: 2px solid var(--accent-2); outline-offset: -2px; }
+      .evm-pv-item .pi-code { flex: 0 0 auto; font-family: "IBM Plex Mono", ui-monospace, monospace; font-size: 13.5px; font-weight: 600; color: var(--brand-dark); }
+      .evm-pv-item .pi-name { flex: 1 1 auto; min-width: 0; font-size: 13px; color: var(--ink-2); overflow-wrap: anywhere; }
+      .evm-pv-item .pi-qty { flex: 0 0 auto; font-weight: 700; font-variant-numeric: tabular-nums; white-space: nowrap; color: var(--brand-dark); }
+      .evm-pv-more { margin: 0; padding: 8px 2px; font-size: 12.5px; font-style: italic; color: var(--muted); }
       @media (max-width: 760px) {
         .evm-overlay { padding: 0; }
         .evm-sheet { width: 100%; min-height: 100dvh; margin: 0; border: 0; border-radius: 0; }
@@ -815,7 +852,8 @@
       }
       @media (max-width: 980px) {
         .charts, .charts.pareto-row, .charts.two-col, .charts.chart-pairs { grid-template-columns: 1fr; }
-        /* Di HP penempatan grid dilepas: urutan DOM yang berpasangan berlaku */
+        /* Di HP penempatan grid dilepas: urutan DOM berlaku (Pareto PP →
+           Pareto SF → Donat PP → Donat SF) */
         .charts.chart-pairs > * { grid-column: auto; grid-row: auto; }
       }
 
@@ -1060,6 +1098,10 @@
       .stock-line .sl-qty { font-variant-numeric: tabular-nums; font-weight: 700; color: var(--brand-dark); white-space: nowrap; }
       .stock-line.total { border-top: 2px solid var(--line-strong); border-bottom: 0; margin-top: 2px; padding-top: 8px; }
       .stock-line.total .sl-name { font-weight: 700; color: var(--brand-dark); }
+      /* Sub-blok di dalam seksi stok (rincian per subcont pada Supply ke SF) */
+      .stock-sec .stock-block { margin-top: 12px; }
+      .stock-sec .stock-block:first-of-type { margin-top: 2px; }
+      .stock-sec .stock-subh { margin: 0 0 2px; font-size: 12.5px; font-weight: 700; letter-spacing: .3px; color: var(--brand-dark); overflow-wrap: anywhere; }
       @media (max-width: 760px) {
         .stock-overlay { padding: 0; }
         .stock-sheet { width: 100%; min-height: 100dvh; margin: 0; border: 0; border-radius: 0; }
@@ -1209,17 +1251,17 @@
           <p class="sub">Bar = jumlah Item delay semua vendor · garis emas = kumulatif % · klik batang untuk detail vendor</p>
           <div id="paretoPress"><div class="chart-empty">Memuat data…</div></div>
         </div>
-        <div class="chart-card cell-pp-donut" id="sec4m">
-          <h3>PROBLEM 4M — PRESS PART</h3>
-          <p class="sub">Klik segmen atau legenda untuk menyaring tabel detail</p>
-          <div id="donutPress"><div class="chart-empty">Memuat data…</div></div>
-        </div>
         <div class="chart-card pareto-card cell-sf-pareto">
           <h3>PARETO ITEM DELAY — SURFACE FINISH <span class="tot" id="totSF"></span></h3>
           <p class="sub">Bar = jumlah Item delay semua vendor · garis emas = kumulatif % · klik batang untuk detail vendor</p>
           <div id="paretoSF"><div class="chart-empty">Memuat data…</div></div>
         </div>
-        <div class="chart-card cell-sf-donut">
+        <div class="chart-card donut-card cell-pp-donut" id="sec4m">
+          <h3>PROBLEM 4M — PRESS PART</h3>
+          <p class="sub">Klik segmen atau legenda untuk menyaring tabel detail</p>
+          <div id="donutPress"><div class="chart-empty">Memuat data…</div></div>
+        </div>
+        <div class="chart-card donut-card cell-sf-donut">
           <h3>PROBLEM 4M — SURFACE FINISH</h3>
           <p class="sub">Klik segmen atau legenda untuk menyaring tabel detail</p>
           <div id="donutSF"><div class="chart-empty">Memuat data…</div></div>
@@ -1509,7 +1551,7 @@
 
       /* ================= Konfigurasi sumber data LIVE ================= */
       var SHEET_ID = '154c18fGXyavo0NtbW2TrPae0ohMCGy2ieqOWzcHMZ0E';
-      var SHEET_GIDS = { LIVE_Meta: '1435789218', LIVE_Delay: '2083480634', LIVE_2DS: '1367143344', LIVE_ItemExtra: '433706484', LIVE_StockTCH: '354569494', LIVE_StockSF: '1261613325' };
+      var SHEET_GIDS = { LIVE_Meta: '1435789218', LIVE_Delay: '2083480634', LIVE_2DS: '1367143344', LIVE_ItemExtra: '433706484', LIVE_StockTCH: '354569494', LIVE_StockSF: '1261613325', LIVE_ItemSupply: '1793607157', LIVE_ItemPO: '435329251' };
       function sheetUrl(tab) {
         return 'https://docs.google.com/spreadsheets/d/' + SHEET_ID + '/gviz/tq?tqx=out:csv&sheet=' + tab;
       }
@@ -2720,7 +2762,16 @@
          label baku. Bila rincian memuat Item Code, tampil tombol Cek Stok
          yang menutup modal lalu membuka panel Cek Stok pada item itu.
          Baris lama tanpa segmen "Item ..." tetap rapi — tombolnya cukup
-         tidak muncul. */
+         tidak muncul.
+         Segmen "Items: <kode> (<qty>); ..." (daftar item lengkap kejadian,
+         ditulis backend untuk DN_DIBUAT & kejadian DI) TIDAK dirender
+         sebagai baris mentah: isinya diparse defensif menjadi daftar item.
+         Bila isinya ≥2 item, tampil tombol Preview yang membuka daftar
+         semua item DI DALAM modal ini (baris item bisa diklik → Cek Stok
+         item itu; tombol kembali ke rincian). Bila isinya tepat 1 item,
+         item itu dilipat menjadi baris Item Code + Qty dan tombol Cek
+         Stok tunggal seperti biasa. Entri "+N item lain" (daftar terpotong
+         di backend) menjadi catatan di akhir daftar Preview. */
       var ID_DAYS = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
       function fmtEvWhen(e) {
         if (!e.t) return e.tsRaw || '';
@@ -2731,6 +2782,7 @@
       function parseEvDetail(e) {
         var rows = [];
         var itemCode = '';
+        var items = [], itemsMore = 0;
         var isDN = String(e.tipe || '').trim().toUpperCase() === 'DN_DIBUAT';
         if (isDN) {
           var mdn = /bikin DN\s+(\S+)/i.exec(e.pesan || '');
@@ -2739,7 +2791,20 @@
         var segs = String(e.detail || '').split('·').map(function (s) { return s.trim(); }).filter(Boolean);
         segs.forEach(function (s) {
           var m;
-          if ((m = /^DI\s+(.+)$/.exec(s))) rows.push({ k: 'Nomor DI', v: m[1] });
+          if ((m = /^Items:\s*(.+)$/.exec(s))) {
+            /* Daftar item lengkap kejadian: entri dipisah "; ", bentuk
+               "<kode> (<qty angka polos>)"; entri "+N item lain" = sisa
+               yang terpotong di backend. Entri di luar pola diabaikan. */
+            m[1].split(';').forEach(function (part) {
+              var p = part.trim();
+              if (!p) return;
+              var mm = /^\+\s*(\d+)\s*item lain/i.exec(p);
+              if (mm) { itemsMore += +mm[1]; return; }
+              mm = /^(.+?)\s*\((\d[\d.]*)\)$/.exec(p);
+              if (mm) items.push({ code: mm[1].trim(), qty: parseNum(mm[2]) });
+            });
+          }
+          else if ((m = /^DI\s+(.+)$/.exec(s))) rows.push({ k: 'Nomor DI', v: m[1] });
           else if ((m = /^PO\s+(.+)$/.exec(s))) rows.push({ k: 'Nomor PO', v: m[1] });
           else if ((m = /^Item\s+(.+)$/.exec(s))) { itemCode = m[1].trim(); rows.push({ k: 'Item Code', v: itemCode }); }
           else if ((m = /^Qty\s+(.+)$/i.exec(s))) rows.push({ k: 'Qty', v: m[1] });
@@ -2754,11 +2819,20 @@
           }
           else rows.push({ k: 'Rincian', v: s });
         });
-        return { rows: rows, itemCode: itemCode };
+        /* Tepat 1 item pada segmen Items dan belum ada Item Code lain:
+           lipat menjadi rincian biasa + tombol Cek Stok tunggal. */
+        if (items.length === 1 && !itemCode) {
+          itemCode = items[0].code;
+          rows.push({ k: 'Item Code', v: itemCode });
+          rows.push({ k: 'Qty', v: fmt(items[0].qty) + ' pcs' });
+        }
+        return { rows: rows, itemCode: itemCode, items: items, itemsMore: itemsMore };
       }
       var evModal = $('evModal');
+      var evModalEvent = null;   /* kejadian yang sedang tampil di modal (untuk Preview ↔ rincian) */
       function openEvModal(e) {
         if (!e || !evModal) return;
+        evModalEvent = e;
         var meta = evTypeMeta(e.tipe);
         var ico = $('evmIco');
         ico.setAttribute('style', 'color:' + meta.color + ';background:' + meta.bg);
@@ -2776,6 +2850,11 @@
           h += '<div class="evm-row"><span class="k">' + esc(r.k.toUpperCase()) + '</span><span class="v">' + esc(r.v) + '</span></div>';
         });
         h += '</div>';
+        if (parsed.items && parsed.items.length >= 2) {
+          h += '<button type="button" class="btn evm-preview-btn" data-ev-preview="1">' +
+            '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="width:18px;height:18px"><path d="M8 6h13M8 12h13M8 18h13"/><circle cx="4" cy="6" r="1" fill="currentColor" stroke="none"/><circle cx="4" cy="12" r="1" fill="currentColor" stroke="none"/><circle cx="4" cy="18" r="1" fill="currentColor" stroke="none"/></svg>' +
+            'Preview — Semua Item (' + parsed.items.length + (parsed.itemsMore ? '+' : '') + ')</button>';
+        }
         if (parsed.itemCode) {
           h += '<button type="button" class="btn evm-stock-btn" id="evmStockBtn" data-ev-item="' + esc(parsed.itemCode) + '">' +
             '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="width:18px;height:18px"><path d="M21 8.2 12 3.5 3 8.2v7.6L12 20.5l9-4.7z"/><path d="M3 8.2l9 4.7 9-4.7"/><path d="M12 12.9v7.6"/></svg>' +
@@ -2793,11 +2872,70 @@
         evModal.hidden = true;
         document.body.style.overflow = '';
       }
+      /* Nama part untuk daftar Preview: cari di data yang sudah dimuat
+         halaman (baris delay → baris 2DS → stok TCH/SF bila panel Cek
+         Stok pernah dimuat). Tidak dikenal → string kosong (kode saja). */
+      function evItemName(code) {
+        var i, r;
+        for (i = 0; i < state.rows.length; i++) {
+          r = state.rows[i];
+          if (r.item === code && r.desc) return r.desc;
+        }
+        for (i = 0; i < state.ngRaw.length; i++) {
+          r = state.ngRaw[i];
+          if (r.item === code && r.name) return r.name;
+        }
+        if (typeof stockState !== 'undefined' && stockState) {
+          if (stockState.tch && stockState.tch[code] && stockState.tch[code].desc) return stockState.tch[code].desc;
+          if (stockState.sf && stockState.sf[code] && stockState.sf[code].desc) return stockState.sf[code].desc;
+        }
+        return '';
+      }
+      /* Tampilan Preview: daftar semua item kejadian (dari segmen Items)
+         menggantikan rincian di dalam modal yang sama; tombol kembali
+         merender ulang rincian lewat openEvModal. Baris item memakai
+         atribut data-ev-item yang sama dengan tombol Cek Stok — handler
+         klik terdelegasi di evmBody menutup modal & membuka Cek Stok. */
+      function renderEvPreview() {
+        var e = evModalEvent;
+        if (!e || !evModal) return;
+        var parsed = parseEvDetail(e);
+        if (!parsed.items || parsed.items.length < 2) { openEvModal(e); return; }
+        var meta = evTypeMeta(e.tipe);
+        var dn = '', di = '';
+        parsed.rows.forEach(function (r) {
+          if (r.k === 'Nomor DN') dn = r.v;
+          else if (r.k === 'Nomor DI') di = r.v;
+        });
+        var ctx = meta.label + (e.vendor ? ' · ' + e.vendor : '') +
+          (dn ? ' · DN ' + dn : '') + (di ? ' · DI ' + di : '');
+        var h = '<button type="button" class="evm-back" data-ev-back="1">← Kembali ke rincian</button>';
+        h += '<p class="evm-pv-ctx">' + esc(ctx) + '</p>';
+        h += '<p class="evm-pv-sub">' + parsed.items.length + ' item pada kejadian ini' +
+          (parsed.itemsMore ? ' (+' + parsed.itemsMore + ' item lain)' : '') +
+          ' — klik item untuk membuka Cek Stok item itu.</p>';
+        h += '<div class="evm-pv-list">';
+        parsed.items.forEach(function (it) {
+          var nm = evItemName(it.code);
+          h += '<button type="button" class="evm-pv-item" data-ev-item="' + esc(it.code) + '">' +
+            '<span class="pi-code">' + esc(it.code) + '</span>' +
+            '<span class="pi-name">' + esc(nm || '—') + '</span>' +
+            '<span class="pi-qty">' + fmt(it.qty) + ' pcs</span></button>';
+        });
+        if (parsed.itemsMore) h += '<p class="evm-pv-more">+' + parsed.itemsMore + ' item lain</p>';
+        h += '</div>';
+        $('evmBody').innerHTML = h;
+        evModal.scrollTop = 0;
+      }
       if (evModal) {
         $('evmClose').addEventListener('click', closeEvModal);
         evModal.addEventListener('click', function (ev) { if (ev.target === evModal) closeEvModal(); });
         $('evmBody').addEventListener('click', function (ev) {
-          var btn = ev.target && ev.target.closest ? ev.target.closest('[data-ev-item]') : null;
+          var t = ev.target;
+          if (!t || !t.closest) return;
+          if (t.closest('[data-ev-preview]')) { renderEvPreview(); return; }
+          if (t.closest('[data-ev-back]')) { if (evModalEvent) openEvModal(evModalEvent); return; }
+          var btn = t.closest('[data-ev-item]');
           if (!btn) return;
           var item = btn.getAttribute('data-ev-item');
           closeEvModal();
@@ -2890,6 +3028,9 @@
           if (csvs[3]) state.extraMap = csvs[3];
           if (meta.stock_tch_source) stockState.tchSource = meta.stock_tch_source;
           if (meta.stock_sf_source) stockState.sfSource = meta.stock_sf_source;
+          if (meta.gi_source) stockState.giSource = meta.gi_source;
+          if (meta.gi_last_date) stockState.giLastDate = meta.gi_last_date;
+          if (meta.po_source) stockState.poSource = meta.po_source;
           state.ngRaw = parseNgRaw(csvs[2]);
           state.rows = buildRows(parseDelayAgg(csvs[1]), parseNgMap(csvs[2]), state.extraMap);
           /* Panel Cek Stok yang sedang terbuka ikut disegarkan datanya */
@@ -3140,15 +3281,28 @@
            Storage Location | Qty)
          · LIVE_StockSF → stok vendor SF (Vendor Code | Vendor Name |
            Material | Description | Qty)
+         · LIVE_StockSF → stok vendor SF (Vendor Code | Vendor Name |
+           Material | Description | Qty)
+         · LIVE_ItemSupply → agregat harian GI ke SF/subcont (Item Code |
+           Subcont | Date | Qty) untuk seksi SUPPLY KE SF (3 hari terakhir)
+         · LIVE_ItemPO → PO outstanding per item (Item Code | No PO |
+           Vendor Code | Vendor Name | Qty PO | OS PO | Delivery Date |
+           Kategori) untuk seksi OS PER PO
          · Sisi vendor SPEED memakai state.ngRaw (baris LIVE_2DS yang
            sudah dimuat halaman; snapshot BAKED.ng saat offline).
-         Label sumber dari LIVE_Meta (stock_tch_source / stock_sf_source),
-         diisi loadLive; di sini hanya cadangan bila meta belum terbaca.
+         Label sumber dari LIVE_Meta (stock_tch_source / stock_sf_source /
+         gi_source / gi_last_date / po_source), diisi loadLive; di sini
+         hanya cadangan bila meta belum terbaca.
+         Kedua tab supply/PO TIDAK dibaked ke snapshot: gagal muat (offline)
+         → seksi barunya menampilkan keterangan tidak tersedia, seksi lain
+         tetap jalan. Gagal muat tab mana pun bersifat fail-soft (null)
+         dan tidak menjatuhkan tab lain.
          Gagal muat → keterangan sopan di panel, tanpa error console.
          Selama panel terbuka, Refresh (loadLive) ikut menyegarkan stok. */
       var stockState = {
         loaded: false, loading: false, failed: false,
-        tch: null, sf: null, tchSource: '', sfSource: '', lastQuery: ''
+        tch: null, sf: null, tchSource: '', sfSource: '', lastQuery: '',
+        supply: null, itemPO: null, giSource: '', giLastDate: '', poSource: ''
       };
       function bakedNgRaw() {
         var out = [], ng = (BAKED && BAKED.ng) || {};
@@ -3215,6 +3369,69 @@
         }
         return n ? byItem : null;
       }
+      /* LIVE_ItemSupply kolom (nama header): Item Code | Subcont | Date |
+         Qty. Hasil = peta item → { order: [kode subcont sesuai kemunculan],
+         subs: { kode: { 'YYYY-MM-DD': qty } } }. Kode subcont boleh string
+         kosong (tidak tercatat di file sumber) — tetap disimpan apa adanya.
+         Tanggal dinormalkan ke ISO lewat parseHistTs (baku tab ini ISO;
+         varian gviz ikut dikenali). Tab kosong/header tak dikenal → null. */
+      function parseItemSupply(csv) {
+        var rows = parseCSV(csv);
+        if (rows.length < 2) return null;
+        var col = stockHeadIdx(rows);
+        var cI = col('item code'), cS = col('subcont'), cD = col('date'), cQ = col('qty');
+        if (cI < 0 || cD < 0 || cQ < 0) return null;
+        var byItem = {}, n = 0;
+        for (var i = 1; i < rows.length; i++) {
+          var r = rows[i];
+          var item = String(r[cI] || '').trim();
+          if (!item) continue;
+          var dt = parseHistTs(r[cD]);
+          if (!dt) continue;
+          var iso = dt.y + '-' + pad2(dt.mo) + '-' + pad2(dt.d);
+          var sub = cS >= 0 ? String(r[cS] || '').trim() : '';
+          var e = byItem[item];
+          if (!e) e = byItem[item] = { order: [], subs: {} };
+          var s = e.subs[sub];
+          if (!s) { s = e.subs[sub] = {}; e.order.push(sub); }
+          s[iso] = (s[iso] || 0) + parseNum(r[cQ]);
+          n++;
+        }
+        return n ? byItem : null;
+      }
+      /* LIVE_ItemPO kolom (nama header): Item Code | No PO | Vendor Code |
+         Vendor Name | Qty PO | OS PO | Delivery Date | Kategori.
+         Hasil = peta item → daftar PO apa adanya (pengurutan tanggal
+         delivery dilakukan saat render). Tab kosong/header tak dikenal
+         → null. */
+      function parseItemPO(csv) {
+        var rows = parseCSV(csv);
+        if (rows.length < 2) return null;
+        var col = stockHeadIdx(rows);
+        var cI = col('item code'), cPO = col('no po'), cVC = col('vendor code'),
+            cVN = col('vendor name'), cQ = col('qty po'), cOS = col('os po'),
+            cD = col('delivery date');
+        if (cI < 0 || cPO < 0 || cOS < 0) return null;
+        var byItem = {}, n = 0;
+        for (var i = 1; i < rows.length; i++) {
+          var r = rows[i];
+          var item = String(r[cI] || '').trim();
+          if (!item) continue;
+          var e = byItem[item];
+          if (!e) e = byItem[item] = [];
+          e.push({
+            po: String(r[cPO] || '').trim(),
+            vcode: cVC >= 0 ? String(r[cVC] || '').trim() : '',
+            vname: cVN >= 0 ? String(r[cVN] || '').trim() : '',
+            qty: cQ >= 0 ? parseNum(r[cQ]) : 0,
+            os: parseNum(r[cOS]),
+            deliv: cD >= 0 ? parseHistTs(r[cD]) : null,
+            delivRaw: cD >= 0 ? String(r[cD] || '').trim() : ''
+          });
+          n++;
+        }
+        return n ? byItem : null;
+      }
       function loadStock(isRefresh) {
         if (stockState.loading) return;
         stockState.loading = true;
@@ -3222,14 +3439,21 @@
         Promise.all([
           fetchText(sheetUrl('LIVE_StockTCH')).then(parseStockTCH).catch(function () { return null; }),
           fetchText(sheetUrl('LIVE_StockSF')).then(parseStockSF).catch(function () { return null; }),
-          fetchText(sheetUrl('LIVE_Meta')).then(parseMeta).catch(function () { return null; })
+          fetchText(sheetUrl('LIVE_Meta')).then(parseMeta).catch(function () { return null; }),
+          fetchText(sheetUrl('LIVE_ItemSupply')).then(parseItemSupply).catch(function () { return null; }),
+          fetchText(sheetUrl('LIVE_ItemPO')).then(parseItemPO).catch(function () { return null; })
         ]).then(function (res) {
           if (res[2]) {
             if (res[2].stock_tch_source) stockState.tchSource = res[2].stock_tch_source;
             if (res[2].stock_sf_source) stockState.sfSource = res[2].stock_sf_source;
+            if (res[2].gi_source) stockState.giSource = res[2].gi_source;
+            if (res[2].gi_last_date) stockState.giLastDate = res[2].gi_last_date;
+            if (res[2].po_source) stockState.poSource = res[2].po_source;
           }
           stockState.tch = res[0];
           stockState.sf = res[1];
+          stockState.supply = res[3];
+          stockState.itemPO = res[4];
           stockState.loaded = true;
           stockState.failed = !res[0] && !res[1];
           stockState.loading = false;
@@ -3303,6 +3527,50 @@
         return '<div class="stock-line"><span class="sl-name">' + esc(name) +
           (small ? '<small>' + esc(small) + '</small>' : '') +
           '</span><span class="sl-qty">' + (qty == null ? '—' : fmt(qty) + (qtySuffix || ' pcs')) + '</span></div>';
+      }
+      /* Peta kode→nama vendor dari data LIVE_StockSF yang sudah dimuat
+         (semua baris semua item) — untuk menyelesaikan nama subcont pada
+         seksi Supply ke SF. */
+      function sfVendorNameByCode() {
+        var map = {};
+        if (stockState.sf) Object.keys(stockState.sf).forEach(function (k) {
+          stockState.sf[k].rows.forEach(function (r) {
+            if (r.vcode && r.vname && !map[r.vcode]) map[r.vcode] = r.vname;
+          });
+        });
+        return map;
+      }
+      /* Nama subcont penerima supply: nama dari peta Stock SF → nickname/
+         singkatan yang dikenal halaman → kode itu sendiri. Kode kosong
+         (tidak tercatat di file sumber) → label khusus. */
+      function subcontName(code, nameMap) {
+        if (!code) return 'Subcont tidak tercatat';
+        if (nameMap && nameMap[code]) return nameMap[code];
+        return shortVendor({ vcode: code, vname: '' });
+      }
+      /* Tiga hari terakhir menurut tanggal berjalan WIB (Asia/Jakarta):
+         hari ini, kemarin, dua hari lalu — urut terbaru dulu. */
+      function last3DaysJkt() {
+        var p = fmtParts(JKT_DATE_FMT, new Date());
+        var base = Date.UTC(+p.year, +p.month - 1, +p.day);
+        var out = [];
+        for (var k = 0; k < 3; k++) {
+          var dt = new Date(base - k * 864e5);
+          out.push({
+            iso: dt.getUTCFullYear() + '-' + pad2(dt.getUTCMonth() + 1) + '-' + pad2(dt.getUTCDate()),
+            wd: dt.getUTCDay(), d: dt.getUTCDate(), mo: dt.getUTCMonth() + 1
+          });
+        }
+        return out;
+      }
+      /* Satu baris hari pada blok supply: "<NamaHari>, <tgl> <Bln> = <qty>" */
+      function supplyDayLine(day, qty) {
+        return '<div class="stock-line"><span class="sl-name">' +
+          ID_DAYS[day.wd] + ', ' + day.d + ' ' + MONTHS_ID[day.mo - 1] +
+          '</span><span class="sl-qty">= ' + fmt(qty) + '</span></div>';
+      }
+      function fmtDateId(t, raw) {
+        return t ? t.d + ' ' + MONTHS_ID[t.mo - 1] + ' ' + t.y : (raw || '—');
       }
       function renderStockDetail(item) {
         var box = $('stockResults'), det = $('stockDetail');
@@ -3385,6 +3653,74 @@
           h += '<p class="none-note">Item ini tidak ada di stok vendor SF.</p>';
         }
         h += '<p class="src-note">Sumber: ' + esc(stockState.sfSource || 'Stok vendor SF (tab LIVE_StockSF)') + '</p></div>';
+        /* d. Supply ke SF — 3 hari terakhir (LIVE_ItemSupply, data GI).
+           Per subcont satu blok; bila item disupply ke LEBIH DARI SATU
+           subcont (common supply), blok TOTAL gabungan tampil lebih dulu
+           lalu rincian per subcont. Hari tanpa GI tampil 0. Data gagal
+           dimuat (null) → keterangan tidak tersedia, bukan "tidak ada". */
+        h += '<div class="stock-sec"><h3>SUPPLY KE SF (3 HARI TERAKHIR)</h3>';
+        if (!stockState.supply) {
+          h += '<p class="none-note">Data supply ke SF belum tersedia saat ini. Periksa koneksi internet, lalu coba lagi lewat Refresh Data.</p>';
+        } else {
+          var sup = stockState.supply[item] || null;
+          if (!sup || !sup.order.length) {
+            h += '<p class="none-note">Tidak ada supply ke SF</p>';
+          } else {
+            var days3 = last3DaysJkt();
+            var nameMap = sfVendorNameByCode();
+            function dayLines(getQty) {
+              return '<div class="stock-lines">' + days3.map(function (dy) {
+                return supplyDayLine(dy, getQty(dy.iso));
+              }).join('') + '</div>';
+            }
+            if (sup.order.length > 1) {
+              h += '<div class="stock-block"><p class="stock-subh">TOTAL (semua subcont)</p>' +
+                dayLines(function (iso) {
+                  var t = 0;
+                  sup.order.forEach(function (c) { t += sup.subs[c][iso] || 0; });
+                  return t;
+                }) + '</div>';
+            }
+            sup.order.forEach(function (code) {
+              h += '<div class="stock-block"><p class="stock-subh">Supply ke ' + esc(subcontName(code, nameMap)) + '</p>' +
+                dayLines(function (iso) { return sup.subs[code][iso] || 0; }) + '</div>';
+            });
+          }
+          var giNote = '';
+          var gd = stockState.giLastDate ? parseHistTs(stockState.giLastDate) : null;
+          if (gd) giNote = 'Data GI terakhir: ' + gd.d + ' ' + MONTHS_ID[gd.mo - 1] + ' ' + gd.y + ' · ';
+          h += '<p class="src-note">' + esc(giNote) + 'Sumber: ' + esc(stockState.giSource || 'Data GI pengiriman ke vendor SF (tab LIVE_ItemSupply)') + '</p>';
+        }
+        h += '</div>';
+        /* e. OS per PO — semua PO outstanding item ini (LIVE_ItemPO),
+           urut tanggal delivery terlama dulu, ditutup total OS PO. */
+        h += '<div class="stock-sec"><h3>OS PER PO</h3>';
+        if (!stockState.itemPO) {
+          h += '<p class="none-note">Data PO belum tersedia saat ini. Periksa koneksi internet, lalu coba lagi lewat Refresh Data.</p>';
+        } else {
+          var pos = (stockState.itemPO[item] || []).slice();
+          if (!pos.length) {
+            h += '<p class="none-note">Tidak ada PO outstanding untuk item ini</p>';
+          } else {
+            pos.sort(function (a, b) {
+              var ka = a.deliv ? a.deliv.y * 10000 + a.deliv.mo * 100 + a.deliv.d : 99999999;
+              var kb = b.deliv ? b.deliv.y * 10000 + b.deliv.mo * 100 + b.deliv.d : 99999999;
+              return ka - kb;
+            });
+            var totOsPO = 0;
+            h += '<div class="stock-lines">' + pos.map(function (p) {
+              totOsPO += p.os;
+              var vdisp = (p.vcode && (VENDOR_ABBR[p.vcode] || nickByCode[p.vcode])) || p.vname || p.vcode || 'Vendor';
+              var small = vdisp + (p.vcode ? ' · ' + p.vcode : '') +
+                ' · Delivery ' + fmtDateId(p.deliv, p.delivRaw) +
+                ' · Qty PO ' + fmt(p.qty) + ' pcs';
+              return stockLine('PO ' + (p.po || '—'), small, p.os);
+            }).join('') +
+              '<div class="stock-line total"><span class="sl-name">Total OS PO</span><span class="sl-qty">' + fmt(totOsPO) + ' pcs</span></div></div>';
+          }
+          h += '<p class="src-note">Sumber: ' + esc(stockState.poSource || 'Data PO outstanding (tab LIVE_ItemPO)') + '</p>';
+        }
+        h += '</div>';
         det.innerHTML = h;
         det.hidden = false;
         $('stockBack').addEventListener('click', function () { runStockSearch(stockState.lastQuery); });
