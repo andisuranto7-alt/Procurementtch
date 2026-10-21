@@ -502,9 +502,11 @@
       .donut-legend li.lg-hit:hover, .donut-legend li.lg-hit:focus-visible { background: var(--hover); }
 
       /* ---------- Notifikasi perubahan data antar-refresh ----------
-         Toast ringkas (menghilang sendiri) + panel log "Perubahan Terakhir"
-         di samping tombol Refresh. Vendor yang berubah ditandai badge
-         BERUBAH pada grup tabelnya dan titik penanda berdenyut pada batang
+         Toast ringkas (menghilang sendiri) untuk perubahan yang terdeteksi
+         selama halaman terbuka + panel "Riwayat Perubahan" di samping
+         tombol Refresh yang memuat histori persisten dari tab LIVE_Changes
+         di spreadsheet backend. Vendor yang berubah pada sesi berjalan
+         ditandai badge BERUBAH pada grup tabelnya dan penanda pada batang
          Pareto-nya sampai refresh LIVE sukses berikutnya. */
       .chg-wrap { position: relative; }
       .btn-chg { background: #fff; color: var(--brand); border-color: var(--line-strong); box-shadow: var(--shadow); }
@@ -526,17 +528,15 @@
       .chg-panel[hidden] { display: none; }
       .chg-panel-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 8px; }
       .chg-panel-head span { font-size: 13px; font-weight: 700; letter-spacing: .4px; color: var(--brand-dark); }
-      .chg-clear {
-        font: inherit; font-size: 12px; font-weight: 600; cursor: pointer;
-        border: 1px solid var(--line-strong); background: var(--surface-2); color: var(--ink-2);
-        border-radius: 999px; padding: 5px 12px; min-height: 32px;
-      }
-      .chg-clear:hover { background: var(--hover); color: var(--ink); }
       .chg-list { list-style: none; margin: 0; padding: 0; max-height: 300px; overflow-y: auto; display: flex; flex-direction: column; gap: 9px; }
       .chg-list li { font-size: 12.5px; color: var(--ink-2); line-height: 1.45; border-bottom: 1px dashed var(--line); padding-bottom: 8px; }
       .chg-list li:last-child { border-bottom: 0; padding-bottom: 0; }
       .chg-list .chg-time { display: block; font-weight: 700; color: var(--gold-ink); font-size: 12px; margin-bottom: 1px; }
       .chg-list .chg-empty { color: var(--muted); border-bottom: 0; padding-bottom: 0; }
+      .chg-list .chg-main { display: block; color: var(--ink); }
+      .chg-list .chg-main b { color: var(--brand-dark); }
+      .chg-list .chg-sub { display: block; color: var(--muted); font-size: 11.5px; margin-top: 1px; }
+      .chg-list .chg-detail { display: block; margin-top: 1px; }
       .chg-toast {
         margin-top: 10px; display: flex; align-items: flex-start; gap: 10px;
         background: #fffdf2; border: 1px solid #e3d194; border-radius: 12px;
@@ -559,6 +559,70 @@
       .rt-vendor.changed { background: #fdf3d3; }
       .p-hit.changed .p-bar { stroke: var(--gold-2); stroke-width: 1.4; }
       .p-hit.changed .p-xlab { fill: #b97f06; }
+
+      /* ---------- Tab di panel Riwayat: Perubahan (LIVE_Changes) | Aktivitas (LIVE_Events) ---------- */
+      .chg-tabs { display: flex; gap: 6px; margin-bottom: 9px; }
+      .chg-tab {
+        flex: 1 1 0; font: inherit; font-size: 12.5px; font-weight: 700; letter-spacing: .3px;
+        padding: 7px 10px; min-height: 36px; border-radius: 9px;
+        border: 1px solid var(--line-strong); background: var(--surface-2); color: var(--ink-2);
+        cursor: pointer; transition: background .15s ease, color .15s ease, border-color .15s ease;
+      }
+      .chg-tab:hover { border-color: var(--accent); color: var(--brand-dark); }
+      .chg-tab.is-on { background: var(--brand); border-color: var(--brand); color: #fff; }
+      .chg-tab:focus-visible { outline: 2px solid var(--accent-2); outline-offset: 1px; }
+      .chg-list[hidden] { display: none; }
+      /* Entri Aktivitas: ikon warna per tipe kejadian + pesan + waktu */
+      .chg-list li.act-item { display: flex; gap: 9px; align-items: flex-start; }
+      .act-ico { width: 28px; height: 28px; border-radius: 8px; display: inline-flex; align-items: center; justify-content: center; flex: 0 0 auto; margin-top: 1px; }
+      .act-ico svg { width: 16px; height: 16px; }
+      .act-body { flex: 1 1 auto; min-width: 0; }
+
+      /* ---------- Umpan aktivitas LIVE_Events: pop-up melayang ----------
+         Di layar lebar kartu kaca (glassmorphism) tampil bergantian di
+         margin KIRI & KANAN di luar .wrap (posisi fixed, di tengah margin),
+         masuk melayang halus, diam beberapa detik, lalu memudar keluar.
+         Antrean diatur JS: maks 3 kartu terlihat bersamaan. Kontainer
+         pointer-events:none — tidak pernah menghalangi klik grafik,
+         drill-down, maupun modal PICA. Mode lebar dinyalakan JS hanya bila
+         margin nyata cukup (≥1500px & ruang di luar .wrap memadai);
+         selain itu kartu tampil sebagai toast di bawah header. */
+      .ev-stack {
+        position: fixed; top: 104px; z-index: 90;
+        width: 248px; display: none;
+        flex-direction: column; gap: 10px;
+        pointer-events: none;
+      }
+      @media (min-width: 1500px) { .ev-stack { display: flex; } }
+      .ev-left { left: calc((100vw - 1760px) / 4 - 124px); }
+      .ev-right { right: calc((100vw - 1760px) / 4 - 124px); }
+      .ev-toast-stack { display: flex; flex-direction: column; gap: 8px; }
+      .ev-toast-stack:not(:empty) { margin-top: 10px; }
+      .ev-card {
+        display: flex; gap: 10px; align-items: flex-start;
+        background: rgba(255, 255, 255, .8);
+        -webkit-backdrop-filter: blur(12px) saturate(1.25);
+        backdrop-filter: blur(12px) saturate(1.25);
+        border: 1px solid rgba(255, 255, 255, .7);
+        box-shadow: 0 14px 34px rgba(10, 42, 94, .16), inset 0 1px 0 rgba(255, 255, 255, .85);
+        border-radius: 14px; padding: 11px 12px;
+        animation: evIn .55s cubic-bezier(.22, .8, .3, 1) both, evBob 5.5s ease-in-out .6s infinite alternate;
+        transition: opacity .55s ease, transform .55s ease;
+      }
+      .ev-card.ev-out { opacity: 0; transform: translateY(-10px); animation: none; }
+      @keyframes evIn { from { opacity: 0; transform: translateY(16px) scale(.96); } to { opacity: 1; transform: none; } }
+      @keyframes evBob { from { transform: translateY(0); } to { transform: translateY(-5px); } }
+      .ev-ico { width: 34px; height: 34px; border-radius: 10px; display: inline-flex; align-items: center; justify-content: center; flex: 0 0 auto; }
+      .ev-ico svg { width: 19px; height: 19px; }
+      .ev-body { flex: 1 1 auto; min-width: 0; }
+      .ev-top { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; }
+      .ev-vendor { font-size: 13.5px; font-weight: 700; color: var(--brand-dark); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+      .ev-time { font-size: 11.5px; font-weight: 600; color: var(--muted); font-variant-numeric: tabular-nums; white-space: nowrap; }
+      .ev-type { display: block; font-size: 10.5px; font-weight: 700; letter-spacing: .6px; margin-top: 1px; }
+      .ev-msg { font-size: 13px; color: var(--ink-2); line-height: 1.4; margin-top: 1px; overflow-wrap: anywhere; }
+      @media (prefers-reduced-motion: reduce) {
+        .ev-card { animation: none; transition: none; }
+      }
 
       /* ---------- PICA: tombol sendiri di header & papan visual (modal) ----------
          Visual-first: diagram SVG + kartu bergambar, teks hanya label pendek.
@@ -767,7 +831,7 @@
         .rt-vendor .rv-name { left: 8px; }
         .rt-vendor .rv-meta { font-size: 11px; }
         .rt-hint { padding: 7px 12px; }
-        /* Log "Perubahan Terakhir" di HP menjadi lembar bawah (bottom sheet):
+        /* Panel "Riwayat Perubahan" di HP menjadi lembar bawah (bottom sheet):
            selalu di dalam layar, lebar mengikuti layar, dan tidak menutupi
            tombol-tombol header. Toast perubahan tetap mengalir di bawah
            header (posisi aman, tidak menutupi tombol penting). */
@@ -806,14 +870,19 @@
             PICA
           </button>
           <div class="chg-wrap">
-            <button type="button" class="btn btn-chg" id="chgBtn" aria-haspopup="true" aria-expanded="false" title="Lihat log perubahan data antar-refresh">
+            <button type="button" class="btn btn-chg" id="chgBtn" aria-haspopup="true" aria-expanded="false" title="Lihat riwayat perubahan data">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 8a6 6 0 1 0-12 0c0 7-3 8-3 8h18s-3-1-3-8"/><path d="M13.7 20a2 2 0 0 1-3.4 0"/></svg>
               Perubahan
               <span class="chg-count" id="chgCount" hidden>0</span>
             </button>
             <div class="chg-panel" id="chgPanel" hidden>
-              <div class="chg-panel-head"><span>PERUBAHAN TERAKHIR</span><button type="button" class="chg-clear" id="chgClear">Bersihkan</button></div>
-              <ul class="chg-list" id="chgList"><li class="chg-empty">Belum ada perubahan terdeteksi.</li></ul>
+              <div class="chg-panel-head"><span>RIWAYAT PERUBAHAN</span></div>
+              <div class="chg-tabs" role="tablist" aria-label="Jenis riwayat pada panel">
+                <button type="button" class="chg-tab is-on" id="chgTabChanges" role="tab" aria-selected="true">Perubahan</button>
+                <button type="button" class="chg-tab" id="chgTabEvents" role="tab" aria-selected="false">Aktivitas</button>
+              </div>
+              <ul class="chg-list" id="chgList"><li class="chg-empty">Belum ada riwayat perubahan tercatat.</li></ul>
+              <ul class="chg-list" id="actList" hidden><li class="chg-empty">Belum ada aktivitas tercatat.</li></ul>
             </div>
           </div>
         </div>
@@ -828,6 +897,10 @@
         </div>
         <button type="button" class="chg-toast-x" id="chgToastClose" aria-label="Tutup notifikasi perubahan">&times;</button>
       </div>
+
+      <!-- Umpan aktivitas LIVE_Events di layar sempit: kartu tampil sebagai
+           toast di bawah header (di layar lebar tampil melayang di margin) -->
+      <div class="ev-toast-stack" id="evToastStack" aria-live="polite"></div>
 
       <section class="charts chart-pairs" aria-label="Grafik Pareto dan donat Problem 4M per kategori">
         <div class="chart-card pareto-card cell-pp-pareto">
@@ -920,6 +993,11 @@
       </div>
      </div>
     </div>
+
+    <!-- Umpan aktivitas LIVE_Events di layar lebar: tumpukan kartu melayang
+         di margin kiri & kanan halaman (di luar .wrap), diisi oleh JS -->
+    <div class="ev-stack ev-left" id="evStackL" aria-hidden="true"></div>
+    <div class="ev-stack ev-right" id="evStackR" aria-hidden="true"></div>
 
     <!-- ================= PAPAN PICA (modal visual) =================
          Dibuka dari tombol PICA di header. Bagian PROBLEM & fishbone diisi
@@ -1856,17 +1934,13 @@
         return changeEpoch + ':' + Object.keys(changedVendors).sort().join(',');
       }
       function renderChangeLog() {
-        var list = $('chgList'), count = $('chgCount');
-        if (!list || !count) return;
+        /* Lencana angka pada tombol Perubahan = jumlah kejadian perubahan
+           yang terdeteksi pada sesi berjalan. Isi panel sendiri sekarang
+           menampilkan Riwayat Perubahan persisten (renderHistory). */
+        var count = $('chgCount');
+        if (!count) return;
         count.hidden = !changeLog.length;
         count.textContent = fmt(changeLog.length);
-        if (!changeLog.length) {
-          list.innerHTML = '<li class="chg-empty">Belum ada perubahan terdeteksi.</li>';
-          return;
-        }
-        list.innerHTML = changeLog.map(function (e) {
-          return '<li><span class="chg-time">' + esc(e.time) + ' WIB</span>' + e.lines.map(function (l) { return esc(l); }).join('<br/>') + '</li>';
-        }).join('');
       }
       function showChangeToast(timeStr, lines) {
         var toast = $('chgToast');
@@ -1902,9 +1976,290 @@
         showChangeToast(timeStr, lines);
       }
 
+      /* ================= Riwayat Perubahan persisten (tab LIVE_Changes) =================
+         Histori permanen dari spreadsheet backend yang sama, tab
+         LIVE_Changes — kolom: Timestamp | Vendor | Kategori | Jenis |
+         Ringkasan | Detail. Timestamp tersimpan dalam WIB format
+         "YYYY-MM-DD HH:MM:SS". Dibaca lewat jalur yang sama dengan tab
+         LIVE lain (fetchText: export CSV / gviz CSV / JSONP) dan dimuat
+         ulang bersama setiap loadLive (tombol Refresh & auto-refresh 60
+         detik). Ditampilkan terbaru di atas, maks 50 entri, panel bisa
+         di-scroll. Tab kosong / belum ada / gagal dimuat → status kosong
+         yang sopan, tanpa mengganggu data utama. Ini terpisah dari
+         deteksi perubahan sesi di atas: toast + badge BERUBAH = kejadian
+         saat halaman terbuka; riwayat = catatan permanen dari backend. */
+      var historyEntries = null;   /* null = belum pernah berhasil dimuat */
+      var MONTHS_ID = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
+      var JKT_DATE_FMT = new Intl.DateTimeFormat('id-ID', {
+        timeZone: 'Asia/Jakarta', day: '2-digit', month: '2-digit', year: 'numeric'
+      });
+      function pad2(n) { return (n < 10 ? '0' : '') + n; }
+      /* Kenali format baku "YYYY-MM-DD HH:MM:SS" plus varian keluaran gviz
+         (DD/MM/YYYY ala locale Indonesia, MM/DD/YYYY + AM/PM, dan bentuk
+         mentah Date(y,m,d,...)) — semuanya diperlakukan sebagai jam
+         dinding WIB sesuai format simpanan tab. */
+      function parseHistTs(s) {
+        s = String(s == null ? '' : s).trim();
+        if (!s) return null;
+        var m = /Date\((\d{4}),\s*(\d{1,2}),\s*(\d{1,2})(?:,\s*(\d{1,2}),\s*(\d{1,2}),\s*(\d{1,2}))?\)/.exec(s);
+        if (m) return { y: +m[1], mo: +m[2] + 1, d: +m[3], h: +(m[4] || 0), mi: +(m[5] || 0), se: +(m[6] || 0) };
+        m = /^(\d{4})-(\d{1,2})-(\d{1,2})(?:[ T](\d{1,2})[:.](\d{2})(?:[:.](\d{2}))?)?/.exec(s);
+        if (m) return { y: +m[1], mo: +m[2], d: +m[3], h: +(m[4] || 0), mi: +(m[5] || 0), se: +(m[6] || 0) };
+        m = /^(\d{1,2})\/(\d{1,2})\/(\d{4})(?:[ T](\d{1,2})[:.](\d{2})(?:[:.](\d{2}))?(?:\s*([AaPp])[Mm])?)?/.exec(s);
+        if (m) {
+          var a = +m[1], b = +m[2], mo, d;
+          if (a > 12) { d = a; mo = b; } else if (b > 12) { mo = a; d = b; } else { d = a; mo = b; }
+          var h = +(m[4] || 0);
+          if (m[7]) {
+            if (/p/i.test(m[7])) { if (h < 12) h += 12; }
+            else if (h === 12) h = 0;
+          }
+          return { y: +m[3], mo: mo, d: d, h: h, mi: +(m[5] || 0), se: +(m[6] || 0) };
+        }
+        return null;
+      }
+      function fmtHistTime(t, raw) {
+        if (!t) return raw || '';
+        var p = fmtParts(JKT_DATE_FMT, new Date());
+        var hm = pad2(t.h) + ':' + pad2(t.mi);
+        if (+p.year === t.y && +p.month === t.mo && +p.day === t.d) return 'Hari ini · ' + hm + ' WIB';
+        return pad2(t.d) + ' ' + MONTHS_ID[t.mo - 1] + ' ' + t.y + ' · ' + hm + ' WIB';
+      }
+      function parseChanges(csv) {
+        var rows = parseCSV(csv);
+        if (rows.length < 2) return [];
+        var head = rows[0].map(function (h) { return String(h).trim().toLowerCase(); });
+        function col(name, idx) { var i = head.indexOf(name); return i >= 0 ? i : idx; }
+        var cTs = col('timestamp', 0), cV = col('vendor', 1), cK = col('kategori', 2),
+            cJ = col('jenis', 3), cR = col('ringkasan', 4), cD = col('detail', 5);
+        var out = [];
+        for (var i = 1; i < rows.length; i++) {
+          var r = rows[i];
+          var tsRaw = String(r[cTs] || '').trim();
+          var vendor = String(r[cV] || '').trim();
+          var ringkasan = String(r[cR] || '').trim();
+          if (!tsRaw && !vendor && !ringkasan) continue;
+          out.push({
+            t: parseHistTs(tsRaw), tsRaw: tsRaw, vendor: vendor,
+            kategori: String(r[cK] || '').trim(),
+            jenis: String(r[cJ] || '').trim(),
+            ringkasan: ringkasan,
+            detail: String(r[cD] || '').trim(),
+            _i: i
+          });
+        }
+        out.sort(function (x, y) {
+          var kx = x.t ? Date.UTC(x.t.y, x.t.mo - 1, x.t.d, x.t.h, x.t.mi, x.t.se) : 0;
+          var ky = y.t ? Date.UTC(y.t.y, y.t.mo - 1, y.t.d, y.t.h, y.t.mi, y.t.se) : 0;
+          return ky - kx || y._i - x._i;
+        });
+        return out.slice(0, 50);
+      }
+      function renderHistory() {
+        var list = $('chgList');
+        if (!list) return;
+        if (!historyEntries || !historyEntries.length) {
+          list.innerHTML = '<li class="chg-empty">Belum ada riwayat perubahan tercatat.</li>';
+          return;
+        }
+        list.innerHTML = historyEntries.map(function (e) {
+          var meta = [e.kategori, e.jenis].filter(function (x) { return !!x; }).map(function (x) { return esc(x); }).join(' · ');
+          return '<li>' +
+            '<span class="chg-time">' + esc(fmtHistTime(e.t, e.tsRaw)) + '</span>' +
+            '<span class="chg-main">' + (e.vendor ? '<b>' + esc(e.vendor) + '</b>' : '') +
+              (e.vendor && e.ringkasan ? ' — ' : '') + esc(e.ringkasan) + '</span>' +
+            (meta ? '<span class="chg-sub">' + meta + '</span>' : '') +
+            (e.detail ? '<span class="chg-detail">' + esc(e.detail) + '</span>' : '') +
+            '</li>';
+        }).join('');
+      }
+      function loadHistory() {
+        fetchText(sheetUrl('LIVE_Changes')).then(function (csv) {
+          historyEntries = parseChanges(csv);
+          renderHistory();
+        }).catch(function () {
+          /* Tab belum ada / gagal dimuat: tampilkan status kosong (atau
+             pertahankan riwayat terakhir yang berhasil dimuat). */
+          if (!historyEntries) renderHistory();
+        });
+      }
+
+      /* ================= Umpan aktivitas (tab LIVE_Events) =================
+         Kejadian operasional dari spreadsheet backend yang sama, tab
+         LIVE_Events — kolom: Timestamp | Tipe | Vendor | Pesan | Detail.
+         Timestamp WIB format "YYYY-MM-DD HH:MM:SS". Dibaca lewat jalur
+         yang sama dengan tab LIVE lain dan dimuat ulang bersama setiap
+         loadLive (tombol Refresh & auto-refresh 60 detik).
+         Tampilan ganda:
+         (1) Semua kejadian tampil di tab "Aktivitas" pada panel Riwayat
+             Perubahan (ikon + warna per tipe, terbaru di atas, maks 50).
+         (2) Pop-up melayang: hanya kejadian BARU selama halaman terbuka
+             (penanda kunci kejadian di memori). Muat pertama tidak
+             membanjiri — maks 3 kejadian terakhir sebagai sambutan.
+             Layar lebar (≥1500px & margin di luar .wrap cukup): kartu kaca
+             bergantian di margin kiri/kanan, maks 3 terlihat bersamaan,
+             antrean menunggu giliran. Layar sempit: toast di bawah header.
+         Tab kosong / belum ada / gagal dimuat → tanpa pop-up, tanpa error;
+         seksi Aktivitas menampilkan status kosong yang sopan. */
+      function evSvg(paths) {
+        return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + paths + '</svg>';
+      }
+      var EVENT_TYPES = {
+        DN_DIBUAT: { color: '#047857', bg: '#e6f4ee', label: 'DN DIBUAT', icon: evSvg('<path d="M2.5 6h11v10h-11z"/><path d="M13.5 10h3.8l3.2 3.2V16h-7"/><circle cx="6.6" cy="17.8" r="1.9"/><circle cx="16.9" cy="17.8" r="1.9"/><path d="M8.5 17.8h6.5"/>') },
+        DI_BARU_HARI_INI: { color: '#1d6fd1', bg: '#e9f2fd', label: 'DI BARU HARI INI', icon: evSvg('<path d="M6 3.5h8L19 8.5v12H6z"/><path d="M13.5 3.5v5.5H19"/><path d="M12 12v6M9 15h6"/>') },
+        DI_BESOK_RELEASE: { color: '#5a4bd1', bg: '#eeecfd', label: 'DI BESOK RELEASE', icon: evSvg('<rect x="3.5" y="5" width="17" height="16" rx="2"/><path d="M3.5 10h17M8 3v4M16 3v4"/><path d="M12 13.2v3.2l2.2 1.3"/>') },
+        VENDOR_UPDATE_2DS: { color: '#0f766e', bg: '#e6f5f2', label: 'UPDATE 2 DAYS STOCK', icon: evSvg('<path d="M20.5 12a8.5 8.5 0 1 1-2.5-6"/><path d="M20.8 3.2v5.3h-5.3"/><path d="m8.8 12.4 2.2 2.2 4.2-4.6"/>') },
+        VENDOR_BELUM_UPDATE: { color: '#c2410c', bg: '#fdeee4', label: 'BELUM UPDATE 2 DAYS STOCK', icon: evSvg('<path d="M12 3.5 2.8 20h18.4z"/><path d="M12 10v4.4"/><circle cx="12" cy="17.2" r=".7" fill="currentColor" stroke="none"/>') }
+      };
+      var EVENT_TYPE_DEFAULT = { color: '#647691', bg: '#eef2f7', label: 'AKTIVITAS', icon: evSvg('<path d="M18 8a6 6 0 1 0-12 0c0 7-3 8-3 8h18s-3-1-3-8"/><path d="M13.7 20a2 2 0 0 1-3.4 0"/>') };
+      function evTypeMeta(tipe) {
+        return EVENT_TYPES[String(tipe == null ? '' : tipe).trim().toUpperCase()] || EVENT_TYPE_DEFAULT;
+      }
+      var eventEntries = null;   /* null = belum pernah berhasil dimuat */
+      var evSeen = {};           /* kunci kejadian yang sudah dianggap tampil */
+      var evPrimed = false;
+      var evQueue = [];
+      var evVisibleCount = 0;
+      var evNextSide = 0;        /* 0 = margin kiri, 1 = margin kanan */
+      var EV_CARD_MS = 6500;     /* lama kartu tampil sebelum memudar keluar */
+      function evKey(e) { return [e.tsRaw, e.tipe, e.vendor, e.pesan].join('|'); }
+      function evClock(e) {
+        if (e.t) return pad2(e.t.h) + ':' + pad2(e.t.mi) + ' WIB';
+        var m = /(\d{1,2})[:.](\d{2})/.exec(e.tsRaw || '');
+        return m ? pad2(+m[1]) + ':' + m[2] + ' WIB' : '';
+      }
+      function parseEvents(csv) {
+        var rows = parseCSV(csv);
+        if (rows.length < 2) return [];
+        var head = rows[0].map(function (h) { return String(h).trim().toLowerCase(); });
+        function col(name, idx) { var i = head.indexOf(name); return i >= 0 ? i : idx; }
+        var cTs = col('timestamp', 0), cT = col('tipe', 1), cV = col('vendor', 2),
+            cP = col('pesan', 3), cD = col('detail', 4);
+        var out = [];
+        for (var i = 1; i < rows.length; i++) {
+          var r = rows[i];
+          var tsRaw = String(r[cTs] || '').trim();
+          var tipe = String(r[cT] || '').trim();
+          var vendor = String(r[cV] || '').trim();
+          var pesan = String(r[cP] || '').trim();
+          if (!tsRaw && !tipe && !vendor && !pesan) continue;
+          out.push({
+            t: parseHistTs(tsRaw), tsRaw: tsRaw, tipe: tipe, vendor: vendor,
+            pesan: pesan, detail: String(r[cD] || '').trim(), _i: i
+          });
+        }
+        out.sort(function (x, y) {
+          var kx = x.t ? Date.UTC(x.t.y, x.t.mo - 1, x.t.d, x.t.h, x.t.mi, x.t.se) : 0;
+          var ky = y.t ? Date.UTC(y.t.y, y.t.mo - 1, y.t.d, y.t.h, y.t.mi, y.t.se) : 0;
+          return ky - kx || y._i - x._i;
+        });
+        return out.slice(0, 50);
+      }
+      function renderEventsPanel() {
+        var list = $('actList');
+        if (!list) return;
+        if (!eventEntries || !eventEntries.length) {
+          list.innerHTML = '<li class="chg-empty">Belum ada aktivitas tercatat.</li>';
+          return;
+        }
+        list.innerHTML = eventEntries.map(function (e) {
+          var meta = evTypeMeta(e.tipe);
+          return '<li class="act-item">' +
+            '<span class="act-ico" style="color:' + meta.color + ';background:' + meta.bg + '">' + meta.icon + '</span>' +
+            '<span class="act-body">' +
+              '<span class="chg-time">' + esc(fmtHistTime(e.t, e.tsRaw)) + '</span>' +
+              '<span class="chg-main">' + (e.vendor ? '<b>' + esc(e.vendor) + '</b>' : '') +
+                (e.vendor && e.pesan ? ' — ' : '') + esc(e.pesan) + '</span>' +
+              '<span class="chg-sub">' + esc(meta.label) + '</span>' +
+              (e.detail ? '<span class="chg-detail">' + esc(e.detail) + '</span>' : '') +
+            '</span></li>';
+        }).join('');
+      }
+      /* Mode lebar: viewport ≥1500px DAN margin nyata di luar .wrap cukup
+         menampung kartu 248px + jarak aman — kartu tidak pernah menutupi
+         konten utama pada lebar berapa pun. */
+      function evWideMode() {
+        var w = window.innerWidth || document.documentElement.clientWidth || 0;
+        if (w < 1500) return false;
+        var wrap = document.querySelector('.wrap');
+        var ww = wrap ? wrap.offsetWidth : w;
+        return (w - ww) / 2 >= 258;
+      }
+      function evCardHTML(e) {
+        var meta = evTypeMeta(e.tipe);
+        var clock = evClock(e);
+        return '<span class="ev-ico" style="color:' + meta.color + ';background:' + meta.bg + '">' + meta.icon + '</span>' +
+          '<span class="ev-body">' +
+            '<span class="ev-top"><span class="ev-vendor">' + esc(e.vendor || meta.label) + '</span>' +
+            (clock ? '<span class="ev-time">' + esc(clock) + '</span>' : '') + '</span>' +
+            (e.vendor ? '<span class="ev-type" style="color:' + meta.color + '">' + esc(meta.label) + '</span>' : '') +
+            '<span class="ev-msg" style="display:block">' + esc(e.pesan || e.detail || meta.label) + '</span>' +
+          '</span>';
+      }
+      function pumpEventPopups() {
+        var maxVis = evWideMode() ? 3 : 1;
+        while (evQueue.length && evVisibleCount < maxVis) {
+          showEventCard(evQueue.shift());
+        }
+      }
+      function showEventCard(e) {
+        var wide = evWideMode();
+        var host = wide ? (evNextSide ? $('evStackR') : $('evStackL')) : $('evToastStack');
+        if (!host) return;
+        if (wide) evNextSide = evNextSide ? 0 : 1;
+        var card = document.createElement('div');
+        card.className = 'ev-card';
+        card.innerHTML = evCardHTML(e);
+        host.appendChild(card);
+        evVisibleCount++;
+        setTimeout(function () { card.classList.add('ev-out'); }, EV_CARD_MS);
+        setTimeout(function () {
+          if (card.parentNode) card.parentNode.removeChild(card);
+          evVisibleCount--;
+          pumpEventPopups();
+        }, EV_CARD_MS + 650);
+      }
+      function enqueueEventPopups(list) {
+        list.forEach(function (e) { evQueue.push(e); });
+        pumpEventPopups();
+      }
+      function loadEvents() {
+        fetchText(sheetUrl('LIVE_Events')).then(function (csv) {
+          var entries = parseEvents(csv);
+          eventEntries = entries;
+          renderEventsPanel();
+          if (!evPrimed) {
+            evPrimed = true;
+            entries.forEach(function (e) { evSeen[evKey(e)] = 1; });
+            /* Sambutan saat halaman pertama dibuka: maks 3 kejadian
+               terakhir (urut kronologis), sisanya cukup masuk panel. */
+            enqueueEventPopups(entries.slice(0, 3).reverse());
+            return;
+          }
+          var fresh = entries.filter(function (e) { return !evSeen[evKey(e)]; });
+          if (!fresh.length) return;
+          fresh.forEach(function (e) { evSeen[evKey(e)] = 1; });
+          /* Hanya kejadian BARU yang jadi pop-up; bila sekali tarik banyak
+             yang baru, pop-up dibatasi 6 terbaru agar tidak membanjiri. */
+          enqueueEventPopups(fresh.slice(0, 6).reverse());
+        }).catch(function () {
+          /* Tab LIVE_Events kosong / belum ada / gagal dimuat: tidak ada
+             pop-up dan tidak ada error — panel menampilkan status kosong
+             (atau mempertahankan aktivitas terakhir yang berhasil dimuat). */
+          if (!eventEntries) renderEventsPanel();
+        });
+      }
+      var evResizeTimer = null;
+      window.addEventListener('resize', function () {
+        if (evResizeTimer) clearTimeout(evResizeTimer);
+        evResizeTimer = setTimeout(pumpEventPopups, 200);
+      });
+
       function loadLive() {
         if (state.loading) return;
         state.loading = true;
+        loadHistory();
+        loadEvents();
         var btn = $('refreshBtn');
         btn.disabled = true;
         $('refreshIcon').classList.add('spin');
@@ -2159,7 +2514,7 @@
       /* ================= Event & init ================= */
       $('refreshBtn').addEventListener('click', loadLive);
 
-      /* Log "Perubahan Terakhir": buka/tutup panel, bersihkan log + tanda. */
+      /* Panel "Riwayat Perubahan": buka/tutup panel. */
       var chgBtn = $('chgBtn'), chgPanel = $('chgPanel');
       function setChgPanel(open) {
         chgPanel.hidden = !open;
@@ -2169,15 +2524,21 @@
         e.stopPropagation();
         setChgPanel(chgPanel.hidden);
       });
+      /* Tab panel: "Perubahan" (LIVE_Changes) | "Aktivitas" (LIVE_Events) */
+      var chgTabChanges = $('chgTabChanges'), chgTabEvents = $('chgTabEvents');
+      function setChgTab(which) {
+        var isEv = which === 'events';
+        chgTabChanges.classList.toggle('is-on', !isEv);
+        chgTabEvents.classList.toggle('is-on', isEv);
+        chgTabChanges.setAttribute('aria-selected', isEv ? 'false' : 'true');
+        chgTabEvents.setAttribute('aria-selected', isEv ? 'true' : 'false');
+        $('chgList').hidden = isEv;
+        $('actList').hidden = !isEv;
+      }
+      chgTabChanges.addEventListener('click', function () { setChgTab('changes'); });
+      chgTabEvents.addEventListener('click', function () { setChgTab('events'); });
       chgPanel.addEventListener('click', function (e) { e.stopPropagation(); });
       document.addEventListener('click', function () { if (!chgPanel.hidden) setChgPanel(false); });
-      $('chgClear').addEventListener('click', function () {
-        changeLog = [];
-        var hadMarks = Object.keys(changedVendors).length > 0;
-        changedVendors = {};
-        renderChangeLog();
-        if (hadMarks) { changeEpoch++; render(); }
-      });
       $('chgToastClose').addEventListener('click', function () {
         $('chgToast').hidden = true;
         if (chgToastTimer) clearTimeout(chgToastTimer);
