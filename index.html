@@ -1366,6 +1366,227 @@
         .chat-msg { max-width: 94%; }
       }
       @media (prefers-reduced-motion: reduce) { .chat-panel { animation: none; } }
+
+      /* ---------- LAYAR BESAR / TV (≥1700px & ≥2400px) ----------
+         MURNI penambahan: semua aturan di dua blok ini hanya hidup pada
+         media query min-width, jadi tampilan pada lebar ≤1600px identik
+         seperti sebelumnya. Tujuannya monitor TV: konten tidak lagi
+         mengumpul sempit di tengah — .wrap memakai lebar layar (padding
+         tepi 40px/sisi), sheet modal dilebarkan, padding isi sheet naik
+         ±25%, dan font modal naik ±10–15% (≥1700px) lalu ±20% dari
+         ukuran dasar (≥2400px). Grafik SVG di dalam modal tidak diubah:
+         mereka sudah diskalakan mengikuti lebar sheet. */
+      @media (min-width: 1700px) {
+        .wrap { max-width: none; padding-left: 40px; padding-right: 40px; }
+        .pica-sheet, .lmtp-sheet { width: min(1560px, 96vw); }
+        .stock-sheet { width: min(1080px, 96vw); }
+        .evm-sheet { width: min(760px, 96vw); }
+        /* Padding isi sheet +25% */
+        .pica-head { padding: 20px 25px 18px; }
+        .pica-body { padding: 20px 25px 28px; }
+        .stock-head { padding: 20px 25px 18px; }
+        .stock-body { padding: 20px 25px 28px; }
+        .evm-head { padding: 19px 25px 16px; }
+        .evm-body { padding: 20px 25px 28px; }
+        .lmtp-chart { padding: 15px 18px 13px; }
+        .lmtp-card { padding: 15px 18px; }
+        .pica-tile { padding: 18px 20px; }
+        .stock-sec { padding: 16px 19px; }
+        /* Font modal +10–15% dari ukuran dasar */
+        .pica-head h2 { font-size: 29px; }
+        .pica-head p { font-size: 15px; }
+        .lmtp-head h2 { font-size: 25px; }
+        .stock-head h2 { font-size: 26px; }
+        .stock-head p { font-size: 15px; }
+        .evm-head h2 { font-size: 21px; }
+        .evm-head p { font-size: 13px; }
+        .lmtp-controls label { font-size: 14.5px; }
+        .lmtp-controls select { font-size: 16px; }
+        .lmtp-badge { font-size: 13.5px; }
+        .lmtp-card .lc-label { font-size: 12.5px; }
+        .lmtp-card .lc-val { font-size: 30px; }
+        .lmtp-card .lc-sub { font-size: 13px; }
+        .lmtp-sec-title { font-size: 17.5px; }
+        .lmtp-sec-title .st-sub { font-size: 13.5px; }
+        .lmtp-chart h4 { font-size: 15px; }
+        .lmtp-legend { font-size: 13px; }
+        .lmtp-note { font-size: 14px; }
+        .lmtp-empty { font-size: 15px; }
+        .lmtp-tbl-title { font-size: 17px; }
+        table.lmtp-tbl { font-size: 16px; }
+        table.lmtp-tbl th { font-size: 14px; }
+        .lmtp-foot p { font-size: 14px; }
+        .pica-sec-head h3 { font-size: 18px; }
+        .pica-sec-head p { font-size: 14px; }
+        .pf-step b { font-size: 15px; }
+        .pf-step span { font-size: 13.5px; }
+        .pica-tile .pt-label { font-size: 13px; }
+        .pica-tile .pt-big { font-size: 45px; }
+        .pica-tile .pt-big.blue, .pica-tile .pt-big.amber { font-size: 34px; }
+        .pica-tile .pt-sub { font-size: 14.5px; }
+        .pica-vchip b { font-size: 15px; }
+        .pica-vchip span { font-size: 12.5px; }
+        .pica-step b { font-size: 16px; }
+        .pica-step span { font-size: 14px; }
+        .pica-card h4 { font-size: 14.5px; }
+        .pica-card .pc-text { font-size: 14.5px; }
+        .tl-row b { font-size: 15px; }
+        .tl-row span { font-size: 14px; }
+        .di-box { font-size: 14.5px; }
+        .di-box small { font-size: 13px; }
+        .clock-chip { font-size: 17px; }
+        .pica-rule b { font-size: 16px; }
+        .pica-rule span { font-size: 14px; }
+        .pica-fish-legend { font-size: 14px; }
+        .pica-fish-concl { font-size: 15px; }
+        .pica-note, .pica-corr-note { font-size: 13.5px; }
+        .stock-status { font-size: 14.5px; }
+        .stock-hit .sh-item { font-size: 16px; }
+        .stock-hit .sh-desc { font-size: 15px; }
+        .src-badge { font-size: 12.5px; }
+        .stock-back { font-size: 15px; }
+        .stock-d-title { font-size: 19px; }
+        .stock-d-desc { font-size: 15.5px; }
+        .stock-sec h3 { font-size: 14.5px; }
+        .stock-sec .src-note { font-size: 13.5px; }
+        .stock-sec .none-note { font-size: 15px; }
+        .stock-line { font-size: 16px; }
+        .stock-line .sl-name small { font-size: 13.5px; }
+        .stock-sec .stock-subh { font-size: 14px; }
+        .evm-msg { font-size: 16px; }
+        .evm-row { font-size: 16px; }
+        .evm-row .k { font-size: 13.5px; }
+        .evm-back { font-size: 15px; }
+        .evm-pv-ctx { font-size: 15px; }
+        .evm-pv-sub { font-size: 14px; }
+        .evm-pv-item { font-size: 16px; }
+        .evm-pv-item .pi-code { font-size: 15px; }
+        .evm-pv-item .pi-name { font-size: 14.5px; }
+        .evm-pv-more { font-size: 14px; }
+      }
+      @media (min-width: 2400px) {
+        /* TV 4K: sheet lebih lebar lagi; font ±20% dari ukuran DASAR
+           (bukan kumulatif dari breakpoint 1700px). Padding tetap
+           memakai kenaikan dari breakpoint 1700px. */
+        .pica-sheet, .lmtp-sheet { width: min(1900px, 96vw); }
+        .stock-sheet { width: min(1240px, 96vw); }
+        .evm-sheet { width: min(880px, 96vw); }
+        .pica-head h2 { font-size: 31px; }
+        .pica-head p { font-size: 16px; }
+        .lmtp-head h2 { font-size: 26px; }
+        .stock-head h2 { font-size: 28px; }
+        .stock-head p { font-size: 16px; }
+        .evm-head h2 { font-size: 23px; }
+        .evm-head p { font-size: 14px; }
+        .lmtp-controls label { font-size: 15.5px; }
+        .lmtp-controls select { font-size: 17.5px; }
+        .lmtp-badge { font-size: 14.5px; }
+        .lmtp-card .lc-label { font-size: 13px; }
+        .lmtp-card .lc-val { font-size: 32px; }
+        .lmtp-card .lc-sub { font-size: 14px; }
+        .lmtp-sec-title { font-size: 19px; }
+        .lmtp-sec-title .st-sub { font-size: 14.5px; }
+        .lmtp-chart h4 { font-size: 16px; }
+        .lmtp-legend { font-size: 14px; }
+        .lmtp-note { font-size: 15px; }
+        .lmtp-empty { font-size: 16px; }
+        .lmtp-tbl-title { font-size: 18px; }
+        table.lmtp-tbl { font-size: 17px; }
+        table.lmtp-tbl th { font-size: 15px; }
+        .lmtp-foot p { font-size: 15px; }
+        .pica-sec-head h3 { font-size: 19px; }
+        .pica-sec-head p { font-size: 15px; }
+        .pf-step b { font-size: 16px; }
+        .pf-step span { font-size: 14.5px; }
+        .pica-tile .pt-label { font-size: 14px; }
+        .pica-tile .pt-big { font-size: 48px; }
+        .pica-tile .pt-big.blue, .pica-tile .pt-big.amber { font-size: 36px; }
+        .pica-tile .pt-sub { font-size: 15.5px; }
+        .pica-vchip b { font-size: 16px; }
+        .pica-vchip span { font-size: 13px; }
+        .pica-step b { font-size: 17.5px; }
+        .pica-step span { font-size: 15px; }
+        .pica-card h4 { font-size: 15.5px; }
+        .pica-card .pc-text { font-size: 15.5px; }
+        .tl-row b { font-size: 16px; }
+        .tl-row span { font-size: 15px; }
+        .di-box { font-size: 15.5px; }
+        .di-box small { font-size: 14px; }
+        .clock-chip { font-size: 18px; }
+        .pica-rule b { font-size: 17.5px; }
+        .pica-rule span { font-size: 15px; }
+        .pica-fish-legend { font-size: 15px; }
+        .pica-fish-concl { font-size: 16px; }
+        .pica-note, .pica-corr-note { font-size: 14.5px; }
+        .stock-status { font-size: 15.5px; }
+        .stock-hit .sh-item { font-size: 17.5px; }
+        .stock-hit .sh-desc { font-size: 16px; }
+        .src-badge { font-size: 13px; }
+        .stock-back { font-size: 16px; }
+        .stock-d-title { font-size: 20px; }
+        .stock-d-desc { font-size: 17px; }
+        .stock-sec h3 { font-size: 15.5px; }
+        .stock-sec .src-note { font-size: 14.5px; }
+        .stock-sec .none-note { font-size: 16px; }
+        .stock-line { font-size: 17px; }
+        .stock-line .sl-name small { font-size: 14.5px; }
+        .stock-sec .stock-subh { font-size: 15px; }
+        .evm-msg { font-size: 17.5px; }
+        .evm-row { font-size: 17px; }
+        .evm-row .k { font-size: 14.5px; }
+        .evm-back { font-size: 16px; }
+        .evm-pv-ctx { font-size: 16px; }
+        .evm-pv-sub { font-size: 15px; }
+        .evm-pv-item { font-size: 17px; }
+        .evm-pv-item .pi-code { font-size: 16px; }
+        .evm-pv-item .pi-name { font-size: 15.5px; }
+        .evm-pv-more { font-size: 15px; }
+      }
+
+      /* ---------- Mode TV / presentasi ----------
+         Tombol di header menyalakan mode: layar penuh (fail-soft) +
+         rotasi otomatis halaman utama ↔ Pencapaian Delivery Supplier.
+         Selama aktif: bilah tipis di bawah layar (nama tampilan, jam
+         live WIB, progress bar pergantian, tombol keluar) dan sheet
+         LMTP tampil memenuhi layar sebagai panggung presentasi.
+         Perpindahan tampilan memakai tirai fade #tvFade. */
+      .btn-tv { background: #fff; color: var(--brand); border-color: var(--line-strong); box-shadow: var(--shadow); }
+      .btn-tv:hover { background: var(--brand-soft); color: var(--brand-dark); border-color: var(--accent); box-shadow: var(--shadow); }
+      .btn-tv.is-on { background: var(--brand); color: #fff; border-color: var(--brand); }
+      #tvBar {
+        position: fixed; left: 0; right: 0; bottom: 0; z-index: 400;
+        display: flex; align-items: center; gap: 16px;
+        padding: 9px 18px calc(9px + env(safe-area-inset-bottom, 0px));
+        background: linear-gradient(120deg, #0b2a5e, #16407e);
+        color: #eaf2fe; box-shadow: 0 -6px 24px rgba(6, 22, 48, .35);
+      }
+      #tvBar[hidden] { display: none; }
+      .tv-bar-name { font-size: 15px; font-weight: 700; letter-spacing: .9px; white-space: nowrap; }
+      .tv-bar-clock { font-size: 15px; font-weight: 600; font-variant-numeric: tabular-nums; white-space: nowrap; color: #cfe2f7; }
+      .tv-bar-track { flex: 1 1 auto; height: 5px; border-radius: 99px; background: rgba(255, 255, 255, .22); overflow: hidden; }
+      .tv-bar-track i { display: block; height: 100%; width: 0%; background: var(--gold-2); border-radius: 99px; }
+      .tv-bar-exit { font: inherit; font-size: 13.5px; font-weight: 700; color: #fff; background: rgba(255, 255, 255, .12); border: 1px solid rgba(255, 255, 255, .45); border-radius: 9px; padding: 8px 14px; min-height: 40px; cursor: pointer; white-space: nowrap; }
+      .tv-bar-exit:hover { background: rgba(255, 255, 255, .24); }
+      .tv-bar-exit:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+      #tvFade { position: fixed; inset: 0; z-index: 390; background: #081c3a; opacity: 0; pointer-events: none; transition: opacity .38s ease; }
+      #tvFade.is-in { opacity: 1; }
+      #tvFade[hidden] { display: none; }
+      /* Selama Mode TV: beri ruang bawah agar bilah tidak menutupi isi,
+         dan jadikan LMTP panggung layar penuh. */
+      body.tv-on .wrap { padding-bottom: 64px; }
+      body.tv-on .lmtp-overlay { padding: 0; }
+      body.tv-on .lmtp-sheet { width: 100%; max-width: none; min-height: 100dvh; margin: 0; border: 0; border-radius: 0; box-shadow: none; }
+      body.tv-on .lmtp-head { border-radius: 0; }
+      /* Tampilan bersih ala papan informasi selama Mode TV: header
+         halaman utama disembunyikan (semua tombol/label header tidak
+         tampil), dan seluruh pop-up ditekan — kartu kejadian & AGING
+         di kedua tumpukan melayang/toast HP serta toast perubahan.
+         (Sisi JS ikut digerbang: enqueue/chime/toast tidak dirender
+         sama sekali selama mode aktif, bukan hanya disembunyikan.) */
+      body.tv-on .topbar { display: none; }
+      body.tv-on .ev-stack, body.tv-on .ev-toast-stack { display: none !important; }
+      body.tv-on .chg-toast { display: none !important; }
+      @media (prefers-reduced-motion: reduce) { #tvFade { transition: none; } }
     </style>
   </head>
   <body>
@@ -1473,6 +1694,9 @@
           </button>
           <button type="button" class="btn btn-lmtp" id="lmtpBtn" aria-haspopup="dialog" title="Buka Pencapaian Delivery Supplier — basis LMTP SPEED (Quality & Quantity)">
             🏆 Pencapaian Delivery Supplier
+          </button>
+          <button type="button" class="btn btn-tv" id="tvBtn" aria-pressed="false" title="Mode TV: layar penuh & putar otomatis bergantian halaman utama ↔ Pencapaian Delivery Supplier (masing-masing 10 menit)">
+            📺 Mode TV
           </button>
           <div class="chg-wrap">
             <button type="button" class="btn btn-chg" id="chgBtn" aria-haspopup="true" aria-expanded="false" title="Lihat riwayat perubahan data">
@@ -1890,6 +2114,17 @@
         </div>
       </div>
     </div>
+
+    <!-- Bilah Mode TV (tampil hanya saat Mode TV aktif): nama tampilan
+         yang sedang diputar, jam live WIB, progress bar menuju
+         pergantian berikutnya, dan tombol keluar. -->
+    <div id="tvBar" hidden>
+      <span class="tv-bar-name" id="tvViewName">Delay Manifest</span>
+      <span class="tv-bar-clock" id="tvClock">--:--:-- WIB</span>
+      <div class="tv-bar-track" aria-hidden="true"><i id="tvProg"></i></div>
+      <button type="button" class="tv-bar-exit" id="tvExitBtn">Keluar Mode TV</button>
+    </div>
+    <div id="tvFade" hidden aria-hidden="true"></div>
 
     <script>
     (function () {
@@ -3303,7 +3538,8 @@
          benar-benar dijadwalkan (toggle menyala + konteks audio siap). */
       function playNotifChime(kind) {
         try {
-          if (!soundOn) return false;
+          /* Mode TV: suara dibisukan total, apa pun status toggle. */
+          if (!soundOn || tvActive()) return false;
           if (!audioReady && !ensureAudio()) return false;
           if (!audioCtx) return false;
           var t0 = audioCtx.currentTime + 0.02;
@@ -3414,6 +3650,7 @@
       function showChangeToast(timeStr, lines) {
         var toast = $('chgToast');
         if (!toast) return;
+        if (tvActive()) return; /* Mode TV: toast ditekan, tidak diantrekan */
         $('chgToastTitle').textContent = 'Update ' + timeStr + ' WIB — data berubah';
         var shown = lines.slice(0, 4);
         if (lines.length > 4) shown.push('…dan ' + fmt(lines.length - 4) + ' vendor lain berubah');
@@ -3782,6 +4019,7 @@
         };
       }
       function refreshAgingPopups() {
+        if (tvActive()) return; /* Mode TV: pop-up aging ditekan */
         var top = state.agingTop || [];
         if (!top.length) return;
         if (agingPending > 0) return;   /* gelombang sebelumnya belum habis */
@@ -4022,6 +4260,10 @@
       }
 
       function enqueueEventPopups(list) {
+        /* Mode TV: pop-up tidak dirender & tidak diantrekan untuk
+           sesudahnya — kejadian tetap tercatat di panel & state seperti
+           biasa, hanya kartu melayangnya yang ditekan. */
+        if (tvActive()) return;
         list.forEach(function (e) { evQueue.push(e); });
         pumpEventPopups();
       }
@@ -6849,6 +7091,187 @@
       setInterval(function () {
         if (!document.hidden) loadLive();
       }, 60000);
+
+      /* ================= MODE TV / PRESENTASI =================
+         Tombol "📺 Mode TV" di header: sekali klik masuk layar penuh
+         (requestFullscreen pada documentElement; FAIL-SOFT — bila
+         browser menolak, mode tetap jalan tanpa fullscreen paksa) dan
+         rotasi otomatis dua tampilan dimulai:
+           A = halaman utama (Delay Manifest & dashboard),
+           B = Pencapaian Delivery Supplier (modal LMTP yang sudah ada,
+               tampil layar penuh via aturan body.tv-on di CSS).
+         Tiap tampilan berdurasi TV_ROTATE_MS lalu berganti dengan
+         transisi fade (tirai #tvFade). Auto-refresh data 60 detik di
+         atas tetap berjalan di kedua tampilan karena tidak dihentikan.
+         Keluar: tombol "Keluar Mode TV" di bilah bawah / klik ulang
+         tombol header, tombol ESC, atau keluar dari fullscreen
+         (fullscreenchange ke null). Bila saat giliran berganti ada
+         modal lain yang sedang dibuka pengguna (PICA / Cek Stok /
+         Detail Kejadian), pergantian siklus itu DILEWATI agar tidak
+         menimpa modal pengguna. */
+      var TV_ROTATE_MS = 10 * 60 * 1000; /* 10 menit per tampilan */
+      var tvState = {
+        on: false, view: 'A', rotateMs: TV_ROTATE_MS,
+        cycleStart: 0, timer: null, progTimer: null,
+        lmtpByTv: false, fsWasActive: false
+      };
+      var tvBar = $('tvBar'), tvFade = $('tvFade'), tvProg = $('tvProg'),
+          tvViewName = $('tvViewName'), tvClockEl = $('tvClock'),
+          tvBtn = $('tvBtn');
+
+      /* Penanda Mode TV untuk gerbang notifikasi di seluruh halaman
+         (suara di playNotifChime, toast perubahan, antrean pop-up
+         kejadian & aging): selama aktif semuanya ditekan. Deklarasi
+         fungsi ter-hoist & tvState ter-guard, jadi aman dipanggil dari
+         kode yang berjalan sebelum blok ini selesai diinisialisasi. */
+      function tvActive() {
+        return typeof tvState !== 'undefined' && !!tvState && tvState.on;
+      }
+      /* Bersihkan pop-up yang keburu tampil tepat saat Mode TV dimulai:
+         kartu kejadian/aging dibuang dari tumpukan, antreannya dikosongkan,
+         toast perubahan disembunyikan. State & data di belakang layar
+         tidak disentuh; setelah keluar mode, pop-up berjalan normal lagi
+         dari refresh berikutnya. */
+      function tvClearPopups() {
+        evQueue.length = 0;
+        var cards = document.querySelectorAll('.ev-card');
+        Array.prototype.forEach.call(cards, function (c) {
+          if (c.parentNode) c.parentNode.removeChild(c);
+        });
+        evVisibleCount = 0;
+        agingPending = 0;
+        var toast = $('chgToast');
+        if (toast) toast.hidden = true;
+        if (chgToastTimer) { clearTimeout(chgToastTimer); chgToastTimer = null; }
+      }
+
+      function tvOtherModalOpen() {
+        return !$('picaOverlay').hidden || !$('stockOverlay').hidden || !$('evModal').hidden;
+      }
+      function tvSetViewName() {
+        tvViewName.textContent = tvState.view === 'B' ? 'Pencapaian Delivery Supplier' : 'Delay Manifest';
+      }
+      function tvProgressReset() {
+        tvState.cycleStart = Date.now();
+        tvProg.style.width = '0%';
+      }
+      function tvTickProgress() {
+        if (!tvState.on) return;
+        var p = (Date.now() - tvState.cycleStart) / tvState.rotateMs;
+        if (p < 0) p = 0; else if (p > 1) p = 1;
+        tvProg.style.width = (p * 100).toFixed(2) + '%';
+        /* Jam bilah TV mengikuti jam live WIB header (logika yang sama). */
+        var lc = $('liveClock');
+        if (lc) tvClockEl.textContent = lc.textContent;
+      }
+      function tvFadeSwap(swapFn) {
+        var reduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        if (reduced) { swapFn(); return; }
+        tvFade.hidden = false;
+        void tvFade.offsetWidth; /* paksa reflow agar transisi berjalan */
+        tvFade.classList.add('is-in');
+        setTimeout(function () {
+          swapFn();
+          tvFade.classList.remove('is-in');
+          setTimeout(function () { tvFade.hidden = true; }, 400);
+        }, 400);
+      }
+      function tvGoView(next) {
+        if (next === 'B') {
+          if (tvOtherModalOpen()) return false;
+          if ($('lmtpOverlay').hidden) { openLMTP(); tvState.lmtpByTv = true; }
+          tvState.view = 'B';
+        } else {
+          if (tvState.lmtpByTv && !$('lmtpOverlay').hidden) closeLMTP();
+          tvState.lmtpByTv = false;
+          tvState.view = 'A';
+        }
+        tvSetViewName();
+        return true;
+      }
+      function tvRotate() {
+        if (!tvState.on) return;
+        var next = tvState.view === 'A' ? 'B' : 'A';
+        /* Modal lain milik pengguna sedang terbuka → lewati siklus ini. */
+        if (tvOtherModalOpen()) { tvProgressReset(); return; }
+        tvFadeSwap(function () { tvGoView(next); });
+        tvProgressReset();
+      }
+      function tvArmTimer() {
+        if (tvState.timer) clearInterval(tvState.timer);
+        tvState.timer = setInterval(tvRotate, tvState.rotateMs);
+      }
+      function startTvMode() {
+        if (tvState.on) return;
+        tvState.on = true;
+        tvState.view = 'A';
+        tvState.lmtpByTv = false;
+        document.body.classList.add('tv-on');
+        tvClearPopups();
+        tvBar.hidden = false;
+        tvSetViewName();
+        tvProgressReset();
+        if (tvBtn) { tvBtn.setAttribute('aria-pressed', 'true'); tvBtn.classList.add('is-on'); }
+        try {
+          var root = document.documentElement;
+          if (root.requestFullscreen && !document.fullscreenElement) {
+            var pr = root.requestFullscreen();
+            if (pr && pr.catch) pr.catch(function () { /* fail-soft */ });
+          }
+        } catch (e) { /* fail-soft: mode tetap jalan */ }
+        tvState.progTimer = setInterval(tvTickProgress, 250);
+        tvArmTimer();
+        tvTickProgress();
+      }
+      function exitTvMode() {
+        if (!tvState.on) return;
+        tvState.on = false;
+        if (tvState.timer) { clearInterval(tvState.timer); tvState.timer = null; }
+        if (tvState.progTimer) { clearInterval(tvState.progTimer); tvState.progTimer = null; }
+        document.body.classList.remove('tv-on');
+        tvBar.hidden = true;
+        tvFade.classList.remove('is-in');
+        tvFade.hidden = true;
+        if (tvState.lmtpByTv && !$('lmtpOverlay').hidden) closeLMTP();
+        tvState.lmtpByTv = false;
+        tvState.fsWasActive = false;
+        if (tvBtn) { tvBtn.setAttribute('aria-pressed', 'false'); tvBtn.classList.remove('is-on'); }
+        if (document.fullscreenElement && document.exitFullscreen) {
+          try {
+            var pr = document.exitFullscreen();
+            if (pr && pr.catch) pr.catch(function () {});
+          } catch (e) { /* abaikan */ }
+        }
+      }
+      if (tvBtn) tvBtn.addEventListener('click', function () {
+        if (tvState.on) exitTvMode(); else startTvMode();
+      });
+      $('tvExitBtn').addEventListener('click', exitTvMode);
+      document.addEventListener('keydown', function (e) {
+        if (!tvState.on) return;
+        if (e.key === 'Escape') { exitTvMode(); return; }
+        /* Maju manual ke tampilan berikutnya (remote presentasi / uji). */
+        if (e.key === 'ArrowRight' || e.key === 'PageDown') tvRotate();
+      });
+      document.addEventListener('fullscreenchange', function () {
+        if (document.fullscreenElement) { tvState.fsWasActive = true; return; }
+        /* Keluar dari fullscreen saat Mode TV aktif → hentikan mode. */
+        if (tvState.on && tvState.fsWasActive) exitTvMode();
+      });
+      /* Kait uji internal untuk sesi audit: membuktikan rotasi A→B→A
+         tanpa menunggu 10 menit. TIDAK mengubah durasi produksi —
+         TV_ROTATE_MS tetap 10 menit; setRotateMs hanya dipakai probe. */
+      window.__tvTest = {
+        start: startTvMode,
+        stop: exitTvMode,
+        rotateNow: tvRotate,
+        setRotateMs: function (ms) {
+          tvState.rotateMs = ms;
+          if (tvState.on) { tvArmTimer(); tvProgressReset(); }
+        },
+        state: tvState,
+        ROTATE_MS: TV_ROTATE_MS
+      };
     })();
     </script>
   </body>
