@@ -497,30 +497,31 @@
       .chart-svg { display: block; width: 100%; height: auto; }
       .chart-empty { padding: 22px 8px; text-align: center; color: var(--muted); font-size: 12.5px; }
       .p-bar { fill: url(#paretoGrad); }
-      /* Segmen tumpuk aging DI pada batang Pareto (mode DI): bawah → atas
-         1–3 HK hijau, 4–5 HK amber, >5 HK merah (paling tua di puncak). */
-      .p-seg-13 { fill: #2e9e5b; }
-      .p-seg-45 { fill: #f5a623; }
-      .p-seg-5p { fill: #d64541; }
-      /* Legenda aging di dalam kartu Pareto — hanya tampil pada mode DI */
+      /* Garis AGING pada Pareto: jumlah item yang DI delay tertuanya
+         >5 HK per vendor — merah bata profesional (keluarga --red
+         halaman), titik ber-ring putih, label angka sewarna garis.
+         Sumbu yang sama dengan batang (satuan item). */
+      .p-aging { fill: none; stroke: #b91c1c; stroke-width: 2.5; stroke-linejoin: round; stroke-linecap: round; pointer-events: none; }
+      .p-adot { fill: #b91c1c; stroke: #ffffff; stroke-width: 1.3; pointer-events: none; }
+      .p-alab { fill: #b91c1c; font-size: 7.5px; font-weight: 700; pointer-events: none; }
+      /* Legenda di dalam kartu Pareto — hanya tampil bila garis aging
+         tergambar (data itemAging LIVE tersedia & valid per vendor) */
       .pareto-legend { display: flex; flex-wrap: wrap; gap: 2px 11px; margin: 2px 0 1px; font-size: 10px; color: var(--ink-2); }
       .pareto-legend[hidden] { display: none; }
       .pareto-legend .pl-item { display: inline-flex; align-items: center; gap: 5px; white-space: nowrap; }
       .pareto-legend .pl-sw { width: 9px; height: 9px; border-radius: 2.5px; flex: 0 0 auto; }
-      .p-line { fill: none; stroke: #f59e0b; stroke-width: 1.6; }
-      .p-dot { fill: #d9480f; }
+      .pareto-legend .pl-sw-line { position: relative; width: 15px; height: 0; border-top: 2.5px solid #b91c1c; border-radius: 2px; flex: 0 0 auto; }
+      .pareto-legend .pl-sw-line::after { content: ''; position: absolute; left: 50%; top: 50%; width: 4.6px; height: 4.6px; transform: translate(-50%, -50%); border-radius: 50%; background: #b91c1c; border: 1.1px solid #ffffff; box-shadow: 0 0 0 .7px #b91c1c; }
       /* Efek "gelombang live" Pareto (murni animasi CSS/SVG ringan, tanpa
-         interval JS baru): batang tumbuh halus tiap grafik digambar ulang,
-         garis kumulatif dialiri cahaya dashes bergerak, dan gelombang sinus
-         lembut mengalir di area bawah garis (terpotong clipPath segaris
-         kumulatif). Jarak geser gelombang = lebar plot (pw = 292 satuan SVG),
-         sama dengan periodenya, jadi putarannya mulus tanpa lompatan. */
+         interval JS baru): batang tumbuh halus tiap grafik digambar ulang
+         dan gelombang sinus lembut mengalir di pita bawah area plot
+         (terpotong clipPath persegi area plot). Jarak geser gelombang =
+         lebar plot (pw = 306 satuan SVG), sama dengan periodenya, jadi
+         putarannya mulus tanpa lompatan. */
       .p-bar { transform-box: fill-box; transform-origin: 50% 100%; animation: barGrow .8s cubic-bezier(.22,.8,.3,1) both; }
       @keyframes barGrow { from { transform: scaleY(0); } to { transform: scaleY(1); } }
-      .p-flow { fill: none; stroke: #ffdf9e; stroke-width: 1.6; stroke-linecap: round; stroke-dasharray: 2.6 5.2; animation: flowDash 1.1s linear infinite; pointer-events: none; }
-      @keyframes flowDash { to { stroke-dashoffset: -7.8; } }
       .p-wave { pointer-events: none; animation: waveSlide 7s linear infinite; }
-      @keyframes waveSlide { to { transform: translateX(-292px); } }
+      @keyframes waveSlide { to { transform: translateX(-306px); } }
       /* Donat 4M: sapuan cahaya sangat halus berputar pelan mengelilingi ring */
       .d-sweep { pointer-events: none; opacity: .16; animation: sweepDash 14s linear infinite; }
       @keyframes sweepDash { to { stroke-dashoffset: -100; } }
@@ -559,7 +560,6 @@
       .p-hit:hover .p-bar, .p-hit:focus-visible .p-bar { filter: brightness(1.28) saturate(1.08); }
       .p-hit:hover .p-xlab, .p-hit:focus-visible .p-xlab { fill: var(--brand); }
       .p-hit:focus-visible .p-bar { stroke: var(--gold-2); stroke-width: 1.2; }
-      .p-line, .p-dot { pointer-events: none; }
       .d-seg { cursor: pointer; outline: none; transition: filter .15s ease; }
       .d-seg:hover, .d-seg:focus-visible { filter: brightness(1.14); }
       .donut-legend li.lg-hit { cursor: pointer; border-radius: 7px; padding: 3px 7px; margin: -1px -7px; outline: none; transition: background .15s ease; }
@@ -926,7 +926,7 @@
         .rt-track { animation: none; }
         .rt-head h2 .rt-dot, .live-badge .dot, .btn .spin { animation: none; }
         .rt-panel.flash, .rt-vendor.flash-v { animation: none; }
-        .p-bar, .p-flow, .p-wave, .d-sweep { animation: none; }
+        .p-bar, .p-wave, .d-sweep { animation: none; }
         .tch-watermark img { animation: none; }
         .p-hit .p-bar, .d-seg, .chart-card, .btn { transition: none; }
       }
@@ -1442,14 +1442,14 @@
       <section class="charts chart-pairs" id="secPareto" aria-label="Grafik Pareto dan donat Problem 4M + O per kategori">
         <div class="chart-card pareto-card cell-pp-pareto">
           <h3><span id="titlePress">PARETO ITEM DELAY — PRESS PART</span> <span class="tot" id="totPress"></span></h3>
-          <p class="sub" id="subPress">Bar = jumlah Item delay semua vendor · garis emas = kumulatif % · klik batang untuk detail vendor</p>
-          <div class="pareto-legend" id="legendPress" hidden><span class="pl-item"><span class="pl-sw" style="background:#2e9e5b"></span>Aging 1–3 HK</span><span class="pl-item"><span class="pl-sw" style="background:#f5a623"></span>Aging 4–5 HK</span><span class="pl-item"><span class="pl-sw" style="background:#d64541"></span>Aging &gt;5 HK</span></div>
+          <p class="sub" id="subPress">Bar = jumlah Item delay semua vendor · klik batang untuk detail vendor</p>
+          <div class="pareto-legend" id="legendPress" hidden><span class="pl-item"><span class="pl-sw" style="background:linear-gradient(180deg,#5b8cc0,#2e5f8a)"></span>Total Item Delay</span><span class="pl-item"><span class="pl-sw-line"></span>Item Aging &gt;5 HK</span></div>
           <div id="paretoPress"><div class="chart-empty">Memuat data…</div></div>
         </div>
         <div class="chart-card pareto-card cell-sf-pareto">
           <h3><span id="titleSF">PARETO ITEM DELAY — SURFACE FINISH</span> <span class="tot" id="totSF"></span></h3>
-          <p class="sub" id="subSF">Bar = jumlah Item delay semua vendor · garis emas = kumulatif % · klik batang untuk detail vendor</p>
-          <div class="pareto-legend" id="legendSF" hidden><span class="pl-item"><span class="pl-sw" style="background:#2e9e5b"></span>Aging 1–3 HK</span><span class="pl-item"><span class="pl-sw" style="background:#f5a623"></span>Aging 4–5 HK</span><span class="pl-item"><span class="pl-sw" style="background:#d64541"></span>Aging &gt;5 HK</span></div>
+          <p class="sub" id="subSF">Bar = jumlah Item delay semua vendor · klik batang untuk detail vendor</p>
+          <div class="pareto-legend" id="legendSF" hidden><span class="pl-item"><span class="pl-sw" style="background:linear-gradient(180deg,#5b8cc0,#2e5f8a)"></span>Total Item Delay</span><span class="pl-item"><span class="pl-sw-line"></span>Item Aging &gt;5 HK</span></div>
           <div id="paretoSF"><div class="chart-empty">Memuat data…</div></div>
         </div>
         <div class="chart-card donut-card cell-pp-donut" id="sec4m">
@@ -2641,21 +2641,23 @@
         return fmt(v);
       }
       /* Pareto per vendor — SEMUA vendor kategori, tanpa batas Top.
-         Nilai batang SELALU count item vendor pada kategori (a.items).
-         MODE TUMPUK (state.itemAging tersedia dari LIVE_Delay): batang
-         dipecah menurut aging ITEM dari bawah ke atas 1–3 HK (hijau),
-         4–5 HK (amber), >5 HK (merah, paling tua di puncak) — segmen
-         hanya dipakai bila entri itemAging vendor ada DAN totalnya sama
-         dengan count item vendor itu; urutan menurun menurut nilai
-         batang, seri → jumlah item menurun; garis = kumulatif % dari
-         total item kategori.
-         MODE CADANGAN (itemAging tidak tersedia / vendor tanpa entri
-         yang cocok): batang tunggal gradien biru = jumlah item unik
-         (count item) per vendor seperti sebelumnya — tidak ada vendor
-         yang hilang.
+         Nilai batang SELALU count item vendor pada kategori (a.items):
+         batang POLOS satu gradien biru korporat; urutan menurun menurut
+         nilai batang, seri → jumlah item menurun.
+         GARIS AGING (state.itemAging tersedia dari LIVE_Delay & SEMUA
+         vendor kategori punya entri valid — total itemAging = count
+         item): garis merah tegas memplot jumlah item AGING >5 HK per
+         vendor (bucket b5p itemAging; umur item = HK DI delay
+         tertuanya) pada sumbu item yang SAMA dengan batang, titik
+         ber-ring putih + label angka di tiap vendor (vendor bernilai 0
+         titiknya di dasar — garis tetap kontinu). Entri itemAging per
+         vendor tetap dipakai untuk tooltip rincian aging.
+         MODE CADANGAN (itemAging tidak tersedia / ada vendor tanpa
+         entri valid): tanpa garis aging — batang polos saja, persis
+         tampilan pra-aging; tidak ada vendor yang hilang.
          Label sumbu-X = singkatan vendor maks 8 karakter. */
       function paretoSVG(cat) {
-        var stackMode = !!state.itemAging;
+        var agingMode = !!state.itemAging;
         var byV = {};
         state.rows.forEach(function (r) {
           if (r.cat !== cat) return;
@@ -2666,34 +2668,34 @@
         var list = Object.keys(byV).map(function (k) {
           var a = byV[k];
           a.items = a.rows.length;
-          var ag = stackMode ? (state.itemAging[a.vcode] || null) : null;
+          var ag = agingMode ? (state.itemAging[a.vcode] || null) : null;
           a.aging = (ag && ag.total === a.items) ? ag : null;
           a.value = a.items;
           return a;
         }).filter(function (v) { return v.items > 0; })
           .sort(function (a, b) { if (b.value !== a.value) return b.value - a.value; return b.items - a.items; });
         if (!list.length) return '<div class="chart-empty">Tidak ada item delay pada kategori ini.</div>';
-        var total = 0;
-        list.forEach(function (v) { total += v.value; });
-        var W = 360, H = 102, ml = 42, mr = 26, mt = 9, mb = 31;
+        var W = 360, H = 102, ml = 42, mr = 12, mt = 9, mb = 31;
         var pw = W - ml - mr, ph = H - mt - mb, maxVal = list[0].value || 1;
         var out = ['<svg class="chart-svg" viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="Grafik Pareto Item delay ' + esc(cat) + '">'];
-        out.push('<defs><linearGradient id="paretoGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#5aa9ff"/><stop offset="1" stop-color="#2f7fe0"/></linearGradient></defs>');
+        out.push('<defs><linearGradient id="paretoGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#5b8cc0"/><stop offset="1" stop-color="#2e5f8a"/></linearGradient></defs>');
         out.push('<text class="p-axis" transform="rotate(-90 9 ' + (mt + ph / 2) + ')" x="9" y="' + (mt + ph / 2) + '" text-anchor="middle">Item</text>');
         [0, 0.25, 0.5, 0.75, 1].forEach(function (f) {
           var y = (mt + ph - f * ph).toFixed(1);
           out.push('<line class="p-grid" x1="' + ml + '" y1="' + y + '" x2="' + (ml + pw) + '" y2="' + y + '"/>');
           out.push('<text class="p-axis" x="' + (ml - 4) + '" y="' + y + '" dy="3" text-anchor="end">' + fmt(Math.round(maxVal * f)) + '</text>');
-          out.push('<text class="p-axis" x="' + (ml + pw + 4) + '" y="' + y + '" dy="3">' + Math.round(f * 100) + '%</text>');
         });
-        var bw = pw / list.length, cum = 0, pts = [], dots = '';
+        var bw = pw / list.length;
+        /* Garis aging hanya digambar bila SEMUA vendor pada kategori ini
+           punya entri itemAging valid (total = count item) — selain itu
+           grafik jatuh utuh ke mode cadangan tanpa garis. */
+        var lineReady = agingMode && list.every(function (v) { return !!v.aging; });
+        var agingPts = [], agingDots = '', agingLabs = '';
         list.forEach(function (v, i) {
-          cum += v.value;
           var h = (v.value / maxVal) * ph;
           var x = ml + i * bw, y = mt + ph - h;
-          var cx = x + bw / 2, cy = mt + ph - (total ? (cum / total) * ph : 0);
+          var cx = x + bw / 2;
           var ab = shortVendor(v).slice(0, 8).toUpperCase();
-          var cumTxt = (total ? Math.round(cum / total * 1000) / 10 : 0).toLocaleString('id-ID');
           /* Batang + label angka + label vendor dibungkus satu grup klik:
              klik di mana pun pada grup menyaring tabel detail ke vendor ini. */
           var gAria = v.aging
@@ -2703,39 +2705,35 @@
           if (v.aging) {
             out.push('<title>Total delay ' + fmt(v.value) + ' item · Aging 1–3 HK: ' + fmt(v.aging.b13) + ' item · 4–5 HK: ' + fmt(v.aging.b45) + ' item · >5 HK: ' + fmt(v.aging.b5p) + ' item · DI terlama: ' + esc(v.aging.oldestDi) + ' (' + fmt(v.aging.oldestHk) + ' HK)</title>');
           } else {
-            out.push('<title>Klik untuk lihat detail ' + esc(v.vname || v.vcode) + ' — ' + fmt(v.items) + ' item delay · kumulatif ' + cumTxt + '%</title>');
+            out.push('<title>Klik untuk lihat detail ' + esc(v.vname || v.vcode) + ' — ' + fmt(v.items) + ' item delay</title>');
           }
           /* Area sentuh transparan selebar slot vendor (batang s.d. label) —
              seluruh kolom vendor bisa diklik, bukan hanya piksel batangnya. */
           out.push('<rect class="p-hitarea" x="' + x.toFixed(1) + '" y="0" width="' + bw.toFixed(1) + '" height="' + H + '" fill="#ffffff" fill-opacity="0" pointer-events="all"/>');
-          if (v.aging) {
-            /* Segmen tumpuk dari BAWAH ke ATAS: 1–3 HK hijau, 4–5 HK
-               amber, >5 HK merah — segmen 0 tidak digambar; jumlah ketiga
-               segmen = count item vendor (tinggi total = h). */
-            var segs = [['p-seg-13', v.aging.b13], ['p-seg-45', v.aging.b45], ['p-seg-5p', v.aging.b5p]];
-            var yCur = mt + ph;
-            segs.forEach(function (sg) {
-              if (!sg[1]) return;
-              var sh = (sg[1] / maxVal) * ph;
-              yCur -= sh;
-              out.push('<rect class="p-bar ' + sg[0] + '" style="animation-delay:' + (i * 45) + 'ms" x="' + (x + bw * 0.005).toFixed(1) + '" y="' + yCur.toFixed(1) + '" width="' + Math.max(1, bw * 0.99).toFixed(1) + '" height="' + sh.toFixed(1) + '"/>');
-            });
-          } else {
-            out.push('<rect class="p-bar" style="animation-delay:' + (i * 45) + 'ms" x="' + (x + bw * 0.005).toFixed(1) + '" y="' + y.toFixed(1) + '" width="' + Math.max(1, bw * 0.99).toFixed(1) + '" height="' + h.toFixed(1) + '"/>');
-          }
+          /* Batang POLOS satu gradien biru korporat = count item vendor. */
+          out.push('<rect class="p-bar" style="animation-delay:' + (i * 45) + 'ms" x="' + (x + bw * 0.005).toFixed(1) + '" y="' + y.toFixed(1) + '" width="' + Math.max(1, bw * 0.99).toFixed(1) + '" height="' + h.toFixed(1) + '"/>');
           out.push('<text class="p-xlab" x="' + cx.toFixed(1) + '" y="' + (y - 2.5).toFixed(1) + '" text-anchor="middle">' + fmt(v.value) + '</text>');
           out.push('<text class="p-xlab" x="' + cx.toFixed(1) + '" y="' + (mt + ph + 5) + '" text-anchor="end" transform="rotate(-42 ' + cx.toFixed(1) + ' ' + (mt + ph + 5) + ')">' + esc(ab) + '</text>');
           out.push('</g>');
-          pts.push(cx.toFixed(1) + ',' + cy.toFixed(1));
-          dots += '<circle class="p-dot" cx="' + cx.toFixed(1) + '" cy="' + cy.toFixed(1) + '" r="1.4"/>';
+          if (lineReady) {
+            var ay = mt + ph - (v.aging.b5p / maxVal) * ph;
+            agingPts.push(cx.toFixed(1) + ',' + ay.toFixed(1));
+            agingDots += '<circle class="p-adot" cx="' + cx.toFixed(1) + '" cy="' + ay.toFixed(1) + '" r="2.3"/>';
+            /* Label angka di titik garis; bila titik hampir menyentuh
+               puncak batang (tempat label total batang di atasnya dan
+               label vendor di bawah sumbu), label aging digeser ke
+               samping titik agar tidak bertabrakan dengan keduanya. */
+            var labX = cx, labY = ay - 4.5, labAnchor = 'middle';
+            if (ay - y < 9) { labX = cx + 5; labY = ay + 2.5; labAnchor = 'start'; }
+            agingLabs += '<text class="p-alab" x="' + labX.toFixed(1) + '" y="' + labY.toFixed(1) + '" text-anchor="' + labAnchor + '">' + fmt(v.aging.b5p) + '</text>';
+          }
         });
-        /* Gelombang lembut di area bawah garis kumulatif: dua jalur sinus
+        /* Gelombang lembut di pita bawah area plot: dua jalur sinus
            selebar 2× plot (periode = lebar plot) digeser CSS sejauh satu
-           periode sehingga mengalir tanpa putus; clipPath membatasi
-           gelombang hanya di bawah garis kumulatif. */
+           periode sehingga mengalir tanpa putus; clipPath persegi
+           membatasi gelombang tetap di dalam area plot. */
         var clipId = cat === 'Press Part' ? 'pClipP' : 'pClipS';
-        var underPts = pts.join(' ') + ' ' + (ml + pw) + ',' + (mt + ph) + ' ' + ml + ',' + (mt + ph);
-        out.push('<clipPath id="' + clipId + '"><polygon points="' + underPts + '"/></clipPath>');
+        out.push('<clipPath id="' + clipId + '"><rect x="' + ml + '" y="' + mt + '" width="' + pw + '" height="' + (ph + 2) + '"/></clipPath>');
         function wavePath(base, amp, phase) {
           var d = '', wx, wy;
           for (wx = 0; wx <= pw * 2; wx += 8) {
@@ -2745,12 +2743,16 @@
           return d + 'L' + (ml + pw * 2) + ' ' + (mt + ph + 2) + ' L' + ml + ' ' + (mt + ph + 2) + ' Z';
         }
         out.push('<g clip-path="url(#' + clipId + ')">'
-          + '<path class="p-wave" d="' + wavePath(mt + ph * 0.42, 3.2, 0) + '" fill="#f5a623" opacity=".12"/>'
-          + '<path class="p-wave" style="animation-duration:11s" d="' + wavePath(mt + ph * 0.58, 2.6, Math.PI) + '" fill="#2f7fe0" opacity=".08"/>'
+          + '<path class="p-wave" d="' + wavePath(mt + ph * 0.82, 2.4, 0) + '" fill="#2e5f8a" opacity=".07"/>'
+          + '<path class="p-wave" style="animation-duration:11s" d="' + wavePath(mt + ph * 0.9, 1.8, Math.PI) + '" fill="#5b8cc0" opacity=".09"/>'
           + '</g>');
-        out.push('<polyline class="p-line" points="' + pts.join(' ') + '"/>');
-        out.push('<polyline class="p-flow" points="' + pts.join(' ') + '"/>');
-        out.push(dots);
+        /* Garis AGING merah digambar terakhir (di atas batang &
+           gelombang) agar garis, titik, dan labelnya selalu terbaca. */
+        if (lineReady) {
+          out.push('<polyline class="p-aging" points="' + agingPts.join(' ') + '"/>');
+          out.push(agingDots);
+          out.push(agingLabs);
+        }
         out.push('</svg>');
         return out.join('');
       }
@@ -2860,23 +2862,26 @@
         var sig = state.rows.map(function (r) { return r.vcode + ':' + r.cat + ':' + r.item + ':' + r.os + ':' + (r.problem || '') + ':' + (r.detail || '') + ':' + (r.delayDiQty == null ? '' : r.delayDiQty); }).join(';') + '#' + chgSigStr() + '#sf' + (state.sfLive ? Object.keys(state.sfLive).length : 0) + '#ag' + agingSig;
         if (sig === chartSig) return;
         chartSig = sig;
-        var stackMode = !!state.itemAging;
         PARETO_CATS.forEach(function (c) {
           $(c[1]).innerHTML = paretoSVG(c[0]);
-          var vendors = {}, catRows = [];
-          state.rows.forEach(function (r) { if (r.cat === c[0]) { vendors[r.vcode] = 1; catRows.push(r); } });
+          var vendors = {}, catRows = [], cntByV = {};
+          state.rows.forEach(function (r) { if (r.cat === c[0]) { vendors[r.vcode] = 1; catRows.push(r); cntByV[r.vcode] = (cntByV[r.vcode] || 0) + 1; } });
+          /* Garis aging tergambar — dan legenda tampil — hanya bila data
+             itemAging LIVE ada & SEMUA vendor kategori ini entri-nya
+             valid (total itemAging = count item), selaras paretoSVG. */
+          var lineReady = !!state.itemAging && Object.keys(vendors).length > 0 && Object.keys(vendors).every(function (vc2) { var e6 = state.itemAging[vc2]; return !!e6 && e6.total === cntByV[vc2]; });
           /* Judul & chip kartu selalu satuan ITEM pada kedua mode; sub
-             mengikuti mode gambarnya: mode tumpuk aging item vs mode
-             cadangan item (batang biru tunggal). */
+             mengikuti mode gambarnya: ada garis aging vs mode cadangan
+             (batang polos saja). */
           $(c[3]).textContent = 'PARETO ITEM DELAY — ' + c[0].toUpperCase();
           $(c[2]).textContent = fmt(catRows.length) + ' Item · ' + Object.keys(vendors).length + ' vendor';
-          if (stackMode) {
-            $(c[4]).textContent = 'Bar = jumlah Item delay per vendor, dipecah menurut aging item · garis emas = kumulatif % · klik batang untuk detail vendor';
+          if (lineReady) {
+            $(c[4]).textContent = 'Bar = jumlah Item delay per vendor · garis merah = Item Aging >5 HK · klik batang untuk detail vendor';
           } else {
-            $(c[4]).textContent = 'Bar = jumlah Item delay semua vendor · garis emas = kumulatif % · klik batang untuk detail vendor';
+            $(c[4]).textContent = 'Bar = jumlah Item delay semua vendor · klik batang untuk detail vendor';
           }
           var lgEl = $(c[5]);
-          if (lgEl) lgEl.hidden = !stackMode;
+          if (lgEl) lgEl.hidden = !lineReady;
         });
         DONUT_CATS.forEach(function (c) { $(c[1]).innerHTML = donutHTML(c[0]); });
       }
