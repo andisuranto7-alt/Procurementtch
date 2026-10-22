@@ -1577,15 +1577,68 @@
       body.tv-on .lmtp-overlay { padding: 0; }
       body.tv-on .lmtp-sheet { width: 100%; max-width: none; min-height: 100dvh; margin: 0; border: 0; border-radius: 0; box-shadow: none; }
       body.tv-on .lmtp-head { border-radius: 0; }
-      /* Tampilan bersih ala papan informasi selama Mode TV: header
-         halaman utama disembunyikan (semua tombol/label header tidak
-         tampil), dan seluruh pop-up ditekan — kartu kejadian & AGING
-         di kedua tumpukan melayang/toast HP serta toast perubahan.
-         (Sisi JS ikut digerbang: enqueue/chime/toast tidak dirender
-         sama sekali selama mode aktif, bukan hanya disembunyikan.) */
+      /* Selama Mode TV hanya header halaman utama yang disembunyikan
+         (semua tombol/label header tidak tampil). Pop-up pemberitahuan
+         — kartu kejadian & AGING serta toast perubahan — TETAP tampil
+         persis seperti mode normal (keputusan Mas Andi): tidak ada
+         penekanan CSS maupun gerbang JS selama mode aktif. */
       body.tv-on .topbar { display: none; }
-      body.tv-on .ev-stack, body.tv-on .ev-toast-stack { display: none !important; }
-      body.tv-on .chg-toast { display: none !important; }
+      /* Selama Mode TV tumpukan kartu pop-up melayang di ATAS sheet
+         LMTP (z-index 305) agar pemberitahuan tetap terlihat juga pada
+         tahap B; di luar Mode TV urutan tumpuk tidak berubah. */
+      body.tv-on .ev-stack { z-index: 320; }
+      /* Tahap B Mode TV = slide LMTP singkat: hanya bagian aktif yang
+         tampil (Delivery ±5 dtk → Quality ±5 dtk → tutup). Kontrol bulan,
+         kartu ringkasan, tabel & catatan kaki disembunyikan selama tahap
+         B agar grafik tampil penuh sebagai slide presentasi. */
+      body.tv-on .lmtp-overlay.tv-ph-del .lmtp-sec-qual,
+      body.tv-on .lmtp-overlay.tv-ph-qual .lmtp-sec-del,
+      body.tv-on .lmtp-overlay.tv-ph-del .lmtp-controls,
+      body.tv-on .lmtp-overlay.tv-ph-qual .lmtp-controls,
+      body.tv-on .lmtp-overlay.tv-ph-del #lmtpCards,
+      body.tv-on .lmtp-overlay.tv-ph-qual #lmtpCards,
+      body.tv-on .lmtp-overlay.tv-ph-del .lmtp-tbl-sec,
+      body.tv-on .lmtp-overlay.tv-ph-qual .lmtp-tbl-sec,
+      body.tv-on .lmtp-overlay.tv-ph-del .lmtp-foot,
+      body.tv-on .lmtp-overlay.tv-ph-qual .lmtp-foot { display: none; }
+      /* Animasi masuk grafik LMTP selama Mode TV: class .tv-anim dipasang
+         ulang oleh JS setiap kali sebuah bagian tampil, jadi animasi
+         berputar lagi di setiap slide — batang tumbuh dari nol, garis
+         tergambar (stroke draw), segmen tren & titik memudar masuk.
+         Hanya berlaku di dalam sheet LMTP saat Mode TV aktif; modal
+         LMTP normal di luar Mode TV tidak tersentuh sama sekali. */
+      @media (prefers-reduced-motion: no-preference) {
+        body.tv-on .lmtp-sheet.tv-anim .lmtp-chart { animation: tvChartIn .45s ease both; }
+        body.tv-on .lmtp-sheet.tv-anim .lmtp-chart:nth-of-type(2) { animation-delay: .12s; }
+        body.tv-on .lmtp-sheet.tv-anim .lmtp-chart:nth-of-type(3) { animation-delay: .24s; }
+        @keyframes tvChartIn { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+        body.tv-on .lmtp-sheet.tv-anim svg rect.lbar {
+          transform-box: fill-box; transform-origin: 50% 100%;
+          animation: tvBarGrow .85s cubic-bezier(.22, .8, .3, 1) both;
+        }
+        body.tv-on .lmtp-sheet.tv-anim svg rect.lbar:nth-of-type(2) { animation-delay: .04s; }
+        body.tv-on .lmtp-sheet.tv-anim svg rect.lbar:nth-of-type(3) { animation-delay: .08s; }
+        body.tv-on .lmtp-sheet.tv-anim svg rect.lbar:nth-of-type(4) { animation-delay: .12s; }
+        body.tv-on .lmtp-sheet.tv-anim svg rect.lbar:nth-of-type(5) { animation-delay: .16s; }
+        body.tv-on .lmtp-sheet.tv-anim svg rect.lbar:nth-of-type(6) { animation-delay: .2s; }
+        body.tv-on .lmtp-sheet.tv-anim svg rect.lbar:nth-of-type(7) { animation-delay: .24s; }
+        body.tv-on .lmtp-sheet.tv-anim svg rect.lbar:nth-of-type(8) { animation-delay: .28s; }
+        body.tv-on .lmtp-sheet.tv-anim svg rect.lbar:nth-of-type(9) { animation-delay: .32s; }
+        body.tv-on .lmtp-sheet.tv-anim svg rect.lbar:nth-of-type(10) { animation-delay: .36s; }
+        body.tv-on .lmtp-sheet.tv-anim svg rect.lbar:nth-of-type(11) { animation-delay: .4s; }
+        body.tv-on .lmtp-sheet.tv-anim svg rect.lbar:nth-of-type(12) { animation-delay: .44s; }
+        body.tv-on .lmtp-sheet.tv-anim svg rect.lbar:nth-of-type(n+13) { animation-delay: .48s; }
+        @keyframes tvBarGrow { from { transform: scaleY(0); } to { transform: scaleY(1); } }
+        body.tv-on .lmtp-sheet.tv-anim svg polyline.lline {
+          stroke-dasharray: 2800; stroke-dashoffset: 2800;
+          animation: tvLineDraw 1.25s ease .3s forwards;
+        }
+        @keyframes tvLineDraw { to { stroke-dashoffset: 0; } }
+        body.tv-on .lmtp-sheet.tv-anim svg .lseg,
+        body.tv-on .lmtp-sheet.tv-anim svg .lpt { opacity: 0; animation: tvFadeIn .55s ease .55s forwards; }
+        body.tv-on .lmtp-sheet.tv-anim svg .lpt { animation-delay: .85s; }
+        @keyframes tvFadeIn { from { opacity: 0; } to { opacity: 1; } }
+      }
       @media (prefers-reduced-motion: reduce) { #tvFade { transition: none; } }
     </style>
   </head>
@@ -1695,7 +1748,7 @@
           <button type="button" class="btn btn-lmtp" id="lmtpBtn" aria-haspopup="dialog" title="Buka Pencapaian Delivery Supplier — basis LMTP SPEED (Quality & Quantity)">
             🏆 Pencapaian Delivery Supplier
           </button>
-          <button type="button" class="btn btn-tv" id="tvBtn" aria-pressed="false" title="Mode TV: layar penuh & putar otomatis bergantian halaman utama ↔ Pencapaian Delivery Supplier (masing-masing 10 menit)">
+          <button type="button" class="btn btn-tv" id="tvBtn" aria-pressed="false" title="Mode TV: layar penuh & putar otomatis — halaman utama 10 menit, lalu slide Pencapaian Delivery Supplier (Delivery ±5 detik → Quality ±5 detik)">
             📺 Mode TV
           </button>
           <div class="chg-wrap">
@@ -2085,23 +2138,23 @@
             <span class="lmtp-badge snap" id="lmtpSrcBadge">Snapshot 22 Okt 2026</span>
           </div>
           <div id="lmtpCards"></div>
-          <section class="lmtp-sec" aria-label="LMTP Delivery (Quantity)">
+          <section class="lmtp-sec lmtp-sec-del" aria-label="LMTP Delivery (Quantity)">
             <h3 class="lmtp-sec-title del">LMTP DELIVERY <span class="st-sub">Quantity — PLUS / MINUS / SALAH BARANG / TIDAK LOT · Jan–Jun rekap LMTP · Jul–Des SPEED realtime</span></h3>
             <div class="lmtp-chart" id="lmtpDelTrend"></div>
             <div class="lmtp-chart" id="lmtpDelWorst"></div>
             <div class="lmtp-chart" id="lmtpDelFreq"></div>
           </section>
-          <section class="lmtp-sec" aria-label="LMTP Quality">
+          <section class="lmtp-sec lmtp-sec-qual" aria-label="LMTP Quality">
             <h3 class="lmtp-sec-title qual">LMTP QUALITY <span class="st-sub">Masalah mutu · sumber: LMTP SPEED (LIVE_LMTP)</span></h3>
             <div class="lmtp-chart" id="lmtpQualTrend"></div>
             <div class="lmtp-chart" id="lmtpQualWorst"></div>
             <div class="lmtp-chart" id="lmtpQualFreq"></div>
           </section>
-          <section aria-label="Tabel per vendor bulan terpilih">
+          <section class="lmtp-tbl-sec" aria-label="Tabel per vendor bulan terpilih">
             <h3 class="lmtp-tbl-title" id="lmtpVendorTitle">PER VENDOR</h3>
             <div id="lmtpVendorTbl"></div>
           </section>
-          <section aria-label="Tabel tren bulanan">
+          <section class="lmtp-tbl-sec" aria-label="Tabel tren bulanan">
             <h3 class="lmtp-tbl-title">TREN BULANAN — LMTP SPEED</h3>
             <div id="lmtpMonthTbl"></div>
           </section>
@@ -3538,8 +3591,8 @@
          benar-benar dijadwalkan (toggle menyala + konteks audio siap). */
       function playNotifChime(kind) {
         try {
-          /* Mode TV: suara dibisukan total, apa pun status toggle. */
-          if (!soundOn || tvActive()) return false;
+          /* Suara mengikuti toggle pengguna, juga selama Mode TV. */
+          if (!soundOn) return false;
           if (!audioReady && !ensureAudio()) return false;
           if (!audioCtx) return false;
           var t0 = audioCtx.currentTime + 0.02;
@@ -3650,7 +3703,6 @@
       function showChangeToast(timeStr, lines) {
         var toast = $('chgToast');
         if (!toast) return;
-        if (tvActive()) return; /* Mode TV: toast ditekan, tidak diantrekan */
         $('chgToastTitle').textContent = 'Update ' + timeStr + ' WIB — data berubah';
         var shown = lines.slice(0, 4);
         if (lines.length > 4) shown.push('…dan ' + fmt(lines.length - 4) + ' vendor lain berubah');
@@ -4019,7 +4071,6 @@
         };
       }
       function refreshAgingPopups() {
-        if (tvActive()) return; /* Mode TV: pop-up aging ditekan */
         var top = state.agingTop || [];
         if (!top.length) return;
         if (agingPending > 0) return;   /* gelombang sebelumnya belum habis */
@@ -4260,10 +4311,6 @@
       }
 
       function enqueueEventPopups(list) {
-        /* Mode TV: pop-up tidak dirender & tidak diantrekan untuk
-           sesudahnya — kejadian tetap tercatat di panel & state seperti
-           biasa, hanya kartu melayangnya yang ditekan. */
-        if (tvActive()) return;
         list.forEach(function (e) { evQueue.push(e); });
         pumpEventPopups();
       }
@@ -5066,7 +5113,7 @@
         runs.forEach(function (run, ri) {
           if (run.length > 1) {
             var pts = run.map(function (idx) { return lmtpNum(X(idx)) + ',' + lmtpNum(Y(values[idx])); }).join(' ');
-            s += '<polyline points="' + pts + '" fill="none" stroke="' + color + '" stroke-width="2.6" stroke-linejoin="round" stroke-linecap="round"/>';
+            s += '<polyline class="lline" points="' + pts + '" fill="none" stroke="' + color + '" stroke-width="2.6" stroke-linejoin="round" stroke-linecap="round"/>';
           }
           if (ri < runs.length - 1) {
             var a = run[run.length - 1], b = runs[ri + 1][0];
@@ -5076,7 +5123,7 @@
         values.forEach(function (v, idx) {
           if (v == null) return;
           var cx = X(idx), cy = Y(v), hi = (idx === hiIdx);
-          s += '<circle cx="' + cx + '" cy="' + cy + '" r="' + (hi ? 4.6 : 3.6) + '" fill="' + color + '" stroke="#ffffff" stroke-width="1.6"><title>' + LMTP_MONTHS_ID[6 + idx] + ' 2026: ' + v + ' kasus</title></circle>';
+          s += '<circle class="lpt" cx="' + cx + '" cy="' + cy + '" r="' + (hi ? 4.6 : 3.6) + '" fill="' + color + '" stroke="#ffffff" stroke-width="1.6"><title>' + LMTP_MONTHS_ID[6 + idx] + ' 2026: ' + v + ' kasus</title></circle>';
           s += '<text x="' + cx + '" y="' + (cy - 10) + '" text-anchor="middle" font-size="11.5" font-weight="700" fill="' + (hi ? '#c00000' : '#16233c') + '">' + v + '</text>';
         });
         return '<svg viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="Grafik garis tren kasus per bulan 2026">' + s + '</svg>';
@@ -5116,7 +5163,7 @@
           if (prev >= 0) {
             var recapSeg = idx <= 6;
             var bridge = idx - prev > 1;
-            s += '<line x1="' + lmtpNum(X(prev)) + '" y1="' + lmtpNum(Y(values[prev])) + '" x2="' + lmtpNum(X(idx)) + '" y2="' + lmtpNum(Y(v)) + '"' +
+            s += '<line class="lseg" x1="' + lmtpNum(X(prev)) + '" y1="' + lmtpNum(Y(values[prev])) + '" x2="' + lmtpNum(X(idx)) + '" y2="' + lmtpNum(Y(v)) + '"' +
               ' stroke="' + (recapSeg ? RECAPC : color) + '" stroke-width="' + (bridge ? 2 : 2.6) + '"' +
               ((recapSeg || bridge) ? ' stroke-dasharray="5 4"' : '') + (bridge ? ' opacity="0.55"' : '') + ' stroke-linecap="round"/>';
           }
@@ -5126,7 +5173,7 @@
           if (v == null) return;
           var cx = X(idx), cy = Y(v), hi = (idx === hiIdx);
           var fill = idx < 6 ? RECAPC : color;
-          s += '<circle cx="' + cx + '" cy="' + cy + '" r="' + (hi ? 4.6 : 3.6) + '" fill="' + fill + '" stroke="#ffffff" stroke-width="1.6"><title>' + LMTP_MONTHS_ID[idx] + ' 2026: ' + v + ' kasus' + (idx < 6 ? ' (rekap LMTP)' : ' (SPEED)') + '</title></circle>';
+          s += '<circle class="lpt" cx="' + cx + '" cy="' + cy + '" r="' + (hi ? 4.6 : 3.6) + '" fill="' + fill + '" stroke="#ffffff" stroke-width="1.6"><title>' + LMTP_MONTHS_ID[idx] + ' 2026: ' + v + ' kasus' + (idx < 6 ? ' (rekap LMTP)' : ' (SPEED)') + '</title></circle>';
           s += '<text x="' + cx + '" y="' + (cy - 10) + '" text-anchor="middle" font-size="11.5" font-weight="700" fill="' + (hi ? '#c00000' : '#16233c') + '">' + v + '</text>';
         });
         return '<svg viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="Grafik garis tren kasus Delivery per bulan 2026 (Jan–Jun rekap, Jul–Des SPEED)">' + s + '</svg>';
@@ -5181,16 +5228,16 @@
         items.forEach(function (it, idx) {
           var cx = L + slot * (idx + 0.5);
           var y = Y(it.value);
-          s += '<rect x="' + lmtpNum(cx - bw / 2) + '" y="' + lmtpNum(y) + '" width="' + lmtpNum(bw) + '" height="' + lmtpNum(T + ph - y) + '" fill="url(#' + gradId + ')"><title>' + esc(it.label) + ': ' + it.value + ' kasus</title></rect>';
+          s += '<rect class="lbar" x="' + lmtpNum(cx - bw / 2) + '" y="' + lmtpNum(y) + '" width="' + lmtpNum(bw) + '" height="' + lmtpNum(T + ph - y) + '" fill="url(#' + gradId + ')"><title>' + esc(it.label) + ': ' + it.value + ' kasus</title></rect>';
           s += '<text x="' + cx + '" y="' + (y - 6) + '" text-anchor="middle" font-size="11.5" font-weight="700" fill="#16233c">' + it.value + '</text>';
           cum += it.value;
           pts.push({ x: cx, y: YR(total ? cum / total * 100 : 0), p: total ? Math.round(cum / total * 100) : 0, label: it.label });
         });
         if (pts.length > 1) {
-          s += '<polyline points="' + pts.map(function (p) { return lmtpNum(p.x) + ',' + lmtpNum(p.y); }).join(' ') + '" fill="none" stroke="#0a2a5e" stroke-width="2.4" stroke-linejoin="round" stroke-linecap="round"/>';
+          s += '<polyline class="lline" points="' + pts.map(function (p) { return lmtpNum(p.x) + ',' + lmtpNum(p.y); }).join(' ') + '" fill="none" stroke="#0a2a5e" stroke-width="2.4" stroke-linejoin="round" stroke-linecap="round"/>';
         }
         pts.forEach(function (p) {
-          s += '<circle cx="' + p.x + '" cy="' + p.y + '" r="3.4" fill="#0a2a5e" stroke="#ffffff" stroke-width="1.3"><title>' + esc(p.label) + ' — kumulatif ' + p.p + '%</title></circle>';
+          s += '<circle class="lpt" cx="' + p.x + '" cy="' + p.y + '" r="3.4" fill="#0a2a5e" stroke="#ffffff" stroke-width="1.3"><title>' + esc(p.label) + ' — kumulatif ' + p.p + '%</title></circle>';
           if (pts.length <= 10) s += '<text x="' + p.x + '" y="' + (p.y - 7) + '" text-anchor="middle" font-size="9.5" font-weight="600" fill="#0a2a5e">' + p.p + '%</text>';
         });
         var rotate = slot < 52;
@@ -5237,7 +5284,7 @@
           v.m.forEach(function (val, mi) {
             if (val > 0) {
               var bh = (val / yMax) * ph;
-              s += '<rect x="' + lmtpNum(gx + mi * (barW + gapB)) + '" y="' + lmtpNum(T + ph - bh) + '" width="' + barW + '" height="' + lmtpNum(bh) + '" fill="' + LMTP_MONTH_COLORS[mi] + '"><title>' + esc(v.name) + ' — ' + LMTP_MONTHS_ID[mi] + ' 2026: ' + val + ' kasus</title></rect>';
+              s += '<rect class="lbar" x="' + lmtpNum(gx + mi * (barW + gapB)) + '" y="' + lmtpNum(T + ph - bh) + '" width="' + barW + '" height="' + lmtpNum(bh) + '" fill="' + LMTP_MONTH_COLORS[mi] + '"><title>' + esc(v.name) + ' — ' + LMTP_MONTHS_ID[mi] + ' 2026: ' + val + ' kasus</title></rect>';
             }
           });
           pts.push({ x: gx + gb / 2, y: YR(v.freq), f: v.freq, name: v.name });
@@ -5246,10 +5293,10 @@
           });
         });
         if (pts.length > 1) {
-          s += '<polyline points="' + pts.map(function (p) { return lmtpNum(p.x) + ',' + lmtpNum(p.y); }).join(' ') + '" fill="none" stroke="' + color + '" stroke-width="2.4" stroke-linejoin="round" stroke-linecap="round" opacity="0.9"/>';
+          s += '<polyline class="lline" points="' + pts.map(function (p) { return lmtpNum(p.x) + ',' + lmtpNum(p.y); }).join(' ') + '" fill="none" stroke="' + color + '" stroke-width="2.4" stroke-linejoin="round" stroke-linecap="round" opacity="0.9"/>';
         }
         pts.forEach(function (p) {
-          s += '<circle cx="' + lmtpNum(p.x) + '" cy="' + lmtpNum(p.y) + '" r="4" fill="' + color + '" stroke="#ffffff" stroke-width="1.5"><title>' + esc(p.name) + ' — FREQ ' + p.f + ' bulan</title></circle>';
+          s += '<circle class="lpt" cx="' + lmtpNum(p.x) + '" cy="' + lmtpNum(p.y) + '" r="4" fill="' + color + '" stroke="#ffffff" stroke-width="1.5"><title>' + esc(p.name) + ' — FREQ ' + p.f + ' bulan</title></circle>';
           s += '<text x="' + lmtpNum(p.x) + '" y="' + (p.y - 8) + '" text-anchor="middle" font-size="11.5" font-weight="700" fill="' + color + '">' + p.f + '</text>';
         });
         return '<svg viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="Grafik batang bulanan per vendor dengan garis FREQ">' + s + '</svg>';
@@ -7096,12 +7143,17 @@
          Tombol "📺 Mode TV" di header: sekali klik masuk layar penuh
          (requestFullscreen pada documentElement; FAIL-SOFT — bila
          browser menolak, mode tetap jalan tanpa fullscreen paksa) dan
-         rotasi otomatis dua tampilan dimulai:
-           A = halaman utama (Delay Manifest & dashboard),
+         rotasi otomatis dimulai:
+           A = halaman utama (Delay Manifest & dashboard), berdurasi
+               TV_ROTATE_MS (10 menit);
            B = Pencapaian Delivery Supplier (modal LMTP yang sudah ada,
-               tampil layar penuh via aturan body.tv-on di CSS).
-         Tiap tampilan berdurasi TV_ROTATE_MS lalu berganti dengan
-         transisi fade (tirai #tvFade). Auto-refresh data 60 detik di
+               tampil layar penuh via aturan body.tv-on di CSS) sebagai
+               slide singkat: bagian DELIVERY tampil TV_LMTP_STEP_MS
+               (±5 detik, grafik beranimasi masuk), lalu bagian QUALITY
+               TV_LMTP_STEP_MS (±5 detik, grafik beranimasi masuk), lalu
+               modal ditutup dan putaran kembali ke A.
+         Pergantian fase memakai transisi fade (tirai #tvFade).
+         Auto-refresh data 60 detik di
          atas tetap berjalan di kedua tampilan karena tidak dihentikan.
          Keluar: tombol "Keluar Mode TV" di bilah bawah / klik ulang
          tombol header, tombol ESC, atau keluar dari fullscreen
@@ -7109,9 +7161,11 @@
          modal lain yang sedang dibuka pengguna (PICA / Cek Stok /
          Detail Kejadian), pergantian siklus itu DILEWATI agar tidak
          menimpa modal pengguna. */
-      var TV_ROTATE_MS = 10 * 60 * 1000; /* 10 menit per tampilan */
+      var TV_ROTATE_MS = 10 * 60 * 1000; /* tampilan A (Delay Manifest): 10 menit */
+      var TV_LMTP_STEP_MS = 5000;        /* tahap B: tiap bagian LMTP ±5 detik */
       var tvState = {
-        on: false, view: 'A', rotateMs: TV_ROTATE_MS,
+        on: false, view: 'A', phase: 'A', rotateMs: TV_ROTATE_MS,
+        stepMs: TV_LMTP_STEP_MS, phaseMs: TV_ROTATE_MS,
         cycleStart: 0, timer: null, progTimer: null,
         lmtpByTv: false, fsWasActive: false
       };
@@ -7119,37 +7173,21 @@
           tvViewName = $('tvViewName'), tvClockEl = $('tvClock'),
           tvBtn = $('tvBtn');
 
-      /* Penanda Mode TV untuk gerbang notifikasi di seluruh halaman
-         (suara di playNotifChime, toast perubahan, antrean pop-up
-         kejadian & aging): selama aktif semuanya ditekan. Deklarasi
-         fungsi ter-hoist & tvState ter-guard, jadi aman dipanggil dari
-         kode yang berjalan sebelum blok ini selesai diinisialisasi. */
+      /* Penanda Mode TV. Pop-up pemberitahuan & suara TIDAK lagi
+         digerbang oleh penanda ini (keputusan Mas Andi: pemberitahuan
+         tetap muncul selama Mode TV, persis seperti mode normal). */
       function tvActive() {
         return typeof tvState !== 'undefined' && !!tvState && tvState.on;
-      }
-      /* Bersihkan pop-up yang keburu tampil tepat saat Mode TV dimulai:
-         kartu kejadian/aging dibuang dari tumpukan, antreannya dikosongkan,
-         toast perubahan disembunyikan. State & data di belakang layar
-         tidak disentuh; setelah keluar mode, pop-up berjalan normal lagi
-         dari refresh berikutnya. */
-      function tvClearPopups() {
-        evQueue.length = 0;
-        var cards = document.querySelectorAll('.ev-card');
-        Array.prototype.forEach.call(cards, function (c) {
-          if (c.parentNode) c.parentNode.removeChild(c);
-        });
-        evVisibleCount = 0;
-        agingPending = 0;
-        var toast = $('chgToast');
-        if (toast) toast.hidden = true;
-        if (chgToastTimer) { clearTimeout(chgToastTimer); chgToastTimer = null; }
       }
 
       function tvOtherModalOpen() {
         return !$('picaOverlay').hidden || !$('stockOverlay').hidden || !$('evModal').hidden;
       }
       function tvSetViewName() {
-        tvViewName.textContent = tvState.view === 'B' ? 'Pencapaian Delivery Supplier' : 'Delay Manifest';
+        if (tvState.phase === 'B1') tvViewName.textContent = 'Pencapaian Delivery Supplier — Delivery';
+        else if (tvState.phase === 'B2') tvViewName.textContent = 'Pencapaian Delivery Supplier — Quality';
+        else if (tvState.view === 'B') tvViewName.textContent = 'Pencapaian Delivery Supplier';
+        else tvViewName.textContent = 'Delay Manifest';
       }
       function tvProgressReset() {
         tvState.cycleStart = Date.now();
@@ -7157,7 +7195,7 @@
       }
       function tvTickProgress() {
         if (!tvState.on) return;
-        var p = (Date.now() - tvState.cycleStart) / tvState.rotateMs;
+        var p = (Date.now() - tvState.cycleStart) / (tvState.phaseMs || tvState.rotateMs);
         if (p < 0) p = 0; else if (p > 1) p = 1;
         tvProg.style.width = (p * 100).toFixed(2) + '%';
         /* Jam bilah TV mengikuti jam live WIB header (logika yang sama). */
@@ -7176,38 +7214,76 @@
           setTimeout(function () { tvFade.hidden = true; }, 400);
         }, 400);
       }
-      function tvGoView(next) {
-        if (next === 'B') {
-          if (tvOtherModalOpen()) return false;
-          if ($('lmtpOverlay').hidden) { openLMTP(); tvState.lmtpByTv = true; }
-          tvState.view = 'B';
-        } else {
-          if (tvState.lmtpByTv && !$('lmtpOverlay').hidden) closeLMTP();
-          tvState.lmtpByTv = false;
-          tvState.view = 'A';
+      /* Pasang fase slide LMTP pada overlay: class tv-ph-del / tv-ph-qual
+         menyaring bagian yang tampil (CSS), lalu class .tv-anim pada
+         sheet dipasang ulang (lepas → reflow → pasang) agar animasi
+         grafik bagian itu berputar dari awal setiap kali tampil. */
+      function tvLmtpPhase(cls) {
+        var ov = $('lmtpOverlay');
+        ov.classList.remove('tv-ph-del');
+        ov.classList.remove('tv-ph-qual');
+        if (cls) ov.classList.add(cls);
+        ov.scrollTop = 0;
+        var sheet = ov.querySelector('.lmtp-sheet');
+        if (sheet) {
+          sheet.classList.remove('tv-anim');
+          void sheet.offsetWidth; /* paksa reflow: picu ulang animasi */
+          sheet.classList.add('tv-anim');
         }
-        tvSetViewName();
-        return true;
       }
-      function tvRotate() {
-        if (!tvState.on) return;
-        var next = tvState.view === 'A' ? 'B' : 'A';
-        /* Modal lain milik pengguna sedang terbuka → lewati siklus ini. */
-        if (tvOtherModalOpen()) { tvProgressReset(); return; }
-        tvFadeSwap(function () { tvGoView(next); });
+      /* Jadwalkan pergantian fase berikutnya (timeout berantai — durasi
+         tiap fase berbeda: A = rotateMs, B1/B2 = stepMs). */
+      function tvSchedule(ms) {
+        tvState.phaseMs = ms;
+        if (tvState.timer) { clearTimeout(tvState.timer); tvState.timer = null; }
+        tvState.timer = setTimeout(tvRotate, ms);
         tvProgressReset();
       }
       function tvArmTimer() {
-        if (tvState.timer) clearInterval(tvState.timer);
-        tvState.timer = setInterval(tvRotate, tvState.rotateMs);
+        tvSchedule(tvState.phase === 'A' ? tvState.rotateMs : tvState.stepMs);
+      }
+      /* Mesin fase Mode TV: A (Delay Manifest, rotateMs) → B1 (LMTP
+         bagian DELIVERY, stepMs) → B2 (LMTP bagian QUALITY, stepMs) →
+         tutup LMTP → kembali ke A. */
+      function tvRotate() {
+        if (!tvState.on) return;
+        /* Modal lain milik pengguna sedang terbuka → lewati pergantian
+           ini; fase yang sedang jalan ditahan satu durasi lagi. */
+        if (tvOtherModalOpen()) { tvSchedule(tvState.phaseMs); return; }
+        if (tvState.phase === 'A') {
+          tvFadeSwap(function () {
+            if ($('lmtpOverlay').hidden) { openLMTP(); tvState.lmtpByTv = true; }
+            tvState.view = 'B'; tvState.phase = 'B1';
+            tvLmtpPhase('tv-ph-del');
+            tvSetViewName();
+          });
+          tvSchedule(tvState.stepMs);
+        } else if (tvState.phase === 'B1') {
+          tvFadeSwap(function () {
+            if ($('lmtpOverlay').hidden) { openLMTP(); tvState.lmtpByTv = true; }
+            tvState.phase = 'B2';
+            tvLmtpPhase('tv-ph-qual');
+            tvSetViewName();
+          });
+          tvSchedule(tvState.stepMs);
+        } else {
+          tvFadeSwap(function () {
+            tvLmtpPhase(null);
+            if (tvState.lmtpByTv && !$('lmtpOverlay').hidden) closeLMTP();
+            tvState.lmtpByTv = false;
+            tvState.view = 'A'; tvState.phase = 'A';
+            tvSetViewName();
+          });
+          tvSchedule(tvState.rotateMs);
+        }
       }
       function startTvMode() {
         if (tvState.on) return;
         tvState.on = true;
         tvState.view = 'A';
+        tvState.phase = 'A';
         tvState.lmtpByTv = false;
         document.body.classList.add('tv-on');
-        tvClearPopups();
         tvBar.hidden = false;
         tvSetViewName();
         tvProgressReset();
@@ -7220,18 +7296,24 @@
           }
         } catch (e) { /* fail-soft: mode tetap jalan */ }
         tvState.progTimer = setInterval(tvTickProgress, 250);
-        tvArmTimer();
+        tvSchedule(tvState.rotateMs);
         tvTickProgress();
       }
       function exitTvMode() {
         if (!tvState.on) return;
         tvState.on = false;
-        if (tvState.timer) { clearInterval(tvState.timer); tvState.timer = null; }
+        if (tvState.timer) { clearTimeout(tvState.timer); tvState.timer = null; }
         if (tvState.progTimer) { clearInterval(tvState.progTimer); tvState.progTimer = null; }
         document.body.classList.remove('tv-on');
         tvBar.hidden = true;
         tvFade.classList.remove('is-in');
         tvFade.hidden = true;
+        var ovExit = $('lmtpOverlay');
+        ovExit.classList.remove('tv-ph-del');
+        ovExit.classList.remove('tv-ph-qual');
+        var sheetExit = ovExit.querySelector('.lmtp-sheet');
+        if (sheetExit) sheetExit.classList.remove('tv-anim');
+        tvState.phase = 'A';
         if (tvState.lmtpByTv && !$('lmtpOverlay').hidden) closeLMTP();
         tvState.lmtpByTv = false;
         tvState.fsWasActive = false;
@@ -7258,19 +7340,22 @@
         /* Keluar dari fullscreen saat Mode TV aktif → hentikan mode. */
         if (tvState.on && tvState.fsWasActive) exitTvMode();
       });
-      /* Kait uji internal untuk sesi audit: membuktikan rotasi A→B→A
-         tanpa menunggu 10 menit. TIDAK mengubah durasi produksi —
-         TV_ROTATE_MS tetap 10 menit; setRotateMs hanya dipakai probe. */
+      /* Kait uji internal untuk sesi audit: membuktikan rotasi
+         A→B1→B2→A tanpa menunggu 10 menit. TIDAK mengubah durasi
+         produksi — TV_ROTATE_MS tetap 10 menit & TV_LMTP_STEP_MS tetap
+         5 detik; setRotateMs/setStepMs hanya dipakai probe. */
       window.__tvTest = {
         start: startTvMode,
         stop: exitTvMode,
         rotateNow: tvRotate,
         setRotateMs: function (ms) {
           tvState.rotateMs = ms;
-          if (tvState.on) { tvArmTimer(); tvProgressReset(); }
+          if (tvState.on && tvState.phase === 'A') tvSchedule(ms);
         },
+        setStepMs: function (ms) { tvState.stepMs = ms; },
         state: tvState,
-        ROTATE_MS: TV_ROTATE_MS
+        ROTATE_MS: TV_ROTATE_MS,
+        STEP_MS: TV_LMTP_STEP_MS
       };
     })();
     </script>
