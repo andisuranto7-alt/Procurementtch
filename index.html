@@ -885,6 +885,71 @@
       }
       @media (prefers-reduced-motion: reduce) { .pica-sheet { animation: none; } }
 
+      /* ---------- Pencapaian Delivery Supplier (LMTP) ----------
+         Modal besar berpola sama dengan modal PICA (overlay + panel terang
+         + header sticky + tombol tutup). Isi: pemilih bulan, kartu ringkasan,
+         grafik SVG tren / Pareto worst supplier / FREQ untuk Delivery &
+         Quality (semua dari LIVE_LMTP / snapshot SPEED), tabel vendor
+         dan tabel tren bulanan. */
+      .btn-lmtp { background: #fff; color: var(--brand); border-color: var(--line-strong); box-shadow: var(--shadow); }
+      .btn-lmtp:hover { background: var(--brand-soft); color: var(--brand-dark); border-color: var(--accent); box-shadow: var(--shadow); }
+      .lmtp-overlay { z-index: 305; }
+      .lmtp-sheet { width: min(1180px, 100%); }
+      .lmtp-head h2 { font-size: 22px; letter-spacing: .6px; }
+      .lmtp-body { display: flex; flex-direction: column; gap: 20px; }
+      .lmtp-controls { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+      .lmtp-controls label { font-size: 13px; font-weight: 700; letter-spacing: .6px; color: var(--brand-dark); }
+      .lmtp-controls select { font: inherit; font-size: 14.5px; font-weight: 600; color: var(--ink); background: var(--surface); border: 1px solid var(--line-strong); border-radius: 9px; padding: 9px 12px; min-height: 44px; cursor: pointer; }
+      .lmtp-controls select:focus-visible { outline: 2px solid var(--accent-2); outline-offset: 1px; }
+      .lmtp-badge { font-size: 12px; font-weight: 700; letter-spacing: .3px; padding: 5px 11px; border-radius: 999px; white-space: nowrap; }
+      .lmtp-badge.snap { background: var(--gold-bg); color: var(--gold-ink); border: 1px solid #e3d194; }
+      .lmtp-badge.live { background: var(--green-bg); color: var(--green); border: 1px solid #9fd4ba; }
+      .lmtp-cards { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 10px; }
+      .lmtp-card { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; box-shadow: var(--shadow); padding: 12px 14px; min-width: 0; }
+      .lmtp-card .lc-label { font-size: 11px; font-weight: 700; letter-spacing: .8px; color: var(--muted); }
+      .lmtp-card .lc-val { font-size: 27px; font-weight: 700; color: var(--brand-dark); font-variant-numeric: tabular-nums; line-height: 1.15; margin-top: 2px; }
+      .lmtp-card .lc-sub { font-size: 11.5px; color: var(--muted); margin-top: 1px; }
+      .lmtp-card.hl { border-color: #e3d194; background: #fffdf2; }
+      .lmtp-card.hl .lc-val { color: var(--gold-ink); }
+      @media (max-width: 900px) { .lmtp-cards { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+      @media (max-width: 520px) { .lmtp-cards { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+      .lmtp-sec { display: flex; flex-direction: column; gap: 12px; }
+      .lmtp-sec-title { margin: 0; font-size: 15.5px; font-weight: 700; letter-spacing: .8px; padding: 10px 14px; border-radius: 10px; display: flex; align-items: center; gap: 9px; flex-wrap: wrap; }
+      .lmtp-sec-title .st-sub { font-size: 12px; font-weight: 600; letter-spacing: 0; }
+      .lmtp-sec-title.del { background: var(--brand-soft); color: var(--brand-dark); border: 1px solid var(--line-strong); }
+      .lmtp-sec-title.del .st-sub { color: var(--ink-2); }
+      .lmtp-sec-title.qual { background: var(--green-bg); color: var(--green); border: 1px solid #9fd4ba; }
+      .lmtp-sec-title.qual .st-sub { color: var(--ink-2); }
+      .lmtp-chart { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; box-shadow: var(--shadow); padding: 12px 14px 10px; min-width: 0; }
+      .lmtp-chart h4 { margin: 0 0 6px; font-size: 13.5px; font-weight: 700; letter-spacing: .4px; color: var(--brand-dark); text-align: center; }
+      .lmtp-chart svg { display: block; width: 100%; height: auto; }
+      .lmtp-legend { display: flex; flex-wrap: wrap; gap: 4px 12px; margin-top: 6px; font-size: 11.5px; color: var(--ink-2); justify-content: center; }
+      .lmtp-legend .lg-item { display: inline-flex; align-items: center; gap: 5px; white-space: nowrap; }
+      .lmtp-legend .lg-sw { width: 10px; height: 10px; border-radius: 3px; flex: 0 0 auto; }
+      .lmtp-legend .lg-freq { width: 15px; border-top: 3px solid currentColor; border-radius: 2px; flex: 0 0 auto; }
+      .lmtp-note { margin: 0; font-size: 12.5px; color: var(--ink-2); line-height: 1.5; }
+      .lmtp-note b { color: var(--brand-dark); }
+      .lmtp-empty { border: 1.5px dashed var(--line-strong); border-radius: 12px; padding: 20px 16px; text-align: center; color: var(--muted); font-size: 13.5px; background: var(--surface-2); }
+      .lmtp-tbl-title { margin: 0 0 8px; font-size: 15px; font-weight: 700; letter-spacing: .5px; color: var(--brand-dark); }
+      .lmtp-tblwrap { overflow-x: auto; border: 1px solid var(--line); border-radius: 12px; box-shadow: var(--shadow); background: var(--surface); }
+      table.lmtp-tbl { border-collapse: collapse; width: 100%; min-width: 560px; font-size: 14px; }
+      table.lmtp-tbl th { background: var(--navy-grad); color: var(--brand-dark); text-align: left; font-size: 12.5px; letter-spacing: .3px; padding: 9px 12px; border-bottom: 1px solid var(--line-strong); white-space: nowrap; }
+      table.lmtp-tbl td { padding: 8px 12px; border-bottom: 1px solid var(--line); font-variant-numeric: tabular-nums; white-space: nowrap; }
+      table.lmtp-tbl tr:last-child td { border-bottom: 0; }
+      table.lmtp-tbl .num { text-align: right; }
+      table.lmtp-tbl td.vname { font-weight: 700; color: var(--brand); }
+      .lmtp-pct { display: inline-flex; align-items: center; gap: 8px; justify-content: flex-end; }
+      .lmtp-minibar { width: 74px; height: 8px; border-radius: 99px; background: var(--line); overflow: hidden; flex: 0 0 auto; }
+      .lmtp-minibar i { display: block; height: 100%; background: var(--accent); border-radius: 99px; }
+      .lmtp-foot { border-top: 1px solid var(--line); padding-top: 12px; display: flex; flex-direction: column; gap: 5px; }
+      .lmtp-foot p { margin: 0; font-size: 12.5px; color: var(--muted); line-height: 1.55; }
+      @media (max-width: 760px) {
+        .lmtp-overlay { padding: 0; }
+        .lmtp-sheet { width: 100%; min-height: 100dvh; margin: 0; border: 0; border-radius: 0; }
+        .lmtp-body { padding: 13px 12px 18px; }
+      }
+      @media (prefers-reduced-motion: reduce) { .lmtp-sheet { animation: none; } }
+
       /* Chip filter Problem 4M aktif (dari klik donat) pada header panel detail */
       .filter-chip {
         display: inline-flex; align-items: center; gap: 8px;
@@ -1406,6 +1471,9 @@
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="4.5"/><circle cx="12" cy="12" r="1" fill="currentColor" stroke="none"/><path d="M12 1.8v3M12 19.2v3M1.8 12h3M19.2 12h3"/></svg>
             PICA
           </button>
+          <button type="button" class="btn btn-lmtp" id="lmtpBtn" aria-haspopup="dialog" title="Buka Pencapaian Delivery Supplier — basis LMTP SPEED (Quality & Quantity)">
+            🏆 Pencapaian Delivery Supplier
+          </button>
           <div class="chg-wrap">
             <button type="button" class="btn btn-chg" id="chgBtn" aria-haspopup="true" aria-expanded="false" title="Lihat riwayat perubahan data">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 8a6 6 0 1 0-12 0c0 7-3 8-3 8h18s-3-1-3-8"/><path d="M13.7 20a2 2 0 0 1-3.4 0"/></svg>
@@ -1755,6 +1823,69 @@
           </section>
 
           <p class="pica-note">Angka pada bagian Problem &amp; Fishbone mengikuti data LIVE (2DS &amp; delay) vendor yang sedang dipilih di papan ini.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ======== PENCAPAIAN DELIVERY SUPPLIER (LMTP) ========
+         Dibuka dari tombol "🏆 Pencapaian Delivery Supplier" di header.
+         Semua angka (Delivery & Quality) dari tab LIVE_LMTP (data LMTP
+         SPEED), fail-soft → snapshot darurat 22 Okt 2026 bila tab belum
+         terbaca. Pola modal sama dengan PICA: overlay + panel terang +
+         header sticky + tombol tutup. -->
+    <div class="pica-overlay lmtp-overlay" id="lmtpOverlay" hidden role="dialog" aria-modal="true" aria-labelledby="lmtpTitle">
+      <div class="pica-sheet lmtp-sheet">
+        <div class="pica-head lmtp-head">
+          <div>
+            <h2 id="lmtpTitle">🏆 Pencapaian Delivery Supplier</h2>
+            <p>Sumber: LMTP SPEED (realtime, sync otomatis)</p>
+          </div>
+          <button type="button" class="pica-close" id="lmtpClose" aria-label="Tutup Pencapaian Delivery Supplier">&times;</button>
+        </div>
+        <div class="pica-body lmtp-body">
+          <div class="lmtp-controls">
+            <label for="lmtpMonthSel">BULAN</label>
+            <select id="lmtpMonthSel" aria-label="Pilih bulan">
+              <option value="2026-01">Januari 2026</option>
+              <option value="2026-02">Februari 2026</option>
+              <option value="2026-03">Maret 2026</option>
+              <option value="2026-04">April 2026</option>
+              <option value="2026-05">Mei 2026</option>
+              <option value="2026-06">Juni 2026</option>
+              <option value="2026-07">Juli 2026</option>
+              <option value="2026-08">Agustus 2026</option>
+              <option value="2026-09">September 2026</option>
+              <option value="2026-10" selected>Oktober 2026</option>
+            </select>
+            <span class="lmtp-badge snap" id="lmtpSrcBadge">Snapshot 22 Okt 2026</span>
+          </div>
+          <div id="lmtpCards"></div>
+          <section class="lmtp-sec" aria-label="LMTP Delivery (Quantity)">
+            <h3 class="lmtp-sec-title del">LMTP DELIVERY <span class="st-sub">Quantity — PLUS / MINUS / SALAH BARANG / TIDAK LOT · sumber: LMTP SPEED (LIVE_LMTP)</span></h3>
+            <div class="lmtp-chart" id="lmtpDelTrend"></div>
+            <div class="lmtp-chart" id="lmtpDelWorst"></div>
+            <div class="lmtp-chart" id="lmtpDelFreq"></div>
+          </section>
+          <section class="lmtp-sec" aria-label="LMTP Quality">
+            <h3 class="lmtp-sec-title qual">LMTP QUALITY <span class="st-sub">Masalah mutu · sumber: LMTP SPEED (LIVE_LMTP)</span></h3>
+            <div class="lmtp-chart" id="lmtpQualTrend"></div>
+            <div class="lmtp-chart" id="lmtpQualWorst"></div>
+            <div class="lmtp-chart" id="lmtpQualFreq"></div>
+          </section>
+          <section aria-label="Tabel per vendor bulan terpilih">
+            <h3 class="lmtp-tbl-title" id="lmtpVendorTitle">PER VENDOR</h3>
+            <div id="lmtpVendorTbl"></div>
+          </section>
+          <section aria-label="Tabel tren bulanan">
+            <h3 class="lmtp-tbl-title">TREN BULANAN — LMTP SPEED</h3>
+            <div id="lmtpMonthTbl"></div>
+          </section>
+          <div class="lmtp-foot">
+            <p>Sumber: LMTP SPEED — Category Delivery = Quantity (PLUS/MINUS/SALAH BARANG/TIDAK LOT), Quality = masalah mutu. Pencapaian = % kasus CLOSE.</p>
+            <p>FREQ = jumlah bulan dengan kasus &gt; 0 per vendor.</p>
+            <p>Data LMTP di SPEED tersedia mulai Juli 2026; Jan–Jun 2026 belum ada data.</p>
+            <p id="lmtpSnapNote">Tab LIVE_LMTP belum terbaca — seluruh angka yang tampil adalah <b>Snapshot 22 Okt 2026</b> (data SPEED per tanggal itu; split kategori Jul–Sep belum terverifikasi pada mode snapshot).</p>
+          </div>
         </div>
       </div>
     </div>
@@ -4465,6 +4596,509 @@
         renderPica();
       });
       renderPica();
+
+      /* ================= PENCAPAIAN DELIVERY SUPPLIER (LMTP) =================
+         Modal dari tombol "🏆 Pencapaian Delivery Supplier" di header.
+         SEMUA angka (grafik Delivery/Quantity & Quality, kartu ringkasan,
+         tabel) berasal dari tab LIVE_LMTP — data LMTP SPEED — lewat jalur
+         fetchText/sheetUrl yang sama dengan tab LIVE lain, FAIL-SOFT
+         seperti LIVE_ItemDI/LIVE_ItemGR: tab belum terbaca / kosong /
+         gagal → SNAPSHOT DARURAT (data SPEED per 22 Okt 2026) di bawah.
+         FREQ = jumlah bulan dengan kasus > 0 per vendor (sumbu kanan
+         0–12). Pemilih bulan Jan–Okt 2026 mengendalikan kartu, kedua
+         Pareto worst supplier, dan tabel vendor. */
+      var LMTP_MONTHS_ID = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
+      var LMTP_MONTHS_SHORT = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
+      var LMTP_MONTH_COLORS = ['#5b8cc0', '#ed7d31', '#a5a5a5', '#ffc000', '#4472c4', '#70ad47', '#264478', '#9e480e', '#636363', '#997300', '#1f4e79', '#385723'];
+
+      /* Snapshot darurat LMTP SPEED — 22 Okt 2026. Total per bulan Jul–Okt
+         + rincian per vendor khusus Oktober (Qty/Quality Jul–Sep tidak
+         dirinci di snapshot → null, ditampilkan "—"). Total tahun 2026:
+         Total 124 · Qty 104 · Quality 20 · OPEN 26 · CLOSE 98 · Plus 41 ·
+         Minus 49 · SalahBarang 13 · TidakLot 1. */
+      var LMTP_SNAPSHOT = {
+        months: {
+          '2026-07': { total: 40, qty: null, quality: null, open: 0, close: 40 },
+          '2026-08': { total: 33, qty: null, quality: null, open: 3, close: 30 },
+          '2026-09': { total: 26, qty: null, quality: null, open: 8, close: 18 },
+          '2026-10': { total: 25, qty: 17, quality: 8, open: 15, close: 10 }
+        },
+        rows: [
+          { bulan: '2026-10', vendor: 'BONECOM', vendorName: 'BONECOM TRICOM PAINTECH', total: 7, qty: 7, quality: 0, open: 4, close: 3, plus: 1, minus: 4, salahBarang: 2, tidakLot: 0 },
+          { bulan: '2026-10', vendor: 'PPA', vendorName: 'PT PRIUK PERKASA ABADI', total: 6, qty: 5, quality: 1, open: 4, close: 2, plus: 1, minus: 3, salahBarang: 1, tidakLot: 0 },
+          { bulan: '2026-10', vendor: 'WHAIN', vendorName: 'WHA IN', total: 4, qty: 0, quality: 4, open: 3, close: 1, plus: 0, minus: 0, salahBarang: 0, tidakLot: 0 },
+          { bulan: '2026-10', vendor: 'IPTI', vendorName: 'PT INDO PLATING TECHNOLOGY INDUSTRY', total: 2, qty: 1, quality: 1, open: 1, close: 1, plus: 0, minus: 1, salahBarang: 0, tidakLot: 0 },
+          { bulan: '2026-10', vendor: 'MMM', vendorName: 'PT METALINDO MULTIDINAMIKA MANDIRI', total: 2, qty: 1, quality: 1, open: 1, close: 1, plus: 0, minus: 0, salahBarang: 1, tidakLot: 0 },
+          { bulan: '2026-10', vendor: 'DAEBAEK', vendorName: 'DAE BAEK', total: 1, qty: 1, quality: 0, open: 1, close: 0, plus: 1, minus: 0, salahBarang: 0, tidakLot: 0 },
+          { bulan: '2026-10', vendor: 'INTERMESINDO', vendorName: 'INTERMESINDO', total: 1, qty: 1, quality: 0, open: 1, close: 0, plus: 0, minus: 1, salahBarang: 0, tidakLot: 0 },
+          { bulan: '2026-10', vendor: 'ATC', vendorName: 'PT ATMI CIKARANG', total: 1, qty: 0, quality: 1, open: 0, close: 1, plus: 0, minus: 0, salahBarang: 0, tidakLot: 0 },
+          { bulan: '2026-10', vendor: 'DRC', vendorName: 'PT DIAN RAYA CIPTA', total: 1, qty: 1, quality: 0, open: 0, close: 1, plus: 0, minus: 0, salahBarang: 1, tidakLot: 0 }
+        ]
+      };
+
+      /* LIVE_LMTP kolom (berdasarkan nama header): Bulan | Vendor |
+         VendorName | Total | Qty | Quality | Open | Close | Plus | Minus |
+         SalahBarang | TidakLot — satu baris per Bulan × Vendor. Tab kosong
+         / header tidak dikenal → null (fail-soft, pola parseItemDI). */
+      function parseLMTP(csv) {
+        var rows = parseCSV(csv);
+        if (rows.length < 2) return null;
+        var head = rows[0].map(function (h) { return String(h).trim().toLowerCase(); });
+        function col(name) { return head.indexOf(name); }
+        var cB = col('bulan'), cV = col('vendor'), cVN = col('vendorname'),
+            cT = col('total'), cQ = col('qty'), cQl = col('quality'),
+            cO = col('open'), cC = col('close'), cP = col('plus'),
+            cM = col('minus'), cSB = col('salahbarang'), cTL = col('tidaklot');
+        if (cB < 0 || cV < 0 || cT < 0 || cQ < 0 || cQl < 0 || cO < 0 || cC < 0) return null;
+        var out = [], n = 0;
+        for (var i = 1; i < rows.length; i++) {
+          var r = rows[i];
+          var bulan = String(r[cB] || '').trim();
+          var vendor = String(r[cV] || '').trim();
+          if (!/^\d{4}-\d{2}$/.test(bulan) || !vendor) continue;
+          out.push({
+            bulan: bulan, vendor: vendor,
+            vendorName: cVN >= 0 ? (String(r[cVN] || '').trim() || vendor) : vendor,
+            total: parseNum(r[cT]), qty: parseNum(r[cQ]), quality: parseNum(r[cQl]),
+            open: parseNum(r[cO]), close: parseNum(r[cC]),
+            plus: cP >= 0 ? parseNum(r[cP]) : 0,
+            minus: cM >= 0 ? parseNum(r[cM]) : 0,
+            salahBarang: cSB >= 0 ? parseNum(r[cSB]) : 0,
+            tidakLot: cTL >= 0 ? parseNum(r[cTL]) : 0
+          });
+          n++;
+        }
+        return n ? out : null;
+      }
+
+      var lmtp = { loaded: false, loading: false, live: false, rows: [], monthAgg: {}, sel: '2026-10' };
+      function lmtpAggRows(rows) {
+        var agg = {};
+        rows.forEach(function (r) {
+          var a = agg[r.bulan];
+          if (!a) a = agg[r.bulan] = { total: 0, qty: 0, quality: 0, open: 0, close: 0 };
+          a.total += r.total; a.qty += r.qty; a.quality += r.quality; a.open += r.open; a.close += r.close;
+        });
+        return agg;
+      }
+      function lmtpApplySnapshot() {
+        lmtp.live = false;
+        lmtp.rows = LMTP_SNAPSHOT.rows;
+        lmtp.monthAgg = {};
+        Object.keys(LMTP_SNAPSHOT.months).forEach(function (k) {
+          var m = LMTP_SNAPSHOT.months[k];
+          lmtp.monthAgg[k] = { total: m.total, qty: m.qty, quality: m.quality, open: m.open, close: m.close };
+        });
+      }
+      /* Tarikan LIVE_LMTP bersifat FAIL-SOFT (pola LIVE_ItemDI/LIVE_ItemGR):
+         promise tidak pernah menggagalkan halaman — tab belum ada / kosong
+         / gagal muat → snapshot darurat tetap tampil. Dimuat malas saat
+         modal pertama dibuka. */
+      function loadLMTP() {
+        if (lmtp.loading || lmtp.loaded) return;
+        lmtp.loading = true;
+        fetchText(sheetUrl('LIVE_LMTP')).then(function (csv) {
+          var rows = parseLMTP(csv);
+          if (rows && rows.length) {
+            lmtp.live = true;
+            lmtp.rows = rows;
+            lmtp.monthAgg = lmtpAggRows(rows);
+          } else lmtpApplySnapshot();
+        }).catch(function () { lmtpApplySnapshot(); }).then(function () {
+          lmtp.loading = false;
+          lmtp.loaded = true;
+          renderLMTP();
+        });
+      }
+
+      function lmtpPct(close, total) { return total > 0 ? (close / total * 100) : 0; }
+      function lmtpPctTxt(v) {
+        var r = Math.round(v * 10) / 10;
+        return (r % 1 === 0 ? String(Math.round(r)) : String(r).replace('.', ',')) + '%';
+      }
+      function lmtpNiceMax(v) {
+        if (v <= 5) return 5;
+        if (v <= 10) return 10;
+        if (v <= 20) return 20;
+        if (v <= 30) return 30;
+        if (v <= 50) return 50;
+        return Math.ceil(v / 20) * 20;
+      }
+      function lmtpWrap(text, per, maxLines) {
+        var words = String(text).split(' '), lines = [], cur = '';
+        words.forEach(function (w) {
+          if (!cur) cur = w;
+          else if ((cur + ' ' + w).length <= per) cur += ' ' + w;
+          else { lines.push(cur); cur = w; }
+        });
+        if (cur) lines.push(cur);
+        if (lines.length > maxLines) {
+          lines = lines.slice(0, maxLines);
+          lines[maxLines - 1] = lines[maxLines - 1] + '…';
+        }
+        return lines;
+      }
+      function lmtpNum(n) { return Math.round(n * 10) / 10; }
+
+      /* Grafik garis tren Jul–Des (6 titik): sumbu Y tetap 0–100, label
+         angka di tiap titik, titik bulan sorotan dibelakangi kotak kuning
+         (gaya contoh Excel). Nilai null (split kategori belum terverifikasi
+         pada snapshot) tidak digambar titiknya. */
+      function lmtpTrendSVG(values, color, hiIdx) {
+        var W = 720, H = 292, L = 44, R = 26, T = 20, B = 34;
+        var pw = W - L - R, ph = H - T - B;
+        function X(i) { return L + pw * i / (values.length - 1); }
+        function Y(v) { return T + ph - (v / 100) * ph; }
+        var s = '', g, i;
+        for (g = 0; g <= 100; g += 20) {
+          var gy = Y(g);
+          s += '<line x1="' + L + '" y1="' + gy + '" x2="' + (W - R) + '" y2="' + gy + '" stroke="#dde7f3" stroke-width="1"/>';
+          s += '<text x="' + (L - 6) + '" y="' + (gy + 3.5) + '" text-anchor="end" font-size="10" fill="#647691">' + g + '</text>';
+        }
+        s += '<line x1="' + L + '" y1="' + T + '" x2="' + L + '" y2="' + (T + ph) + '" stroke="#bfd2ea" stroke-width="1"/>';
+        s += '<line x1="' + L + '" y1="' + (T + ph) + '" x2="' + (W - R) + '" y2="' + (T + ph) + '" stroke="#bfd2ea" stroke-width="1"/>';
+        for (i = 0; i < values.length; i++) {
+          s += '<text x="' + X(i) + '" y="' + (H - 12) + '" text-anchor="middle" font-size="10.5" fill="#44536b">' + LMTP_MONTHS_SHORT[6 + i] + '-26</text>';
+        }
+        if (hiIdx >= 0 && values[hiIdx] != null) {
+          var hx = X(hiIdx), hy = Y(values[hiIdx]);
+          s += '<rect x="' + (hx - 19) + '" y="' + (hy - 28) + '" width="38" height="37" fill="#fff200" opacity="0.85"/>';
+        }
+        var runs = [], cur = null;
+        values.forEach(function (v, idx) {
+          if (v == null) { if (cur) { runs.push(cur); cur = null; } }
+          else { if (!cur) cur = []; cur.push(idx); }
+        });
+        if (cur) runs.push(cur);
+        runs.forEach(function (run, ri) {
+          if (run.length > 1) {
+            var pts = run.map(function (idx) { return lmtpNum(X(idx)) + ',' + lmtpNum(Y(values[idx])); }).join(' ');
+            s += '<polyline points="' + pts + '" fill="none" stroke="' + color + '" stroke-width="2.6" stroke-linejoin="round" stroke-linecap="round"/>';
+          }
+          if (ri < runs.length - 1) {
+            var a = run[run.length - 1], b = runs[ri + 1][0];
+            s += '<line x1="' + X(a) + '" y1="' + Y(values[a]) + '" x2="' + X(b) + '" y2="' + Y(values[b]) + '" stroke="' + color + '" stroke-width="2" stroke-dasharray="4 4" opacity="0.5"/>';
+          }
+        });
+        values.forEach(function (v, idx) {
+          if (v == null) return;
+          var cx = X(idx), cy = Y(v), hi = (idx === hiIdx);
+          s += '<circle cx="' + cx + '" cy="' + cy + '" r="' + (hi ? 4.6 : 3.6) + '" fill="' + color + '" stroke="#ffffff" stroke-width="1.6"><title>' + LMTP_MONTHS_ID[6 + idx] + ' 2026: ' + v + ' kasus</title></circle>';
+          s += '<text x="' + cx + '" y="' + (cy - 10) + '" text-anchor="middle" font-size="11.5" font-weight="700" fill="' + (hi ? '#c00000' : '#16233c') + '">' + v + '</text>';
+        });
+        return '<svg viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="Grafik garis tren kasus per bulan 2026">' + s + '</svg>';
+      }
+
+      /* Pareto worst supplier: batang menurun + label angka + garis
+         kumulatif % (sumbu kanan 0–100%). Label sumbu X = nama lengkap
+         vendor, dipotong elipsis (nama penuh di <title>); label dimiringkan
+         bila slot sempit. */
+      function lmtpParetoSVG(items, gradId, c1, c2) {
+        var total = 0, maxV = 0, i;
+        items.forEach(function (it) { total += it.value; if (it.value > maxV) maxV = it.value; });
+        var W = 720, H = 336, L = 42, R = 48, T = 26, B = 78;
+        var pw = W - L - R, ph = H - T - B;
+        var yMax = lmtpNiceMax(maxV);
+        var step = yMax <= 10 ? 2 : yMax <= 20 ? 5 : yMax <= 40 ? 10 : 20;
+        function Y(v) { return T + ph - (v / yMax) * ph; }
+        function YR(p) { return T + ph - (p / 100) * ph; }
+        var s = '<defs><linearGradient id="' + gradId + '" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="' + c1 + '"/><stop offset="1" stop-color="' + c2 + '"/></linearGradient></defs>';
+        var g;
+        for (g = 0; g <= yMax; g += step) {
+          var gy = Y(g);
+          s += '<line x1="' + L + '" y1="' + gy + '" x2="' + (W - R) + '" y2="' + gy + '" stroke="#dde7f3" stroke-width="1"/>';
+          s += '<text x="' + (L - 6) + '" y="' + (gy + 3.5) + '" text-anchor="end" font-size="10" fill="#647691">' + g + '</text>';
+        }
+        for (g = 0; g <= 100; g += 20) {
+          var ry = YR(g);
+          s += '<text x="' + (W - R + 6) + '" y="' + (ry + 3.5) + '" font-size="10" fill="#0a2a5e">' + g + '%</text>';
+        }
+        s += '<line x1="' + L + '" y1="' + (T + ph) + '" x2="' + (W - R) + '" y2="' + (T + ph) + '" stroke="#bfd2ea" stroke-width="1"/>';
+        var slot = pw / items.length;
+        var bw = Math.min(60, slot * 0.62);
+        var cum = 0, pts = [];
+        items.forEach(function (it, idx) {
+          var cx = L + slot * (idx + 0.5);
+          var y = Y(it.value);
+          s += '<rect x="' + lmtpNum(cx - bw / 2) + '" y="' + lmtpNum(y) + '" width="' + lmtpNum(bw) + '" height="' + lmtpNum(T + ph - y) + '" fill="url(#' + gradId + ')"><title>' + esc(it.label) + ': ' + it.value + ' kasus</title></rect>';
+          s += '<text x="' + cx + '" y="' + (y - 6) + '" text-anchor="middle" font-size="11.5" font-weight="700" fill="#16233c">' + it.value + '</text>';
+          cum += it.value;
+          pts.push({ x: cx, y: YR(total ? cum / total * 100 : 0), p: total ? Math.round(cum / total * 100) : 0, label: it.label });
+        });
+        if (pts.length > 1) {
+          s += '<polyline points="' + pts.map(function (p) { return lmtpNum(p.x) + ',' + lmtpNum(p.y); }).join(' ') + '" fill="none" stroke="#0a2a5e" stroke-width="2.4" stroke-linejoin="round" stroke-linecap="round"/>';
+        }
+        pts.forEach(function (p) {
+          s += '<circle cx="' + p.x + '" cy="' + p.y + '" r="3.4" fill="#0a2a5e" stroke="#ffffff" stroke-width="1.3"><title>' + esc(p.label) + ' — kumulatif ' + p.p + '%</title></circle>';
+          if (pts.length <= 10) s += '<text x="' + p.x + '" y="' + (p.y - 7) + '" text-anchor="middle" font-size="9.5" font-weight="600" fill="#0a2a5e">' + p.p + '%</text>';
+        });
+        var rotate = slot < 52;
+        var maxCh = rotate ? 22 : Math.max(6, Math.floor(slot / 5.9));
+        items.forEach(function (it, idx) {
+          var cx = L + slot * (idx + 0.5);
+          var lab = it.label.length > maxCh ? it.label.slice(0, maxCh - 1) + '…' : it.label;
+          if (rotate) {
+            s += '<text transform="rotate(-28 ' + lmtpNum(cx) + ' ' + (T + ph + 12) + ')" x="' + cx + '" y="' + (T + ph + 12) + '" text-anchor="end" font-size="9.5" font-weight="600" fill="#44536b">' + esc(lab) + '<title>' + esc(it.label) + '</title></text>';
+          } else {
+            s += '<text x="' + cx + '" y="' + (T + ph + 16) + '" text-anchor="middle" font-size="9.5" font-weight="600" fill="#44536b">' + esc(lab) + '<title>' + esc(it.label) + '</title></text>';
+          }
+        });
+        return '<svg viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="Grafik Pareto worst supplier">' + s + '</svg>';
+      }
+
+      /* Batang kelompok FREQ/BULAN: 12 batang bulanan per vendor (warna per
+         bulan) + garis FREQ pada sumbu kanan 0–12 (hitungan bulan). */
+      function lmtpFreqSVG(vendors, color) {
+        var barW = 7, gapB = 1.6, gb = 12 * (barW + gapB), gGap = 30;
+        var L = 42, R = 48, T = 28, B = 94, ph = 216;
+        var pw = vendors.length * gb + (vendors.length - 1) * gGap;
+        var W = L + pw + R, H = T + ph + B;
+        var maxV = 1;
+        vendors.forEach(function (v) { v.m.forEach(function (x) { if (x > maxV) maxV = x; }); });
+        var yMax = lmtpNiceMax(maxV);
+        var step = yMax <= 10 ? 2 : yMax <= 20 ? 5 : 10;
+        function Y(v) { return T + ph - (v / yMax) * ph; }
+        function YR(f) { return T + ph - (f / 12) * ph; }
+        var s = '', g;
+        for (g = 0; g <= yMax; g += step) {
+          var gy = Y(g);
+          s += '<line x1="' + L + '" y1="' + gy + '" x2="' + (W - R) + '" y2="' + gy + '" stroke="#dde7f3" stroke-width="1"/>';
+          s += '<text x="' + (L - 6) + '" y="' + (gy + 3.5) + '" text-anchor="end" font-size="10" fill="#647691">' + g + '</text>';
+        }
+        for (g = 0; g <= 12; g += 3) {
+          var ry = YR(g);
+          s += '<text x="' + (W - R + 6) + '" y="' + (ry + 3.5) + '" font-size="10" fill="#44536b">' + g + '</text>';
+        }
+        s += '<line x1="' + L + '" y1="' + (T + ph) + '" x2="' + (W - R) + '" y2="' + (T + ph) + '" stroke="#bfd2ea" stroke-width="1"/>';
+        var pts = [];
+        vendors.forEach(function (v, gi) {
+          var gx = L + gi * (gb + gGap);
+          v.m.forEach(function (val, mi) {
+            if (val > 0) {
+              var bh = (val / yMax) * ph;
+              s += '<rect x="' + lmtpNum(gx + mi * (barW + gapB)) + '" y="' + lmtpNum(T + ph - bh) + '" width="' + barW + '" height="' + lmtpNum(bh) + '" fill="' + LMTP_MONTH_COLORS[mi] + '"><title>' + esc(v.name) + ' — ' + LMTP_MONTHS_ID[mi] + ' 2026: ' + val + ' kasus</title></rect>';
+            }
+          });
+          pts.push({ x: gx + gb / 2, y: YR(v.freq), f: v.freq, name: v.name });
+          lmtpWrap(v.name, 16, 3).forEach(function (ln, li) {
+            s += '<text x="' + lmtpNum(gx + gb / 2) + '" y="' + (T + ph + 16 + li * 11) + '" text-anchor="middle" font-size="9.5" font-weight="600" fill="#44536b">' + esc(ln) + '</text>';
+          });
+        });
+        if (pts.length > 1) {
+          s += '<polyline points="' + pts.map(function (p) { return lmtpNum(p.x) + ',' + lmtpNum(p.y); }).join(' ') + '" fill="none" stroke="' + color + '" stroke-width="2.4" stroke-linejoin="round" stroke-linecap="round" opacity="0.9"/>';
+        }
+        pts.forEach(function (p) {
+          s += '<circle cx="' + lmtpNum(p.x) + '" cy="' + lmtpNum(p.y) + '" r="4" fill="' + color + '" stroke="#ffffff" stroke-width="1.5"><title>' + esc(p.name) + ' — FREQ ' + p.f + ' bulan</title></circle>';
+          s += '<text x="' + lmtpNum(p.x) + '" y="' + (p.y - 8) + '" text-anchor="middle" font-size="11.5" font-weight="700" fill="' + color + '">' + p.f + '</text>';
+        });
+        return '<svg viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="Grafik batang bulanan per vendor dengan garis FREQ">' + s + '</svg>';
+      }
+      function lmtpFreqLegend(color) {
+        var s = '<div class="lmtp-legend">';
+        LMTP_MONTHS_SHORT.forEach(function (m, i) {
+          s += '<span class="lg-item"><span class="lg-sw" style="background:' + LMTP_MONTH_COLORS[i] + '"></span>' + m + '-26</span>';
+        });
+        s += '<span class="lg-item" style="color:' + color + '"><span class="lg-freq"></span><b>FREQ</b></span>';
+        return s + '</div>';
+      }
+
+      /* Seri bulanan untuk grafik tren — hanya Jul–Des 2026 (6 titik),
+         karena data LMTP di SPEED hanya ada mulai Juli 2026; bulan tanpa
+         data = 0. Nilai null pada snapshot (split kategori Jul–Sep belum
+         terverifikasi) diteruskan apa adanya agar titiknya tidak digambar.
+         hi = indeks sorotan dalam jendela Jul–Des (bulan berdata terakhir). */
+      function lmtpSeries(field) {
+        var vals = [], hi = -1, m, k;
+        for (m = 7; m <= 12; m++) {
+          k = '2026-' + (m < 10 ? '0' + m : '' + m);
+          if (lmtp.monthAgg[k]) { vals.push(lmtp.monthAgg[k][field]); if (lmtp.monthAgg[k][field] != null) hi = m - 7; }
+          else vals.push(0);
+        }
+        if (hi < 0) hi = 3;
+        return { vals: vals, hi: hi };
+      }
+      /* 7 vendor teratas untuk grafik FREQ satu kolom data (qty / quality):
+         batang bulanan per vendor dari baris LIVE_LMTP + FREQ = jumlah
+         bulan dengan kasus > 0 untuk vendor itu. */
+      function lmtpFreqByVendor(field) {
+        var map = {}, order = [];
+        lmtp.rows.forEach(function (r) {
+          if (!map[r.vendor]) {
+            map[r.vendor] = { name: r.vendorName, m: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], total: 0 };
+            order.push(r.vendor);
+          }
+          var mm = /^(\d{4})-(\d{2})$/.exec(r.bulan);
+          if (mm && mm[1] === '2026') map[r.vendor].m[parseInt(mm[2], 10) - 1] += r[field];
+          map[r.vendor].total += r[field];
+        });
+        return order.map(function (k) { return map[k]; })
+          .filter(function (v) { return v.total > 0; })
+          .sort(function (a, b) { return b.total - a.total; })
+          .slice(0, 7)
+          .map(function (v) {
+            return { name: v.name, m: v.m, freq: v.m.filter(function (x) { return x > 0; }).length };
+          });
+      }
+
+      function lmtpCardsHTML() {
+        var agg = lmtp.monthAgg[lmtp.sel];
+        if (!agg) {
+          return '<div class="lmtp-empty">Belum ada data LMTP SPEED untuk bulan ini.</div>';
+        }
+        function card(label, val, sub) {
+          return '<div class="lmtp-card"><div class="lc-label">' + label + '</div><div class="lc-val">' + val + '</div><div class="lc-sub">' + sub + '</div></div>';
+        }
+        var na = 'tidak dirinci di snapshot';
+        return '<div class="lmtp-cards">' +
+          card('TOTAL LMTP', fmt(agg.total), 'kasus bulan ini') +
+          card('QUANTITY', agg.qty == null ? '—' : fmt(agg.qty), agg.qty == null ? na : 'Delivery (SPEED)') +
+          card('QUALITY', agg.quality == null ? '—' : fmt(agg.quality), agg.quality == null ? na : 'masalah mutu') +
+          card('OPEN', fmt(agg.open), 'belum tuntas') +
+          card('CLOSE', fmt(agg.close), 'sudah tuntas') +
+          '<div class="lmtp-card hl"><div class="lc-label">PENCAPAIAN KESELURUHAN</div><div class="lc-val">' + lmtpPctTxt(lmtpPct(agg.close, agg.total)) + '</div><div class="lc-sub">% kasus CLOSE dari total</div></div>' +
+          '</div>';
+      }
+      function lmtpVendorTableHTML(rows) {
+        var s = '<div class="lmtp-tblwrap"><table class="lmtp-tbl"><thead><tr>' +
+          '<th>Vendor</th><th class="num">Total LMTP</th><th class="num">Quantity</th><th class="num">Quality</th><th class="num">OPEN</th><th class="num">CLOSE</th><th class="num">Pencapaian</th>' +
+          '</tr></thead><tbody>';
+        rows.forEach(function (r) {
+          var p = lmtpPct(r.close, r.total);
+          s += '<tr><td class="vname" title="' + esc(r.vendorName) + '">' + esc(r.vendor) + '</td>' +
+            '<td class="num">' + fmt(r.total) + '</td><td class="num">' + fmt(r.qty) + '</td><td class="num">' + fmt(r.quality) + '</td>' +
+            '<td class="num">' + fmt(r.open) + '</td><td class="num">' + fmt(r.close) + '</td>' +
+            '<td class="num"><span class="lmtp-pct">' + lmtpPctTxt(p) + '<span class="lmtp-minibar"><i style="width:' + Math.min(100, Math.round(p)) + '%"></i></span></span></td></tr>';
+        });
+        return s + '</tbody></table></div>';
+      }
+      function lmtpMonthTableHTML() {
+        var keys = Object.keys(lmtp.monthAgg).sort();
+        var s = '<div class="lmtp-tblwrap"><table class="lmtp-tbl"><thead><tr>' +
+          '<th>Bulan</th><th class="num">Total</th><th class="num">OPEN</th><th class="num">CLOSE</th><th class="num">Pencapaian</th>' +
+          '</tr></thead><tbody>';
+        keys.forEach(function (k) {
+          var a = lmtp.monthAgg[k];
+          var mm = /^(\d{4})-(\d{2})$/.exec(k);
+          var label = mm ? LMTP_MONTHS_ID[parseInt(mm[2], 10) - 1] + ' ' + mm[1] : k;
+          s += '<tr><td class="vname">' + esc(label) + '</td>' +
+            '<td class="num">' + fmt(a.total) + '</td><td class="num">' + fmt(a.open) + '</td><td class="num">' + fmt(a.close) + '</td>' +
+            '<td class="num">' + lmtpPctTxt(lmtpPct(a.close, a.total)) + '</td></tr>';
+        });
+        return s + '</tbody></table></div>';
+      }
+      function renderLMTP() {
+        var sel = lmtp.sel;
+        var mi = parseInt(sel.slice(5), 10) - 1;
+        var monthName = LMTP_MONTHS_ID[mi];
+        var preSpeed = sel < '2026-07';
+        var speedEmpty = '<div class="lmtp-empty">Data SPEED (LIVE_LMTP) tersedia mulai Juli 2026 — untuk ' + monthName + ' 2026 belum ada data LMTP di SPEED.</div>';
+
+        /* Badge sumber + catatan snapshot */
+        var badge = $('lmtpSrcBadge');
+        if (badge) {
+          badge.textContent = lmtp.live ? 'LIVE — tab LIVE_LMTP (SPEED)' : 'Snapshot 22 Okt 2026';
+          badge.className = 'lmtp-badge ' + (lmtp.live ? 'live' : 'snap');
+        }
+        var snapNote = $('lmtpSnapNote');
+        if (snapNote) snapNote.hidden = lmtp.live;
+
+        /* Kartu ringkasan bulan terpilih (LIVE_LMTP / snapshot) */
+        $('lmtpCards').innerHTML = preSpeed ? speedEmpty : lmtpCardsHTML();
+
+        /* ---- DELIVERY (Quantity) — LIVE_LMTP / snapshot ---- */
+        var dSeries = lmtpSeries('qty');
+        $('lmtpDelTrend').innerHTML = '<h4>SUPPLIER PERFORMANCE [LMTP DELIVERY] TH 2026</h4>' +
+          lmtpTrendSVG(dSeries.vals, '#2f7fe0', dSeries.hi) +
+          (lmtp.live ? '' : '<p class="lmtp-note">Mode snapshot: split Delivery (Qty) bulan Jul–Sep belum terverifikasi pada snapshot (total Qty 2026 = 104 kasus; Okt = 17) — titik Jul–Sep tidak digambar.</p>');
+        if (preSpeed) {
+          $('lmtpDelWorst').innerHTML = '<h4>WORST SUPPLIER ' + monthName.toUpperCase() + ' 26 [LMTP DELIVERY]</h4>' + speedEmpty;
+        } else {
+          var dItems = lmtp.rows
+            .filter(function (r) { return r.bulan === sel && r.qty > 0; })
+            .map(function (r) { return { label: r.vendorName, value: r.qty }; })
+            .sort(function (a, b) { return b.value - a.value; });
+          $('lmtpDelWorst').innerHTML = '<h4>WORST SUPPLIER ' + monthName.toUpperCase() + ' 26 [LMTP DELIVERY]</h4>' +
+            (dItems.length ? lmtpParetoSVG(dItems, 'lmtpDelGrad', '#f7b955', '#e07b1f')
+              : '<div class="lmtp-empty">' + (lmtp.live ? 'Tidak ada kasus Delivery pada ' + monthName + ' 2026.' : 'Rincian per vendor untuk ' + monthName + ' 2026 tidak ada di snapshot 22 Okt 2026 (rincian tersedia untuk Oktober 2026).') + '</div>');
+        }
+        if (!lmtp.live) {
+          $('lmtpDelFreq').innerHTML = '<h4>PARETO LMTP DELIVERY [FREQ/BULAN] TAHUN 2026</h4>' +
+            '<div class="lmtp-empty">Grafik FREQ Delivery tampil setelah tab LIVE_LMTP terbaca — snapshot 22 Okt 2026 hanya memuat rincian per vendor untuk Oktober 2026.</div>';
+        } else {
+          var dFreq = lmtpFreqByVendor('qty');
+          $('lmtpDelFreq').innerHTML = '<h4>PARETO LMTP DELIVERY [FREQ/BULAN] TAHUN 2026</h4>' +
+            (dFreq.length ? lmtpFreqSVG(dFreq, '#2f7fe0') + lmtpFreqLegend('#2f7fe0') : '<div class="lmtp-empty">Belum ada kasus Delivery tercatat di LIVE_LMTP.</div>');
+        }
+
+        /* ---- QUALITY — LIVE_LMTP / snapshot ---- */
+        var qSeries = lmtpSeries('quality');
+        $('lmtpQualTrend').innerHTML = '<h4>SUPPLIER PERFORMANCE [LMTP QUALITY] TH 2026</h4>' +
+          lmtpTrendSVG(qSeries.vals, '#047857', qSeries.hi) +
+          (lmtp.live ? '' : '<p class="lmtp-note">Mode snapshot: split Quality bulan Jul–Sep belum terverifikasi pada snapshot (total Quality 2026 = 20 kasus; Okt = 8) — titik Jul–Sep tidak digambar.</p>');
+        if (preSpeed) {
+          $('lmtpQualWorst').innerHTML = '<h4>WORST SUPPLIER ' + monthName.toUpperCase() + ' 26 [LMTP QUALITY]</h4>' + speedEmpty;
+        } else {
+          var qItems = lmtp.rows
+            .filter(function (r) { return r.bulan === sel && r.quality > 0; })
+            .map(function (r) { return { label: r.vendorName, value: r.quality }; })
+            .sort(function (a, b) { return b.value - a.value; });
+          $('lmtpQualWorst').innerHTML = '<h4>WORST SUPPLIER ' + monthName.toUpperCase() + ' 26 [LMTP QUALITY]</h4>' +
+            (qItems.length ? lmtpParetoSVG(qItems, 'lmtpQualGrad', '#4cc38a', '#047857')
+              : '<div class="lmtp-empty">' + (lmtp.live ? 'Tidak ada kasus Quality pada ' + monthName + ' 2026.' : 'Rincian per vendor untuk ' + monthName + ' 2026 tidak ada di snapshot 22 Okt 2026 (rincian tersedia untuk Oktober 2026).') + '</div>');
+        }
+        if (!lmtp.live) {
+          $('lmtpQualFreq').innerHTML = '<h4>PARETO LMTP QUALITY [FREQ/BULAN] TAHUN 2026</h4>' +
+            '<div class="lmtp-empty">Grafik FREQ Quality tampil setelah tab LIVE_LMTP terbaca — snapshot 22 Okt 2026 hanya memuat rincian per vendor untuk Oktober 2026.</div>';
+        } else {
+          var qFreq = lmtpFreqByVendor('quality');
+          $('lmtpQualFreq').innerHTML = '<h4>PARETO LMTP QUALITY [FREQ/BULAN] TAHUN 2026</h4>' +
+            (qFreq.length ? lmtpFreqSVG(qFreq, '#047857') + lmtpFreqLegend('#047857') : '<div class="lmtp-empty">Belum ada kasus Quality tercatat di LIVE_LMTP.</div>');
+        }
+
+        /* ---- Tabel per vendor bulan terpilih (LIVE_LMTP / snapshot) ---- */
+        $('lmtpVendorTitle').textContent = 'PER VENDOR — ' + monthName.toUpperCase() + ' 2026 (LMTP SPEED)';
+        if (preSpeed) {
+          $('lmtpVendorTbl').innerHTML = speedEmpty;
+        } else {
+          var vRows = lmtp.rows
+            .filter(function (r) { return r.bulan === sel; })
+            .sort(function (a, b) { return b.total - a.total; });
+          $('lmtpVendorTbl').innerHTML = vRows.length ? lmtpVendorTableHTML(vRows)
+            : '<div class="lmtp-empty">' + (lmtp.live ? 'Belum ada data per vendor untuk ' + monthName + ' 2026 di LIVE_LMTP.' : 'Rincian per vendor untuk ' + monthName + ' 2026 tidak ada di snapshot 22 Okt 2026 (rincian tersedia untuk Oktober 2026).') + '</div>';
+        }
+
+        /* ---- Tabel tren bulanan (semua bulan di data SPEED) ---- */
+        $('lmtpMonthTbl').innerHTML = lmtpMonthTableHTML();
+      }
+
+      var lmtpOverlay = $('lmtpOverlay');
+      function openLMTP() {
+        renderLMTP();
+        lmtpOverlay.hidden = false;
+        lmtpOverlay.scrollTop = 0;
+        document.body.style.overflow = 'hidden';
+        var c = $('lmtpClose');
+        if (c && c.focus) c.focus();
+        loadLMTP();
+      }
+      function closeLMTP() {
+        lmtpOverlay.hidden = true;
+        document.body.style.overflow = '';
+        var b = $('lmtpBtn');
+        if (b && b.focus) b.focus();
+      }
+      $('lmtpBtn').addEventListener('click', openLMTP);
+      $('lmtpClose').addEventListener('click', closeLMTP);
+      lmtpOverlay.addEventListener('click', function (e) { if (e.target === lmtpOverlay) closeLMTP(); });
+      document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape' && !lmtpOverlay.hidden) closeLMTP();
+      });
+      $('lmtpMonthSel').addEventListener('change', function () {
+        lmtp.sel = this.value;
+        renderLMTP();
+      });
+      lmtpApplySnapshot();
+      renderLMTP();
 
       /* ================= CEK STOK =================
          Data stok dimuat MALAS saat panel pertama dibuka, lewat jalur
