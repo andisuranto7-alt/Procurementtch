@@ -2613,10 +2613,12 @@
          isinya laporan 2 Days Stock LENGKAP per tanggal terbit yang sama
          (semua item, OK + NG) — bukan hanya item NG. Parser sama dengan
          parseNgRaw, ditambah Std 2HK (kolom ke-7) yang memang ditampilkan
-         seksi stok vendor SPEED pada detail item. Dataset ini HANYA
-         dipakai seksi "DI VENDOR — SPEED (2DS)" pada modal Detail Item:
-         pareto, donat 4M, PICA, tabel detail, dan semua hitungan lain
-         tetap membaca LIVE_2DS (state.ngRaw) persis seperti sebelumnya. */
+         seksi stok vendor SPEED pada detail item. Dataset ini dipakai
+         seksi "DI VENDOR — SPEED (2DS)" pada modal Detail Item, tabel
+         detail PRESS PART, dan donat Problem 4M + O Press Part (ketiganya
+         lewat peta bersama ngFullMap(), supaya donat & tabel satu
+         sumber); pareto & PICA tetap membaca LIVE_2DS (state.ngRaw)
+         persis seperti sebelumnya. */
       function parseNgFullRaw(csv) {
         var rows = parseCSV(csv);
         var nick = (BAKED && BAKED.nick) || {};
@@ -3017,19 +3019,30 @@
          dikelompokkan per vendor (semua item satu vendor berurutan) dan
          vendor diurutkan dari total OS terbesar. */
       var totalDiFallbackRows = 0;   /* baris Total DI cadangan (agregasi terakhir) */
-      function aggregatedItemRows(rows) {
-        totalDiFallbackRows = 0;
-        var map = {}, order = [], vendorTotal = {};
-        /* Peta laporan 2DS LENGKAP (LIVE_2DSFull, baris pertama per
-           vendor+item) — sumber penyamaan tabel PRESS PART ke laporan
-           2 Days Stock SPEED. Tab kosong / belum termuat → peta kosong
-           dan tabel berperilaku persis seperti sebelumnya (fail-soft). */
-        var fullMap = {};
+      /* Peta laporan 2DS LENGKAP (LIVE_2DSFull, baris pertama per
+         vendor+item) — SATU peta bersama untuk tabel detail PRESS PART
+         dan donat Problem 4M + O Press Part, supaya keduanya selalu
+         dihitung dari sumber yang sama persis. Di-cache per referensi
+         array state.ngFullRaw (diganti utuh pada setiap tarikan).
+         Tab kosong / belum termuat → peta kosong dan pemakai berperilaku
+         persis seperti sebelumnya, berbasis LIVE_2DS (fail-soft). */
+      var _ngFullMapSrc = null, _ngFullMap = null;
+      function ngFullMap() {
+        if (_ngFullMapSrc === state.ngFullRaw && _ngFullMap) return _ngFullMap;
+        var m = {};
         (state.ngFullRaw || []).forEach(function (fr) {
           if (!fr.vcode || !fr.item) return;
           var fk = fr.vcode + '|' + fr.item;
-          if (!fullMap[fk]) fullMap[fk] = fr;
+          if (!m[fk]) m[fk] = fr;
         });
+        _ngFullMapSrc = state.ngFullRaw;
+        _ngFullMap = m;
+        return m;
+      }
+      function aggregatedItemRows(rows) {
+        totalDiFallbackRows = 0;
+        var map = {}, order = [], vendorTotal = {};
+        var fullMap = ngFullMap();
         rows.forEach(function (r) {
           var key = r.vcode + '|' + r.item;
           var a = map[key];
@@ -3104,8 +3117,11 @@
              Judgement SPEED. Label Problem 4M dihitung ulang dari
              problem/detail laporan dengan aturan panel Press Part yang
              sama. Tidak ada di laporan lengkap → nilai lama apa adanya.
-             Panel SURFACE FINISH tidak disentuh; pareto, donat, dan
-             PICA tetap berbasis LIVE_2DS seperti sebelumnya. */
+             Panel SURFACE FINISH tidak disentuh; donat Press Part
+             memakai penggantian yang sama persis lewat peta bersama
+             ngFullMap() (lihat rowCat4MO), jadi irisan donat selalu
+             sama dengan isi tabel. Pareto & PICA tetap berbasis
+             LIVE_2DS seperti sebelumnya. */
           if (a.cat !== 'Surface Finish') {
             var f2 = fullMap[a.vcode + '|' + a.item];
             if (f2) {
@@ -3311,11 +3327,22 @@
         if (/\b(rak|box)\b/i.test(d)) return 'Other';
         return classify4M(problem);
       }
-      /* Kategori 4M + O untuk satu baris state.rows (populasi donat). */
+      /* Kategori 4M + O untuk satu baris state.rows (populasi donat).
+         PRESS PART (termasuk Standard Part): bila pasangan vendor+item
+         ada di laporan 2DS lengkap (LIVE_2DSFull, peta bersama
+         ngFullMap()), problem & detail diambil VERBATIM dari baris
+         laporan itu — penggantian yang sama persis dengan tabel detail
+         (aggregatedItemRows) — supaya irisan donat selalu sama dengan
+         kolom Problem 4M / Detail Problem yang tampil di tabel. Tidak
+         ada di laporan lengkap (atau tabnya belum termuat) → nilai
+         LIVE_2DS baris itu apa adanya, sama seperti tabel.
+         SURFACE FINISH tetap aturan stok-vs-delay dari LIVE_2DS. */
       function rowCat4MO(r) {
         if (r.cat === 'Surface Finish') {
           return cat4MO('Surface Finish', r.vcode, r.problem, r.detail, sfStockFor(r.vcode, r.item), r.delayDiQty != null ? r.delayDiQty : r.os);
         }
+        var f = ngFullMap()[r.vcode + '|' + r.item];
+        if (f) return cat4MO('Press Part', r.vcode, f.problem, f.detail, 0, 0);
         return cat4MO('Press Part', r.vcode, r.problem, r.detail, 0, 0);
       }
       function donutHTML(cat) {
@@ -3358,7 +3385,17 @@
         /* Sidik jari ringkas aging ITEM ikut dalam sig: grafik digambar
            ulang bila rincian aging item per vendor berubah. */
         var agingSig = state.itemAging ? Object.keys(state.itemAging).sort().map(function (k) { var e = state.itemAging[k]; return k + ':' + e.total + '/' + e.b12 + '/' + e.b35 + '/' + e.b5p + '/' + e.oldestHk; }).join(',') : '-';
-        var sig = state.rows.map(function (r) { return r.vcode + ':' + r.cat + ':' + r.item + ':' + r.os + ':' + (r.problem || '') + ':' + (r.detail || '') + ':' + (r.delayDiQty == null ? '' : r.delayDiQty); }).join(';') + '#' + chgSigStr() + '#sf' + (state.sfLive ? Object.keys(state.sfLive).length : 0) + '#ag' + agingSig;
+        /* Sidik jari problem/detail laporan 2DS lengkap untuk baris
+           non-SF: donat Press Part kini berbasis LIVE_2DSFull (lewat
+           rowCat4MO), jadi perubahan pada tab itu saja — tanpa perubahan
+           baris delay — tetap harus menggambar ulang donat. */
+        var fullMapSig = ngFullMap();
+        var fullSig = state.rows.map(function (r) {
+          if (r.cat === 'Surface Finish') return '';
+          var f = fullMapSig[r.vcode + '|' + r.item];
+          return f ? (f.problem || '') + '/' + (f.detail || '') : '-';
+        }).join(';');
+        var sig = state.rows.map(function (r) { return r.vcode + ':' + r.cat + ':' + r.item + ':' + r.os + ':' + (r.problem || '') + ':' + (r.detail || '') + ':' + (r.delayDiQty == null ? '' : r.delayDiQty); }).join(';') + '#' + chgSigStr() + '#sf' + (state.sfLive ? Object.keys(state.sfLive).length : 0) + '#ag' + agingSig + '#full' + fullSig;
         if (sig === chartSig) return;
         chartSig = sig;
         PARETO_CATS.forEach(function (c) {
@@ -4466,7 +4503,8 @@
         /* LIVE_2DSFull juga FAIL-SOFT dengan pola yang sama: tab belum
            ada / kosong / gagal muat → null, baris lengkap terakhir yang
            baik tetap dipakai dan tarikan utama tidak ikut gagal. Isinya
-           hanya dipakai seksi stok vendor SPEED pada Detail Item. */
+           dipakai seksi stok vendor SPEED pada Detail Item, tabel detail
+           PRESS PART, dan donat Press Part (peta bersama ngFullMap()). */
         var fullP = fetchText(sheetUrl('LIVE_2DSFull')).then(function (csv) {
           return parseNgFullRaw(csv);
         }).catch(function () { return null; });
