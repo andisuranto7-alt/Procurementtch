@@ -3349,10 +3349,16 @@
         /* Kategori per item dari fungsi bersama cat4MO (4M + O): Press Part
            5 irisan (termasuk Other dari token rak/box); Surface Finish
            hasil prosedur stok-vs-delay (+ pola IPTI) — irisan/legenda SF
-           hanya yang benar-benar dihasilkan aturan. */
+           hanya yang benar-benar dihasilkan aturan.
+           POPULASI donat mengikuti populasi panel tabel detailnya: donat
+           Press Part menghitung Press Part + Standard Part (panel tabel PP
+           menggabungkan keduanya — DETAIL_TABLES match), donat Surface
+           Finish hanya baris Surface Finish — jadi total donat selalu
+           sama dengan jumlah item pada panel tabel yang bersangkutan,
+           dan klik irisannya menyaring tabel ke jumlah yang sama. */
         var counts = { Man: 0, Machine: 0, Method: 0, Material: 0, Other: 0 }, total = 0;
         state.rows.forEach(function (r) {
-          if (r.cat !== cat) return;
+          if (cat === 'Surface Finish' ? r.cat !== 'Surface Finish' : r.cat === 'Surface Finish') return;
           counts[rowCat4MO(r)]++;
           total++;
         });
@@ -3426,10 +3432,10 @@
          Tabel detail kini DUA panel terpisah. Aturan kategori KHUSUS tabel
          detail: kategori 'Surface Finish' masuk panel Surface Finish; SEMUA
          kategori lain (Press Part dan Standard Part) digabung ke panel
-         Press Part. Aturan ini hanya berlaku pada pengelompokan baris tabel
-         detail — r.cat tetap apa adanya untuk pareto & donat (categoryOf:
-         CAT_PRESS / CAT_SURF), sehingga Standard Part tetap tidak tampil
-         di grafik. Tiap panel: baris berjalan vertikal ke atas, loop
+         Press Part. Populasi donat Press Part mengikuti panel tabelnya
+         (Press Part + Standard Part); pareto tetap per kategori murni
+         (categoryOf: CAT_PRESS / CAT_SURF), sehingga Standard Part tetap
+         tidak tampil di pareto. Tiap panel: baris berjalan vertikal ke atas, loop
          otomatis (isi digandakan agar mulus), jeda saat kursor di atas
          panel; header kolom menempel tetap di atas jendela berjalan.
          Penomoran & ringkasan header dihitung per panel. */
