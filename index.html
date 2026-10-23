@@ -3020,6 +3020,16 @@
       function aggregatedItemRows(rows) {
         totalDiFallbackRows = 0;
         var map = {}, order = [], vendorTotal = {};
+        /* Peta laporan 2DS LENGKAP (LIVE_2DSFull, baris pertama per
+           vendor+item) — sumber penyamaan tabel PRESS PART ke laporan
+           2 Days Stock SPEED. Tab kosong / belum termuat → peta kosong
+           dan tabel berperilaku persis seperti sebelumnya (fail-soft). */
+        var fullMap = {};
+        (state.ngFullRaw || []).forEach(function (fr) {
+          if (!fr.vcode || !fr.item) return;
+          var fk = fr.vcode + '|' + fr.item;
+          if (!fullMap[fk]) fullMap[fk] = fr;
+        });
         rows.forEach(function (r) {
           var key = r.vcode + '|' + r.item;
           var a = map[key];
@@ -3082,6 +3092,34 @@
             a.vcode, a.problemRaw, a.detail,
             sfStockFor(a.vcode, a.item),
             a.delayDiQty != null ? a.delayDiQty : a.totalPcs);
+          /* SAMAKAN DENGAN SPEED — khusus panel PRESS PART (termasuk
+             Standard Part), untuk SEMUA item: bila pasangan vendor+item
+             ada di laporan 2DS lengkap (LIVE_2DSFull — laporan yang sama
+             yang tampil di SPEED, mengikuti aturan tanggal terbit:
+             sebelum 13.00 WIB laporan kemarin, 13.00 ke atas laporan
+             hari ini), kolom RM, WIP, FG, Judgement, Problem 4M, dan
+             Detail Problem diambil VERBATIM dari baris laporan itu,
+             menggantikan nilai peta NG-only LIVE_2DS dan Judgement
+             hitungan lokal (FG vs OS delay) yang bisa berbeda dari
+             Judgement SPEED. Label Problem 4M dihitung ulang dari
+             problem/detail laporan dengan aturan panel Press Part yang
+             sama. Tidak ada di laporan lengkap → nilai lama apa adanya.
+             Panel SURFACE FINISH tidak disentuh; pareto, donat, dan
+             PICA tetap berbasis LIVE_2DS seperti sebelumnya. */
+          if (a.cat !== 'Surface Finish') {
+            var f2 = fullMap[a.vcode + '|' + a.item];
+            if (f2) {
+              if (f2.rm != null) a.rm = f2.rm;
+              if (f2.wip != null) a.wip = f2.wip;
+              if (f2.fg != null) a.fg = f2.fg;
+              var fj = String(f2.judgement || '').trim().toUpperCase();
+              if (fj === 'OK' || fj === 'NG') a.judgement = fj;
+              a.problemRaw = f2.problem || '';
+              a.problem = problemLabel(f2.problem);
+              a.detail = f2.detail || '';
+              a.cat4mo = cat4MO('Press Part', a.vcode, a.problemRaw, a.detail, 0, 0);
+            }
+          }
           a.vendorAbbr = shortVendor(a);
           a.vendorTotal = vendorTotal[a.vcode] || 0;
           delete a._problems; delete a._details; delete a._rawProblems;
@@ -5961,18 +5999,44 @@
              Std 2HK, Judgement, Problem 4M & Detail Problem dari sana.
              Tidak ditemukan di LIVE_2DSFull → perilaku lama (LIVE_2DS).
            · Dari tabel SURFACE FINISH: TIDAK berubah — selalu LIVE_2DS.
-           · Dari Cek Stok (ctx kosong): baris LIVE_2DS tetap utama;
-             LIVE_2DSFull hanya mengisi pasangan item+vendor yang belum
-             ada di LIVE_2DS (tidak menimpa data yang sudah ada). */
+           · Dari Cek Stok (ctx kosong): untuk pasangan item+vendor
+             PRESS PART (termasuk Standard Part — kategori baris bukan
+             Surface Finish, aturan yang sama dengan tabel detail),
+             baris LIVE_2DSFull MENGGANTIKAN baris LIVE_2DS pasangan
+             yang sama — RM, WIP, FG, Std 2HK, Judgement, Problem 4M &
+             Detail Problem ikut laporan tanggalan, bukan hanya mengisi
+             pasangan yang belum ada. Pasangan SURFACE FINISH tidak
+             berubah: baris LIVE_2DS tetap utama dan LIVE_2DSFull hanya
+             mengisi pasangan yang belum ada di LIVE_2DS. */
         var fullRows = (state.ngFullRaw || []).filter(function (r) { return r.item === item; });
         if (ctx && ctx.cat === 'Press Part') {
           var fullHit = fullRows.filter(function (r) { return !!ctx.vcode && r.vcode === ctx.vcode; });
           if (fullHit.length) speed = fullHit;
         } else if (!ctx && fullRows.length) {
-          var haveKey = {};
-          speed.forEach(function (r) { haveKey[(r.vcode || '') + '|' + (r.nick || '')] = true; });
+          var fullByKey = {};
           fullRows.forEach(function (r) {
-            if (!haveKey[(r.vcode || '') + '|' + (r.nick || '')]) speed.push(r);
+            var fk = (r.vcode || '') + '|' + (r.nick || '');
+            if (!fullByKey[fk]) fullByKey[fk] = r;
+          });
+          /* Kategori pasangan menurut vendor: utamakan kategori baris
+             delay item ini di state.rows (categoryOf dari data Manifest);
+             cadangan categoryOf(vcode, nick) — CAT_PRESS / CAT_SURF. */
+          var catByVc = {};
+          (state.rows || []).forEach(function (r) {
+            if (r.item === item && r.vcode && !catByVc[r.vcode]) catByVc[r.vcode] = r.cat;
+          });
+          var haveKey = {};
+          speed = speed.map(function (r) {
+            var k = (r.vcode || '') + '|' + (r.nick || '');
+            haveKey[k] = true;
+            var fr = fullByKey[k];
+            if (!fr) return r;
+            var cat = catByVc[r.vcode] || categoryOf(r.vcode, r.nick || '');
+            return cat === 'Surface Finish' ? r : fr;
+          });
+          fullRows.forEach(function (r) {
+            var k = (r.vcode || '') + '|' + (r.nick || '');
+            if (!haveKey[k]) { haveKey[k] = true; speed.push(r); }
           });
         }
         var desc = (tch && tch.desc) || (sf && sf.desc) || (speed.length ? speed[0].name : '') || '';
