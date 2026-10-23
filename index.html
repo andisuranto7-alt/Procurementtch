@@ -2607,6 +2607,40 @@
         }
         return out;
       }
+      /* LIVE_2DSFull kolom posisional PERSIS seperti LIVE_2DS (Vendor |
+         Item Code | Part Name | RM | WIP | FG | Std 2HK | Judgement |
+         Delay | Manifest | Kategori Problem | Detail Problem), tetapi
+         isinya laporan 2 Days Stock LENGKAP per tanggal terbit yang sama
+         (semua item, OK + NG) — bukan hanya item NG. Parser sama dengan
+         parseNgRaw, ditambah Std 2HK (kolom ke-7) yang memang ditampilkan
+         seksi stok vendor SPEED pada detail item. Dataset ini HANYA
+         dipakai seksi "DI VENDOR — SPEED (2DS)" pada modal Detail Item:
+         pareto, donat 4M, PICA, tabel detail, dan semua hitungan lain
+         tetap membaca LIVE_2DS (state.ngRaw) persis seperti sebelumnya. */
+      function parseNgFullRaw(csv) {
+        var rows = parseCSV(csv);
+        var nick = (BAKED && BAKED.nick) || {};
+        var out = [];
+        for (var i = 1; i < rows.length; i++) {
+          var r = rows[i];
+          if (r.length < 8) continue;
+          var item = String(r[1] || '').trim();
+          if (!item || item.indexOf('.') === -1) continue;
+          var nickname = String(r[0] || '').trim();
+          out.push({
+            nick: nickname,
+            vcode: nick[nickname] || '',
+            item: item,
+            name: String(r[2] || '').trim(),
+            rm: parseNumN(r[3]), wip: parseNumN(r[4]), fg: parseNumN(r[5]),
+            std: parseNumN(r[6]),
+            judgement: String(r[7] || '').trim(),
+            problem: r.length > 10 ? String(r[10] || '').trim() : '',
+            detail: r.length > 11 ? String(r[11] || '').trim() : ''
+          });
+        }
+        return out;
+      }
       function parseMeta(csv) {
         var meta = {};
         parseCSV(csv).forEach(function (r) {
@@ -2972,7 +3006,7 @@
       }
 
       /* ================= State & agregasi ================= */
-      var state = { rows: [], ngRaw: [], updatedAt: '', loading: false, rtSigs: {}, query: '', m4Filter: { 'Press Part': null, 'Surface Finish': null }, extraMap: null, diUnique: null, diAging: null, itemAging: null, diMap: null, grMap: null, diResolved: null, grResolved: null, diWindow: null, diSource: null, grSource: null, sfLive: null, sfLiveNames: null };
+      var state = { rows: [], ngRaw: [], ngFullRaw: [], updatedAt: '', loading: false, rtSigs: {}, query: '', m4Filter: { 'Press Part': null, 'Surface Finish': null }, extraMap: null, diUnique: null, diAging: null, itemAging: null, diMap: null, grMap: null, diResolved: null, grResolved: null, diWindow: null, diSource: null, grSource: null, sfLive: null, sfLiveNames: null };
 
       function numCell(v) { return v == null ? '—' : fmt(v); }
 
@@ -3376,7 +3410,7 @@
           var judge = r.judgement === 'OK'
             ? '<span class="badge green">OK</span>'
             : '<span class="badge red">NG</span>';
-          html += '<div class="rt-row' + (no % 2 ? ' alt' : '') + '" data-item="' + esc(r.item) + '" title="Klik 2× untuk melihat detail item">' +
+          html += '<div class="rt-row' + (no % 2 ? ' alt' : '') + '" data-item="' + esc(r.item) + '" data-vcode="' + esc(r.vcode) + '" title="Klik 2× untuk melihat detail item">' +
             '<span class="c-no num">' + no + '</span>' +
             '<span class="c-item">' + esc(r.item) + '</span>' +
             '<span class="c-vendor">' + esc(r.vendorAbbr) + '</span>' +
@@ -3461,9 +3495,13 @@
          persisten karena baris di-render ulang via innerHTML dan
          digandakan untuk efek running — kedua salinan baris ikut bisa
          diklik 2×. Baris judul vendor (.rt-vendor) tidak memicu apa pun,
-         dan klik biasa (1×) tetap tanpa aksi seperti sebelumnya. */
-      ['rtTrackPress', 'rtTrackSF'].forEach(function (id) {
-        var tr = $(id);
+         dan klik biasa (1×) tetap tanpa aksi seperti sebelumnya.
+         Konteks asal tabel (kategori + kode vendor baris yang diklik)
+         ikut diteruskan: seksi stok vendor SPEED pada detail item
+         memakai LIVE_2DSFull khusus untuk baris dari tabel PRESS PART;
+         tabel SURFACE FINISH berperilaku persis seperti sebelumnya. */
+      [{ id: 'rtTrackPress', cat: 'Press Part' }, { id: 'rtTrackSF', cat: 'Surface Finish' }].forEach(function (tc) {
+        var tr = $(tc.id);
         if (!tr) return;
         tr.addEventListener('dblclick', function (e) {
           var row = e.target && e.target.closest ? e.target.closest('.rt-row') : null;
@@ -3471,7 +3509,7 @@
           var item = row.getAttribute('data-item');
           if (!item) return;
           e.preventDefault();
-          openStock(item);
+          openStock(item, { cat: tc.cat, vcode: row.getAttribute('data-vcode') || '' });
         });
       });
 
@@ -4387,6 +4425,13 @@
         var sfP = fetchText(sheetUrl('LIVE_StockSF')).then(function (csv) {
           return parseStockSFMap(csv);
         }).catch(function () { return null; });
+        /* LIVE_2DSFull juga FAIL-SOFT dengan pola yang sama: tab belum
+           ada / kosong / gagal muat → null, baris lengkap terakhir yang
+           baik tetap dipakai dan tarikan utama tidak ikut gagal. Isinya
+           hanya dipakai seksi stok vendor SPEED pada Detail Item. */
+        var fullP = fetchText(sheetUrl('LIVE_2DSFull')).then(function (csv) {
+          return parseNgFullRaw(csv);
+        }).catch(function () { return null; });
         Promise.all([
           fetchText(sheetUrl('LIVE_Meta')),
           fetchText(sheetUrl('LIVE_Delay')),
@@ -4394,7 +4439,8 @@
           extraP,
           diP,
           grP,
-          sfP
+          sfP,
+          fullP
         ]).then(function (csvs) {
           var meta = parseMeta(csvs[0]);
           if (!meta.last_update) throw new Error('LIVE_Meta tidak lengkap');
@@ -4402,6 +4448,7 @@
           if (csvs[4]) state.diMap = csvs[4];
           if (csvs[5]) state.grMap = csvs[5];
           if (csvs[6]) { state.sfLive = csvs[6].map; state.sfLiveNames = csvs[6].names; }
+          if (csvs[7]) state.ngFullRaw = csvs[7];
           if (meta.di_window) state.diWindow = meta.di_window;
           if (meta.di_manifest_source) state.diSource = meta.di_manifest_source;
           if (meta.gr_source) state.grSource = meta.gr_source;
@@ -5766,7 +5813,8 @@
           fetchText(sheetUrl('LIVE_StockSF')).then(parseStockSF).catch(function () { return null; }),
           fetchText(sheetUrl('LIVE_Meta')).then(parseMeta).catch(function () { return null; }),
           fetchText(sheetUrl('LIVE_ItemSupply')).then(parseItemSupply).catch(function () { return null; }),
-          fetchText(sheetUrl('LIVE_ItemPO')).then(parseItemPO).catch(function () { return null; })
+          fetchText(sheetUrl('LIVE_ItemPO')).then(parseItemPO).catch(function () { return null; }),
+          fetchText(sheetUrl('LIVE_2DSFull')).then(parseNgFullRaw).catch(function () { return null; })
         ]).then(function (res) {
           if (res[2]) {
             updateTwodsLabel(res[2]);
@@ -5780,6 +5828,7 @@
           stockState.sf = res[1];
           stockState.supply = res[3];
           stockState.itemPO = res[4];
+          if (res[5]) state.ngFullRaw = res[5];
           stockState.loaded = true;
           stockState.failed = !res[0] && !res[1];
           stockState.loading = false;
@@ -5898,13 +5947,34 @@
       function fmtDateId(t, raw) {
         return t ? t.d + ' ' + MONTHS_ID[t.mo - 1] + ' ' + t.y : (raw || '—');
       }
-      function renderStockDetail(item) {
+      function renderStockDetail(item, ctx) {
         var box = $('stockResults'), det = $('stockDetail');
         box.innerHTML = '';
         $('stockStatus').textContent = '';
         var tch = stockState.tch ? stockState.tch[item] : null;
         var sf = stockState.sf ? stockState.sf[item] : null;
         var speed = state.ngRaw.filter(function (r) { return r.item === item; });
+        /* Sumber baris seksi "DI VENDOR — SPEED (2DS)" menurut asal buka:
+           · Dari tabel detail PRESS PART (ctx.cat 'Press Part', termasuk
+             Standard Part): baris (Item Code + Vendor) diambil dari
+             LIVE_2DSFull (laporan 2DS lengkap, OK + NG) — RM, WIP, FG,
+             Std 2HK, Judgement, Problem 4M & Detail Problem dari sana.
+             Tidak ditemukan di LIVE_2DSFull → perilaku lama (LIVE_2DS).
+           · Dari tabel SURFACE FINISH: TIDAK berubah — selalu LIVE_2DS.
+           · Dari Cek Stok (ctx kosong): baris LIVE_2DS tetap utama;
+             LIVE_2DSFull hanya mengisi pasangan item+vendor yang belum
+             ada di LIVE_2DS (tidak menimpa data yang sudah ada). */
+        var fullRows = (state.ngFullRaw || []).filter(function (r) { return r.item === item; });
+        if (ctx && ctx.cat === 'Press Part') {
+          var fullHit = fullRows.filter(function (r) { return !!ctx.vcode && r.vcode === ctx.vcode; });
+          if (fullHit.length) speed = fullHit;
+        } else if (!ctx && fullRows.length) {
+          var haveKey = {};
+          speed.forEach(function (r) { haveKey[(r.vcode || '') + '|' + (r.nick || '')] = true; });
+          fullRows.forEach(function (r) {
+            if (!haveKey[(r.vcode || '') + '|' + (r.nick || '')]) speed.push(r);
+          });
+        }
         var desc = (tch && tch.desc) || (sf && sf.desc) || (speed.length ? speed[0].name : '') || '';
         var h = '<button type="button" class="stock-back" id="stockBack">← Kembali ke hasil pencarian</button>';
         h += '<p class="stock-d-title">' + esc(item) + '</p>';
@@ -6054,6 +6124,7 @@
         if (speed.length) {
           h += '<div class="stock-lines">' + speed.map(function (r) {
             var sub = 'RM ' + numCell(r.rm) + ' · WIP ' + numCell(r.wip) + ' · FG ' + numCell(r.fg) +
+              (r.std != null ? ' · Std 2HK ' + numCell(r.std) : '') +
               (r.judgement ? ' · Judgement ' + r.judgement : '') +
               (r.problem ? ' · Problem 4M: ' + r.problem : '') +
               (r.detail ? ' — ' + r.detail : '');
@@ -6152,6 +6223,8 @@
          pencarian normalnya yang tampil. */
       function stockDetailFor(item) {
         stockState.pendingItem = null;
+        var ctx = stockState.pendingCtx || null;
+        stockState.pendingCtx = null;
         runStockSearch(item);
         var known = stockIndex().some(function (e) { return e.item === item; });
         if (!known && state.extraMap) {
@@ -6164,20 +6237,24 @@
             return k.split('|')[1] === item;
           });
         }
-        if (known) renderStockDetail(item);
+        if (known) renderStockDetail(item, ctx);
       }
-      function openStock(item) {
+      function openStock(item, ctx) {
         stockOverlay.hidden = false;
         stockOverlay.scrollTop = 0;
         document.body.style.overflow = 'hidden';
         if (typeof item === 'string' && item) {
           /* Dibuka dari modal Detail Kejadian: cari item code itu dan
              buka detail stoknya (menunggu data stok selesai dimuat bila
-             panel ini baru pertama kali dibuka). */
+             panel ini baru pertama kali dibuka). ctx (opsional) = konteks
+             asal buka dari klik 2× tabel detail — {cat, vcode}; pemanggil
+             lain (Cek Stok, notifikasi, Tanya Data) tidak mengirim ctx
+             sehingga detailnya berperilaku persis seperti sebelumnya. */
           var qIn = $('stockQuery');
           if (qIn) qIn.value = item;
           stockState.lastQuery = item;
           stockState.pendingItem = item;
+          stockState.pendingCtx = ctx || null;
           if (stockState.loaded) stockDetailFor(item);
           else if (!stockState.loading) loadStock(false);
           return;
