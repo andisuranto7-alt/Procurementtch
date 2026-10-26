@@ -6120,13 +6120,18 @@
         return shortVendor({ vcode: code, vname: '' });
       }
       /* Tiga hari terakhir menurut tanggal berjalan WIB (Asia/Jakarta):
-         hari ini, kemarin, dua hari lalu — urut terbaru dulu. */
+         hari ini, kemarin, dua hari lalu — urut terbaru dulu. Supply hari
+         MINGGU tidak dihitung (instruksi Mas Andi 26 Okt 2026): Minggu
+         dilewati dan diganti hari sebelumnya, jadi tetap tampil 3 hari —
+         mis. dari Senin menjadi Senin, Sabtu, Jumat. Hanya untuk jendela
+         supply ini; data & seksi lain tidak berubah. */
       function last3DaysJkt() {
         var p = fmtParts(JKT_DATE_FMT, new Date());
         var base = Date.UTC(+p.year, +p.month - 1, +p.day);
         var out = [];
-        for (var k = 0; k < 3; k++) {
+        for (var k = 0; out.length < 3; k++) {
           var dt = new Date(base - k * 864e5);
+          if (dt.getUTCDay() === 0) continue; /* Minggu dilewati */
           out.push({
             iso: dt.getUTCFullYear() + '-' + pad2(dt.getUTCMonth() + 1) + '-' + pad2(dt.getUTCDate()),
             wd: dt.getUTCDay(), d: dt.getUTCDate(), mo: dt.getUTCMonth() + 1
