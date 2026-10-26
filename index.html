@@ -5742,6 +5742,10 @@
          · LIVE_ItemPO → PO outstanding per item (Item Code | No PO |
            Vendor Code | Vendor Name | Qty PO | OS PO | Delivery Date |
            Kategori) untuk seksi OS PER PO
+         · LIVE_SupplyMaterial & LIVE_SupplyMaterialMap → pemetaan
+           pokayoke Code PO (itemcode untuk PO) ↔ Code Material (itemcode
+           yang dikirimkan ke supplier SF) untuk blok yokoten di seksi
+           SUPPLY KE SF & seksi SUPPLY MATERIAL (BOOK1)
          · Sisi vendor SPEED memakai state.ngRaw (baris LIVE_2DS yang
            sudah dimuat halaman; snapshot BAKED.ng saat offline).
          Label sumber dari LIVE_Meta (stock_tch_source / stock_sf_source /
@@ -5756,7 +5760,8 @@
       var stockState = {
         loaded: false, loading: false, failed: false,
         tch: null, sf: null, tchSource: '', sfSource: '', lastQuery: '',
-        supply: null, itemPO: null, giSource: '', giLastDate: '', poSource: ''
+        supply: null, itemPO: null, giSource: '', giLastDate: '', poSource: '',
+        supMat: null, supMap: null
       };
       function bakedNgRaw() {
         var out = [], ng = (BAKED && BAKED.ng) || {};
@@ -5886,6 +5891,95 @@
         }
         return n ? byItem : null;
       }
+      /* LIVE_SupplyMaterial kolom (nama header): Code Material (Supply) |
+         Partname | Type | Proses (WIP) | Jumlah Code PO | Daftar Code PO
+         Sumber. Hasil = { byMat: { kode material: {code, name, type,
+         proses, sources: [Code PO]} }, poMats: { Code PO: [kode
+         material] } } — poMats adalah balikan dari Daftar Code PO
+         Sumber. Material tidak valid pada sumber (kode '0'/kosong)
+         dibuang. Tab kosong/header tak dikenal → null. */
+      function parseSupplyMaterial(csv) {
+        var rows = parseCSV(csv);
+        if (rows.length < 2) return null;
+        var col = stockHeadIdx(rows);
+        var cM = col('code material (supply)'), cN = col('partname'),
+            cT = col('type'), cP = col('proses (wip)'), cS = col('daftar code po sumber');
+        if (cM < 0 || cS < 0) return null;
+        var byMat = {}, poMats = {}, n = 0;
+        for (var i = 1; i < rows.length; i++) {
+          var r = rows[i];
+          var code = String(r[cM] || '').trim();
+          if (!code || code === '0') continue;
+          var e = byMat[code];
+          if (!e) e = byMat[code] = { code: code, name: '', type: '', proses: '', sources: [] };
+          if (!e.name && cN >= 0) e.name = String(r[cN] || '').trim();
+          if (!e.type && cT >= 0) e.type = String(r[cT] || '').trim();
+          if (!e.proses && cP >= 0) e.proses = String(r[cP] || '').trim();
+          String(r[cS] || '').split(/[\s,;]+/).forEach(function (po) {
+            po = po.trim();
+            if (!po) return;
+            if (e.sources.indexOf(po) < 0) e.sources.push(po);
+            var lst = poMats[po] || (poMats[po] = []);
+            if (lst.indexOf(code) < 0) lst.push(code);
+          });
+          n++;
+        }
+        return n ? { byMat: byMat, poMats: poMats } : null;
+      }
+      /* LIVE_SupplyMaterialMap kolom: Code PO | Partname | Code Material |
+         Type | Proses (WIP). Hasil = { Code PO: [kode material] }.
+         Tab ini di spreadsheet saat ini memuat SATU baris gabungan di
+         baris pertama (setiap sel = nama kolom + seluruh nilai kolom itu
+         dipisah spasi) diikuti baris-baris normal tanpa header; parser
+         menangani kedua bentuk: baris gabungan diurai per token untuk
+         kolom Code PO & Code Material (kode tidak mengandung spasi dan
+         jumlah token kedua kolom harus sama), baris sesudahnya dibaca
+         posisional. Bila tab suatu saat diperbaiki menjadi header +
+         baris normal, jalur header yang dipakai. Pasangan material
+         '0'/kosong (baris "Tidak valid") dibuang. */
+      function parseSupplyMap(csv) {
+        var rows = parseCSV(csv);
+        if (!rows.length) return null;
+        var poMats = {}, n = 0;
+        function add(po, mat) {
+          po = String(po || '').trim(); mat = String(mat || '').trim();
+          if (!po || !mat || mat === '0') return;
+          var lst = poMats[po] || (poMats[po] = []);
+          if (lst.indexOf(mat) < 0) { lst.push(mat); n++; }
+        }
+        var col = stockHeadIdx(rows);
+        var cPO = col('code po'), cM = col('code material');
+        if (cPO < 0 || cM < 0) {
+          var t0 = String((rows[0] || [])[0] || '').split(/\s+/);
+          var t2 = String((rows[0] || [])[2] || '').split(/\s+/);
+          if (t0.length > 3 && t2.length > 3 &&
+              t0[0].toLowerCase() === 'code' && t0[1].toLowerCase() === 'po' &&
+              t2[0].toLowerCase() === 'code' && t2[1].toLowerCase() === 'material') {
+            var pos = t0.slice(2), mats = t2.slice(2);
+            if (pos.length === mats.length) {
+              for (var k = 0; k < pos.length; k++) add(pos[k], mats[k]);
+            }
+          }
+          cPO = 0; cM = 2;
+        }
+        for (var i = 1; i < rows.length; i++) {
+          var r = rows[i];
+          if (!r || r.length <= Math.max(cPO, cM)) continue;
+          add(r[cPO], r[cM]);
+        }
+        return n ? poMats : null;
+      }
+      /* Daftar Code Material supply untuk sebuah Code PO: gabungan tab
+         LIVE_SupplyMaterialMap & balikan LIVE_SupplyMaterial, tanpa
+         duplikat. Satu Code PO bisa punya lebih dari satu Code Material
+         — semuanya dikembalikan. */
+      function supplyMatsFor(po) {
+        var out = [];
+        function push(m) { if (out.indexOf(m) < 0) out.push(m); }
+        if (stockState.supMap && stockState.supMap[po]) stockState.supMap[po].forEach(push);
+        if (stockState.supMat && stockState.supMat.poMats[po]) stockState.supMat.poMats[po].forEach(push);
+        return out;
+      }
       function loadStock(isRefresh) {
         if (stockState.loading) return;
         stockState.loading = true;
@@ -5896,7 +5990,9 @@
           fetchText(sheetUrl('LIVE_Meta')).then(parseMeta).catch(function () { return null; }),
           fetchText(sheetUrl('LIVE_ItemSupply')).then(parseItemSupply).catch(function () { return null; }),
           fetchText(sheetUrl('LIVE_ItemPO')).then(parseItemPO).catch(function () { return null; }),
-          fetchText(sheetUrl('LIVE_2DSFull')).then(parseNgFullRaw).catch(function () { return null; })
+          fetchText(sheetUrl('LIVE_2DSFull')).then(parseNgFullRaw).catch(function () { return null; }),
+          fetchText(sheetUrl('LIVE_SupplyMaterial')).then(parseSupplyMaterial).catch(function () { return null; }),
+          fetchText(sheetUrl('LIVE_SupplyMaterialMap')).then(parseSupplyMap).catch(function () { return null; })
         ]).then(function (res) {
           if (res[2]) {
             updateTwodsLabel(res[2]);
@@ -5911,6 +6007,8 @@
           stockState.supply = res[3];
           stockState.itemPO = res[4];
           if (res[5]) state.ngFullRaw = res[5];
+          stockState.supMat = res[6];
+          stockState.supMap = res[7];
           stockState.loaded = true;
           stockState.failed = !res[0] && !res[1];
           stockState.loading = false;
@@ -5937,6 +6035,22 @@
         });
         if (stockState.sf) Object.keys(stockState.sf).forEach(function (k) {
           var e = get(k); e.sf = true; if (!e.desc) e.desc = stockState.sf[k].desc;
+        });
+        /* Item supply pokayoke ikut terindeks supaya Code Material bisa
+           dicari langsung & Code PO yang hanya dikenal dari pemetaan
+           supply tetap membuka detailnya (seksi SUPPLY MATERIAL). */
+        if (stockState.supMat) Object.keys(stockState.supMat.byMat).forEach(function (k) {
+          var e = get(k); if (!e.desc) e.desc = stockState.supMat.byMat[k].name;
+        });
+        [stockState.supMap, stockState.supMat ? stockState.supMat.poMats : null].forEach(function (pm) {
+          if (!pm) return;
+          Object.keys(pm).forEach(function (k) {
+            var e = get(k);
+            if (!e.desc) {
+              var ms = supplyMatsFor(k);
+              if (ms.length && stockState.supMat && stockState.supMat.byMat[ms[0]]) e.desc = stockState.supMat.byMat[ms[0]].name;
+            }
+          });
         });
         state.ngRaw.forEach(function (r) {
           var e = get(r.item); e.speed = true; if (!e.desc && r.name) e.desc = r.name;
@@ -6291,6 +6405,45 @@
           if (gd) giNote = 'Data GI terakhir: ' + gd.d + ' ' + MONTHS_ID[gd.mo - 1] + ' ' + gd.y + ' · ';
           h += '<p class="src-note">' + esc(giNote) + 'Sumber: ' + esc(stockState.giSource || 'Data GI pengiriman ke vendor SF (tab LIVE_ItemSupply)') + '</p>';
         }
+        /* Yokoten pokayoke: item yang dicari adalah Code PO — supply ke
+           SF untuk item ini tercatat memakai Code Material (itemcode
+           yang dikirimkan ke supplier SF), jadi stok SF & GI supply di
+           bawah dibaca dari Code Material itu, bukan dari Code PO-nya.
+           Satu Code PO bisa punya lebih dari satu Code Material —
+           semuanya ditampilkan. Klik Code Material membuka detailnya. */
+        var yokoMats = supplyMatsFor(item);
+        if (yokoMats.length) {
+          h += '<div class="stock-block"><p class="stock-subh">SUPPLY MEMAKAI CODE MATERIAL (POKAYOKE)</p>';
+          h += '<p class="none-note">Item ini Code PO — supply ke vendor SF tercatat dengan Code Material berikut:</p>';
+          yokoMats.forEach(function (mc) {
+            var minfo = stockState.supMat ? stockState.supMat.byMat[mc] : null;
+            h += '<button type="button" class="stock-hit" data-stock-item="' + esc(mc) + '">' +
+              '<span class="sh-item">' + esc(mc) + '</span>' +
+              '<span class="sh-desc">' + esc(minfo && minfo.name ? minfo.name : 'Code Material supply') + '</span></button>';
+            var msf = stockState.sf ? stockState.sf[mc] : null;
+            if (msf) {
+              h += '<div class="stock-lines">' + msf.rows.map(function (r) {
+                return stockLine(r.vname || r.vcode, r.vcode, r.qty);
+              }).join('') +
+                '<div class="stock-line total"><span class="sl-name">Total stok SF (' + esc(mc) + ')</span><span class="sl-qty">' + fmt(msf.total) + ' pcs</span></div></div>';
+            } else if (stockState.sf) {
+              h += '<p class="none-note">Code material ini tidak ada di stok vendor SF.</p>';
+            }
+            var msup = stockState.supply ? stockState.supply[mc] : null;
+            if (stockState.supply) {
+              if (msup && msup.order.length) {
+                h += '<div class="stock-lines">' + last3DaysJkt().map(function (dy) {
+                  var t = 0;
+                  msup.order.forEach(function (c) { t += msup.subs[c][dy.iso] || 0; });
+                  return supplyDayLine(dy, t);
+                }).join('') + '</div>';
+              } else {
+                h += '<p class="none-note">Tidak ada GI supply tercatat untuk code material ini (3 hari terakhir).</p>';
+              }
+            }
+          });
+          h += '</div>';
+        }
         h += '</div>';
         /* e. OS per PO — semua PO outstanding item ini (LIVE_ItemPO),
            urut tanggal delivery terlama dulu, ditutup total OS PO. */
@@ -6319,6 +6472,53 @@
               '<div class="stock-line total"><span class="sl-name">Total OS PO</span><span class="sl-qty">' + fmt(totOsPO) + ' pcs</span></div></div>';
           }
           h += '<p class="src-note">Sumber: ' + esc(stockState.poSource || 'Data PO outstanding (tab LIVE_ItemPO)') + '</p>';
+        }
+        h += '</div>';
+        /* f. Supply material (Book1/pokayoke) — pemetaan Code PO ↔ Code
+           Material. Item yang dicari Code PO → Code Material-nya tampil
+           (bisa lebih dari satu, semua ditampilkan). Item itu sendiri
+           Code Material → Type, Proses (WIP) & daftar Code PO sumbernya
+           tampil. Kedua tab gagal muat → keterangan tidak tersedia,
+           bukan daftar kosong. */
+        h += '<div class="stock-sec"><h3>SUPPLY MATERIAL (BOOK1)</h3>';
+        if (!stockState.supMat && !stockState.supMap) {
+          h += '<p class="none-note">Data supply material (Book1) belum tersedia saat ini. Periksa koneksi internet, lalu coba lagi lewat Refresh Data.</p>';
+        } else {
+          var smInfo = stockState.supMat ? stockState.supMat.byMat[item] : null;
+          var smMats = supplyMatsFor(item);
+          if (!smInfo && !smMats.length) {
+            h += '<p class="none-note">Item ini tidak ada di daftar supply material (Book1).</p>';
+          }
+          if (smMats.length) {
+            h += '<p class="stock-subh">CODE MATERIAL UNTUK ITEM (CODE PO) INI</p>';
+            smMats.forEach(function (mc) {
+              var mi = stockState.supMat ? stockState.supMat.byMat[mc] : null;
+              h += '<button type="button" class="stock-hit" data-stock-item="' + esc(mc) + '">' +
+                '<span class="sh-item">' + esc(mc) + '</span>' +
+                '<span class="sh-desc">' + esc(mi && mi.name ? mi.name : 'Code Material supply') + '</span></button>';
+              if (mi) {
+                h += '<div class="stock-lines">' +
+                  '<div class="stock-line"><span class="sl-name">Type</span><span class="sl-qty">' + esc(mi.type || '—') + '</span></div>' +
+                  '<div class="stock-line"><span class="sl-name">Proses (WIP)</span><span class="sl-qty">' + esc(mi.proses || '—') + '</span></div>' +
+                  '</div>';
+              }
+            });
+          }
+          if (smInfo) {
+            h += '<p class="stock-subh">ITEM INI ADALAH CODE MATERIAL SUPPLY</p>';
+            h += '<div class="stock-lines">' +
+              '<div class="stock-line"><span class="sl-name">Type</span><span class="sl-qty">' + esc(smInfo.type || '—') + '</span></div>' +
+              '<div class="stock-line"><span class="sl-name">Proses (WIP)</span><span class="sl-qty">' + esc(smInfo.proses || '—') + '</span></div>' +
+              '<div class="stock-line"><span class="sl-name">Jumlah Code PO sumber</span><span class="sl-qty">' + fmt(smInfo.sources.length) + '</span></div></div>';
+            if (smInfo.sources.length) {
+              h += '<p class="stock-subh">CODE PO SUMBER</p>' + smInfo.sources.map(function (po) {
+                return '<button type="button" class="stock-hit" data-stock-item="' + esc(po) + '">' +
+                  '<span class="sh-item">' + esc(po) + '</span>' +
+                  '<span class="sh-desc">' + esc(smInfo.name || 'Code PO') + '</span></button>';
+              }).join('');
+            }
+          }
+          h += '<p class="src-note">Sumber: Daftar supply material Book1 (tab LIVE_SupplyMaterial &amp; LIVE_SupplyMaterialMap). Code PO = itemcode untuk PO; Code Material = itemcode yang dikirimkan ke supplier SF. Daftar ini tidak memuat kolom vendor.</p>';
         }
         h += '</div>';
         det.innerHTML = h;
@@ -6394,6 +6594,12 @@
       $('stockResults').addEventListener('click', function (e) {
         var el = e.target && e.target.closest ? e.target.closest('[data-stock-item]') : null;
         if (el) renderStockDetail(el.getAttribute('data-stock-item'));
+      });
+      /* Klik Code Material / Code PO di dalam detail (blok yokoten &
+         seksi SUPPLY MATERIAL) membuka detail item yang diklik. */
+      $('stockDetail').addEventListener('click', function (e) {
+        var el = e.target && e.target.closest ? e.target.closest('[data-stock-item]') : null;
+        if (el) stockDetailFor(el.getAttribute('data-stock-item'));
       });
 
       /* ================= TANYA DATA — asisten data lokal =================
