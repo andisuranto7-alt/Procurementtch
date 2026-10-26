@@ -501,17 +501,17 @@
          >2 HK per vendor — merah bata profesional (keluarga --red
          halaman), titik ber-ring putih, label angka sewarna garis.
          Sumbu yang sama dengan batang (satuan item). */
-      .p-aging { fill: none; stroke: #b91c1c; stroke-width: 2.5; stroke-linejoin: round; stroke-linecap: round; pointer-events: none; }
-      .p-adot { fill: #b91c1c; stroke: #ffffff; stroke-width: 1.3; pointer-events: none; }
-      .p-alab { fill: #b91c1c; font-size: 7.5px; font-weight: 700; pointer-events: none; }
+      .p-aging { fill: none; stroke: #ffffff; stroke-width: 2.5; stroke-linejoin: round; stroke-linecap: round; pointer-events: none; }
+      .p-adot { fill: #ffffff; stroke: #ffffff; stroke-width: 1.3; pointer-events: none; }
+      .p-alab { fill: #ffffff; font-size: 7.5px; font-weight: 700; pointer-events: none; }
       /* Legenda di dalam kartu Pareto — hanya tampil bila garis aging
          tergambar (data itemAging LIVE tersedia & valid per vendor) */
       .pareto-legend { display: flex; flex-wrap: wrap; gap: 2px 11px; margin: 2px 0 1px; font-size: 10px; color: var(--ink-2); }
       .pareto-legend[hidden] { display: none; }
       .pareto-legend .pl-item { display: inline-flex; align-items: center; gap: 5px; white-space: nowrap; }
       .pareto-legend .pl-sw { width: 9px; height: 9px; border-radius: 2.5px; flex: 0 0 auto; }
-      .pareto-legend .pl-sw-line { position: relative; width: 15px; height: 0; border-top: 2.5px solid #b91c1c; border-radius: 2px; flex: 0 0 auto; }
-      .pareto-legend .pl-sw-line::after { content: ''; position: absolute; left: 50%; top: 50%; width: 4.6px; height: 4.6px; transform: translate(-50%, -50%); border-radius: 50%; background: #b91c1c; border: 1.1px solid #ffffff; box-shadow: 0 0 0 .7px #b91c1c; }
+      .pareto-legend .pl-sw-line { position: relative; width: 15px; height: 0; border-top: 2.5px solid #ffffff; border-radius: 2px; flex: 0 0 auto; }
+      .pareto-legend .pl-sw-line::after { content: ''; position: absolute; left: 50%; top: 50%; width: 4.6px; height: 4.6px; transform: translate(-50%, -50%); border-radius: 50%; background: #ffffff; border: 1.1px solid #ffffff; box-shadow: 0 0 0 .7px #ffffff; }
       /* Efek "gelombang live" Pareto (murni animasi CSS/SVG ringan, tanpa
          interval JS baru): batang tumbuh halus tiap grafik digambar ulang
          dan gelombang sinus lembut mengalir di pita bawah area plot
@@ -3418,7 +3418,7 @@
           $(c[3]).textContent = 'PARETO ITEM DELAY — ' + c[0].toUpperCase();
           $(c[2]).textContent = fmt(catRows.length) + ' Item · ' + Object.keys(vendors).length + ' vendor';
           if (lineReady) {
-            $(c[4]).textContent = 'Bar = jumlah Item delay per vendor · garis merah = Item Aging >2 HK · klik batang untuk detail vendor';
+            $(c[4]).textContent = 'Bar = jumlah Item delay per vendor · garis putih = Item Aging >2 HK · klik batang untuk detail vendor';
           } else {
             $(c[4]).textContent = 'Bar = jumlah Item delay semua vendor · klik batang untuk detail vendor';
           }
