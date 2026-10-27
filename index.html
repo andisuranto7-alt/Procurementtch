@@ -1640,6 +1640,79 @@
         @keyframes tvFadeIn { from { opacity: 0; } to { opacity: 1; } }
       }
       @media (prefers-reduced-motion: reduce) { #tvFade { transition: none; } }
+
+      /* ---------- Reminder Ordering PPIC (DI Manifest) ----------
+         Modal sendiri berpola sama dengan modal Cek Stok / PICA / LMTP
+         (overlay + lembar terang + header sticky + tombol tutup). Isinya
+         dua tabel dari LIVE_2DSFull untuk User DI Manifest (PPIC): stok
+         Press Part ready tanpa manifest & stok di bawah Std 2HK. Tombol
+         Download PDF memakai window.print() — stylesheet cetak di bawah
+         membuat HANYA modal ini yang tercetak (aktif saat body.rem-open). */
+      .btn-rem { background: #fff; color: var(--brand); border-color: var(--line-strong); box-shadow: var(--shadow); }
+      .btn-rem:hover { background: var(--brand-soft); color: var(--brand-dark); border-color: var(--accent); box-shadow: var(--shadow); }
+      .rem-overlay { z-index: 306; }
+      .rem-sheet { width: min(1280px, 100%); }
+      .rem-head { align-items: center; }
+      .rem-head h2 { font-size: 21px; letter-spacing: .8px; }
+      .rem-head p { font-weight: 600; }
+      .rem-dl { flex: 0 0 auto; margin-left: auto; background: var(--brand); color: #fff; border-color: var(--brand-dark); box-shadow: var(--shadow); }
+      .rem-dl:hover { background: var(--brand-dark); color: #fff; border-color: var(--brand-dark); }
+      .rem-head .pica-close { margin-left: 0; }
+      .rem-body { gap: 26px; }
+      .rem-sec-title { margin: 0 0 8px; font-size: 18px; font-weight: 700; letter-spacing: .4px; color: var(--brand-dark); display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+      .rem-count { font-size: 12.5px; font-weight: 700; letter-spacing: .3px; background: var(--brand-soft); color: var(--brand); border: 1px solid var(--line-strong); border-radius: 999px; padding: 3px 11px; white-space: nowrap; }
+      .rem-act { margin: 0 0 10px; font-size: 13.5px; line-height: 1.55; border-radius: 10px; padding: 10px 13px; }
+      .rem-act.go { background: var(--green-bg); border: 1px solid #9fd4ba; color: #14532d; }
+      .rem-act.must { background: #fff5f4; border: 1.5px solid #f0a49f; color: #7c211c; font-weight: 600; }
+      table.rem-tbl { min-width: 880px; }
+      table.rem-tbl td.code { font-family: "IBM Plex Mono", ui-monospace, monospace; font-size: 12.5px; font-weight: 600; color: var(--brand-dark); }
+      table.rem-tbl td.pname { white-space: normal; min-width: 160px; }
+      table.rem-tbl td.write { min-width: 140px; }
+      .rem-nopo { display: inline-block; background: var(--red-bg); color: var(--red); border: 1px solid #f0a49f; border-radius: 7px; padding: 2px 7px; font-size: 11.5px; font-weight: 700; line-height: 1.35; }
+      .rem-note { margin: 9px 0 0; font-size: 12.5px; color: var(--muted); line-height: 1.55; }
+      .rem-print-head, .rem-print-foot { display: none; }
+      @media (max-width: 760px) {
+        .rem-overlay { padding: 0; }
+        .rem-sheet { width: 100%; min-height: 100dvh; margin: 0; border: 0; border-radius: 0; }
+        .rem-head { flex-wrap: wrap; border-radius: 0; }
+        .rem-head h2 { font-size: 17px; }
+        .rem-dl { margin-left: 0; }
+        .rem-sec-title { font-size: 16px; }
+      }
+      @media (prefers-reduced-motion: reduce) { .rem-sheet { animation: none; } }
+      /* ---- Cetak (Download PDF): hanya modal Reminder yang tercetak.
+         Kepala cetak (judul + tanggal + sumber) & footer memakai
+         position:fixed khusus cetak sehingga terulang di tiap halaman;
+         <thead> tabel ikut terulang; seksi 2 mulai di halaman baru.
+         Aturan @page (A4 landscape + margin) disuntik JS selama modal
+         terbuka (elemen #remPageStyle) agar cetak halaman utama di luar
+         modal tidak berubah. ---- */
+      @media print {
+        body.rem-open > *:not(#remOverlay) { display: none !important; }
+        body.rem-open { background: #fff !important; }
+        body.rem-open #remOverlay { position: static !important; display: block !important; overflow: visible !important; background: #fff !important; padding: 0 !important; }
+        body.rem-open .rem-sheet { width: 100% !important; margin: 0 !important; border: 0 !important; border-radius: 0 !important; box-shadow: none !important; animation: none !important; background: #fff !important; }
+        body.rem-open .rem-head { display: none !important; }
+        body.rem-open .rem-noprint { display: none !important; }
+        body.rem-open .rem-body { padding: 0 0 12mm !important; gap: 0 !important; }
+        body.rem-open .rem-print-head { display: block !important; position: fixed; top: 0; left: 0; right: 0; text-align: center; }
+        body.rem-open .rem-print-head .rph-title { font-size: 16pt; font-weight: 700; letter-spacing: .5px; color: #000; }
+        body.rem-open .rem-print-head .rph-meta { font-size: 10.5pt; color: #333; margin-top: 2px; }
+        body.rem-open .rem-print-foot { display: block !important; position: fixed; bottom: 0; left: 0; right: 0; text-align: center; font-size: 9.5pt; color: #444; border-top: 1px solid #999; padding-top: 4px; }
+        body.rem-open .rem-sec-title { font-size: 13.5pt; color: #000; margin: 0 0 6px; }
+        body.rem-open .rem-count { border: 1px solid #666; color: #000; background: #fff !important; }
+        body.rem-open .rem-act { font-size: 11pt; border: 1px solid #666 !important; background: #fff !important; color: #000 !important; }
+        body.rem-open .rem-tblwrap { overflow: visible !important; border: 0 !important; border-radius: 0 !important; box-shadow: none !important; background: #fff !important; }
+        body.rem-open table.rem-tbl { min-width: 0 !important; width: 100% !important; font-size: 10.5pt; }
+        body.rem-open table.rem-tbl th, body.rem-open table.rem-tbl td { border: 1px solid #555 !important; white-space: normal !important; padding: 5px 6px !important; color: #000 !important; background: #fff !important; }
+        body.rem-open table.rem-tbl th { background: #e7e7e7 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; font-size: 10pt; }
+        body.rem-open table.rem-tbl thead { display: table-header-group; }
+        body.rem-open table.rem-tbl tr { page-break-inside: avoid; }
+        body.rem-open table.rem-tbl td.write { height: 34px; }
+        body.rem-open .rem-nopo { border: 1px solid #555; background: #fff !important; color: #000; }
+        body.rem-open .rem-note { color: #000; font-size: 10.5pt; }
+        body.rem-open .rem-sec2 { break-before: page; page-break-before: always; }
+      }
     </style>
   </head>
   <body>
@@ -1700,6 +1773,10 @@
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 8.2 12 3.5 3 8.2v7.6L12 20.5l9-4.7z"/><path d="M3 8.2l9 4.7 9-4.7"/><path d="M12 12.9v7.6"/></svg>
           Cek Stok
         </button>
+        <button type="button" class="btn btn-rem" id="sbRemBtn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="4.5" width="14" height="17" rx="2"/><path d="M9.5 4.5a2.5 2.5 0 0 1 5 0"/><path d="M9 11h6M9 15h4"/></svg>
+          Reminder Ordering PPIC
+        </button>
       </div>
     </aside>
     <div class="sb-backdrop" id="sbBackdrop"></div>
@@ -1747,6 +1824,9 @@
           </button>
           <button type="button" class="btn btn-lmtp" id="lmtpBtn" aria-haspopup="dialog" title="Buka Pencapaian Delivery Supplier — basis LMTP SPEED (Quality & Quantity)">
             🏆 Pencapaian Delivery Supplier
+          </button>
+          <button type="button" class="btn btn-rem" id="remBtn" aria-haspopup="dialog" title="Reminder ordering DI Manifest untuk PPIC — stok Press Part ready tanpa manifest & stok di bawah Std 2HK (dari LIVE_2DSFull)">
+            📋 Reminder Ordering PPIC
           </button>
           <button type="button" class="btn btn-tv" id="tvBtn" aria-pressed="false" title="Mode TV: layar penuh & putar otomatis — halaman utama 10 menit, lalu slide Pencapaian Delivery Supplier (Delivery ±5 detik → Quality ±5 detik)">
             📺 Mode TV
@@ -2165,6 +2245,33 @@
             <p id="lmtpSnapNote">Tab LIVE_LMTP belum terbaca — seluruh angka yang tampil adalah <b>Snapshot 22 Okt 2026</b> (data SPEED per tanggal itu; nilai Jul–Sep pada snapshot berasal dari LMTP Monthly SPEED per 22 Okt 2026).</p>
           </div>
         </div>
+      </div>
+    </div>
+
+    <!-- ======== REMINDER ORDERING PPIC (DI MANIFEST) ========
+         Dibuka dari tombol "📋 Reminder Ordering PPIC" di header &
+         sidebar. Data dibaca LIVE dari state.ngFullRaw (tab LIVE_2DSFull
+         — laporan 2DS lengkap SPEED, sumber yang sama dengan Cek Stok),
+         fail-soft: tab belum termuat → keterangan data belum tersedia,
+         tidak pernah menampilkan angka karangan. Tombol Download PDF
+         memakai window.print() dengan stylesheet cetak khusus: hanya
+         modal ini yang tercetak. -->
+    <div class="pica-overlay rem-overlay" id="remOverlay" hidden role="dialog" aria-modal="true" aria-labelledby="remTitle">
+      <div class="pica-sheet rem-sheet">
+        <div class="rem-print-head" aria-hidden="true">
+          <div class="rph-title">REMINDER ORDERING DI MANIFEST — UNTUK PPIC</div>
+          <div class="rph-meta" id="remPrintMeta"></div>
+        </div>
+        <div class="pica-head rem-head">
+          <div>
+            <h2 id="remTitle">REMINDER ORDERING DI MANIFEST — UNTUK PPIC</h2>
+            <p id="remMeta">Tanggal terbit data: — · Sumber: LIVE_2DSFull (laporan 2DS lengkap SPEED)</p>
+          </div>
+          <button type="button" class="btn rem-dl rem-noprint" id="remPrintBtn" title="Unduh sebagai PDF — lewat dialog cetak browser, pilih tujuan Simpan sebagai PDF">⬇ Download PDF</button>
+          <button type="button" class="pica-close rem-noprint" id="remClose" aria-label="Tutup Reminder Ordering PPIC">&times;</button>
+        </div>
+        <div class="pica-body rem-body" id="remBody"></div>
+        <div class="rem-print-foot" id="remPrintFoot" aria-hidden="true"></div>
       </div>
     </div>
 
@@ -2637,6 +2744,7 @@
             rm: parseNumN(r[3]), wip: parseNumN(r[4]), fg: parseNumN(r[5]),
             std: parseNumN(r[6]),
             judgement: String(r[7] || '').trim(),
+            delay: parseNumN(r[8]), manifest: parseNumN(r[9]),
             problem: r.length > 10 ? String(r[10] || '').trim() : '',
             detail: r.length > 11 ? String(r[11] || '').trim() : ''
           });
@@ -2666,6 +2774,9 @@
         return d + ' ' + MONTHS[mo - 1] + ' ' + m[1];
       }
       function updateTwodsLabel(meta) {
+        /* Meta terakhir yang baik disimpan utuh — modal Reminder
+           Ordering PPIC membaca tanggal terbit 2DS dari sini. */
+        if (meta) state.twodsMeta = meta;
         var el = $('twodsSource');
         if (!el) return;
         var label = meta && meta.twods_source_label ? String(meta.twods_source_label).trim() : '';
@@ -5727,6 +5838,162 @@
       });
       lmtpApplySnapshot();
       renderLMTP();
+
+      /* ================= REMINDER ORDERING PPIC (DI MANIFEST) =================
+         Modal dari tombol "📋 Reminder Ordering PPIC" (header & sidebar):
+         pengingat ordering untuk User DI Manifest (PPIC), dihitung LIVE
+         dari state.ngFullRaw (tab LIVE_2DSFull — laporan 2DS lengkap
+         SPEED, sumber yang sama dengan Cek Stok). Press Part = Item Code
+         awalan "27.". Tanggal terbit data dari LIVE_Meta
+         (twods_source_date / twods_source_label via state.twodsMeta).
+         · Seksi 1: FG > 0 dan Manifest = 0 (stok ready tapi belum ada
+           manifest) — urut FG terbesar dulu. Item Judgement "NO PO"
+           tetap tampil dengan flag "NO PO — cek PO dulu sebelum
+           ordering", tidak disembunyikan.
+         · Seksi 2: FG numerik dan FG < Std 2HK (termasuk FG = 0) —
+           urut Kekurangan (Std 2HK − FG) terbesar dulu; dua kolom
+           terakhir sengaja kosong untuk diisi tangan oleh PPIC.
+         FG kosong (tidak dilaporkan vendor) TIDAK dihitung sebagai 0
+         dan TIDAK masuk seksi 2 — jumlahnya hanya tampil sebagai
+         catatan di bawah tabel seksi 2.
+         Tab belum termuat / kosong → keterangan data belum tersedia
+         (fail-soft, tanpa angka karangan). */
+      var remOverlay = $('remOverlay');
+      function remNum(v) { return v == null || isNaN(v) ? '—' : fmt(v); }
+      function remMetaText() {
+        var meta = state.twodsMeta || null;
+        var label = meta && meta.twods_source_label ? String(meta.twods_source_label).trim() : '';
+        var dateTxt = fmtTwodsDate(meta && meta.twods_source_date);
+        var t = '';
+        if (label) {
+          t = label;
+          if (dateTxt && label.indexOf(dateTxt) === -1) t = label + ' (' + dateTxt + ')';
+        } else if (dateTxt) t = dateTxt;
+        return t;
+      }
+      function renderRem() {
+        var metaTxt = remMetaText();
+        var metaLine = 'Tanggal terbit data: ' + (metaTxt || 'belum tersedia') +
+          ' · Sumber: LIVE_2DSFull (laporan 2DS lengkap SPEED)';
+        $('remMeta').textContent = metaLine;
+        $('remPrintMeta').textContent = metaLine;
+        $('remPrintFoot').textContent = 'DAILY PRO — Reminder Ordering DI Manifest PPIC — ' +
+          (metaTxt || 'tanggal terbit data belum tersedia');
+        var body = $('remBody');
+        var rows = state.ngFullRaw || [];
+        if (!rows.length) {
+          body.innerHTML = '<div class="lmtp-empty">Data laporan 2DS lengkap (LIVE_2DSFull) belum tersedia saat ini. ' +
+            'Periksa koneksi internet, klik <b>Refresh Data</b>, lalu buka kembali panel ini.</div>';
+          return;
+        }
+        var pp = rows.filter(function (r) { return r.item && r.item.indexOf('27.') === 0; });
+        var s1 = pp.filter(function (r) {
+          return r.fg != null && r.fg > 0 && (r.manifest == null || r.manifest === 0);
+        }).sort(function (a, b) { return b.fg - a.fg; });
+        var s2 = pp.filter(function (r) {
+          return r.fg != null && r.std != null && r.fg < r.std;
+        }).sort(function (a, b) { return (b.std - b.fg) - (a.std - a.fg); });
+        var emptyFg = 0;
+        pp.forEach(function (r) { if (r.fg == null) emptyFg++; });
+
+        var h = '';
+        /* ---- Seksi 1: ready tapi belum ada manifest ---- */
+        h += '<section class="rem-sec" aria-label="Stok Press Part ready tapi belum ada manifest">' +
+          '<h3 class="rem-sec-title">1. STOK PRESS PART READY TAPI BELUM ADA MANIFEST' +
+          '<span class="rem-count">' + s1.length + ' item</span></h3>' +
+          '<p class="rem-act go">Segera terbitkan DI Manifest (ordering) untuk stok ready ini — stok sudah ada di vendor tapi belum ada manifest.</p>';
+        if (s1.length) {
+          h += '<div class="lmtp-tblwrap rem-tblwrap"><table class="lmtp-tbl rem-tbl"><thead><tr>' +
+            '<th class="num">No</th><th>Vendor</th><th>Item Code</th><th>Part Name</th>' +
+            '<th class="num">RM</th><th class="num">WIP</th><th class="num">FG (Ready)</th>' +
+            '<th class="num">Std 2HK</th><th>Judgement</th></tr></thead><tbody>';
+          s1.forEach(function (r, i) {
+            var jud = String(r.judgement || '').trim();
+            var judCell = jud.toUpperCase() === 'NO PO'
+              ? '<span class="rem-nopo">NO PO — cek PO dulu sebelum ordering</span>'
+              : esc(jud || '—');
+            h += '<tr><td class="num">' + (i + 1) + '</td>' +
+              '<td class="vname">' + esc(r.nick || r.vcode || '—') + '</td>' +
+              '<td class="code">' + esc(r.item) + '</td>' +
+              '<td class="pname">' + esc(r.name || '—') + '</td>' +
+              '<td class="num">' + remNum(r.rm) + '</td>' +
+              '<td class="num">' + remNum(r.wip) + '</td>' +
+              '<td class="num"><b>' + remNum(r.fg) + '</b></td>' +
+              '<td class="num">' + remNum(r.std) + '</td>' +
+              '<td>' + judCell + '</td></tr>';
+          });
+          h += '</tbody></table></div>';
+        } else {
+          h += '<div class="lmtp-empty">Tidak ada item pada seksi ini.</div>';
+        }
+        h += '</section>';
+        /* ---- Seksi 2: kosong / di bawah Std 2HK ---- */
+        h += '<section class="rem-sec rem-sec2" aria-label="Stok kosong atau di bawah Std 2HK">' +
+          '<h3 class="rem-sec-title">2. STOK KOSONG / DI BAWAH STD 2HK — WAJIB HITUNG &amp; BENARKAN PENDEKATAN' +
+          '<span class="rem-count">' + s2.length + ' item</span></h3>' +
+          '<p class="rem-act must">User PPIC wajib menghitung kebutuhan ordernya dan membenarkan (menjelaskan) cara pendekatannya — tulis perhitungan dan alasan di kolom kosong sebelum diserahkan ke leader.</p>';
+        if (s2.length) {
+          h += '<div class="lmtp-tblwrap rem-tblwrap"><table class="lmtp-tbl rem-tbl"><thead><tr>' +
+            '<th class="num">No</th><th>Vendor</th><th>Item Code</th><th>Part Name</th>' +
+            '<th class="num">FG</th><th class="num">Std 2HK</th><th class="num">Kekurangan</th>' +
+            '<th class="num">Delay</th><th class="num">Manifest</th><th>Judgement</th>' +
+            '<th>Perhitungan Order (diisi PPIC)</th><th>Alasan / Pendekatan (diisi PPIC)</th></tr></thead><tbody>';
+          s2.forEach(function (r, i) {
+            h += '<tr><td class="num">' + (i + 1) + '</td>' +
+              '<td class="vname">' + esc(r.nick || r.vcode || '—') + '</td>' +
+              '<td class="code">' + esc(r.item) + '</td>' +
+              '<td class="pname">' + esc(r.name || '—') + '</td>' +
+              '<td class="num">' + remNum(r.fg) + '</td>' +
+              '<td class="num">' + remNum(r.std) + '</td>' +
+              '<td class="num"><b>' + remNum(r.std - r.fg) + '</b></td>' +
+              '<td class="num">' + remNum(r.delay) + '</td>' +
+              '<td class="num">' + remNum(r.manifest) + '</td>' +
+              '<td>' + esc(String(r.judgement || '').trim() || '—') + '</td>' +
+              '<td class="write"></td><td class="write"></td></tr>';
+          });
+          h += '</tbody></table></div>';
+        } else {
+          h += '<div class="lmtp-empty">Tidak ada item pada seksi ini.</div>';
+        }
+        h += '<p class="rem-note">Catatan: ' + emptyFg + ' item Press Part FG-nya kosong (tidak dilaporkan vendor) — ' +
+          'tidak dihitung sebagai 0 dan tidak masuk tabel di atas.</p>';
+        h += '</section>';
+        body.innerHTML = h;
+      }
+      function openRem() {
+        renderRem();
+        remOverlay.hidden = false;
+        remOverlay.scrollTop = 0;
+        document.body.style.overflow = 'hidden';
+        document.body.classList.add('rem-open');
+        /* Aturan @page khusus cetak modal ini — dipasang hanya selama
+           modal terbuka agar cetak halaman utama tidak ikut berubah. */
+        if (!$('remPageStyle')) {
+          var st = document.createElement('style');
+          st.id = 'remPageStyle';
+          st.textContent = '@page { size: A4 landscape; margin: 20mm 9mm 16mm; }';
+          document.head.appendChild(st);
+        }
+        var c = $('remClose');
+        if (c && c.focus) c.focus();
+      }
+      function closeRem() {
+        remOverlay.hidden = true;
+        document.body.style.overflow = '';
+        document.body.classList.remove('rem-open');
+        var st = $('remPageStyle');
+        if (st && st.parentNode) st.parentNode.removeChild(st);
+        var b = $('remBtn');
+        if (b && b.focus) b.focus();
+      }
+      $('remBtn').addEventListener('click', openRem);
+      $('sbRemBtn').addEventListener('click', function () { setDrawer(false); openRem(); });
+      $('remClose').addEventListener('click', closeRem);
+      $('remPrintBtn').addEventListener('click', function () { window.print(); });
+      remOverlay.addEventListener('click', function (e) { if (e.target === remOverlay) closeRem(); });
+      document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape' && !remOverlay.hidden) closeRem();
+      });
 
       /* ================= CEK STOK =================
          Data stok dimuat MALAS saat panel pertama dibuka, lewat jalur
