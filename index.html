@@ -2753,8 +2753,24 @@
       }
       function parseMeta(csv) {
         var meta = {};
-        parseCSV(csv).forEach(function (r) {
-          if (r.length >= 2 && r[0]) meta[String(r[0]).trim()] = String(r[1]).trim();
+        parseCSV(csv).forEach(function (r, idx) {
+          if (r.length < 2 || !r[0]) return;
+          var k = String(r[0]).trim(), v = String(r[1]).trim();
+          /* Baris header harfiah "Key | Value" bukan data. */
+          if (k === 'Key' && v === 'Value') return;
+          /* PEMULIHAN header terlipat gviz: gviz dapat menggabung baris
+             header tab dengan baris data pertamanya menjadi label kolom,
+             sehingga baris pertama CSV tampil sebagai
+             "Key <kunciPertama>" | "Value <nilaiPertama>" (jalur JSONP
+             menghasilkan baris pertama yang sama lewat label kolom).
+             Kembalikan pasangan kunci/nilai aslinya — tanpa ini kunci
+             baris pertama LIVE_Meta (last_update) hilang dan seluruh
+             tarikan LIVE gugur menjadi OFFLINE. */
+          if (idx === 0) {
+            var mk = /^Key\s+(.+)$/.exec(k), mv = /^Value\s+(.+)$/.exec(v);
+            if (mk && mv) { k = mk[1].trim(); v = mv[1].trim(); }
+          }
+          if (k) meta[k] = v;
         });
         return meta;
       }
@@ -4636,12 +4652,16 @@
           fullP
         ]).then(function (csvs) {
           var meta = parseMeta(csvs[0]);
-          if (!meta.last_update) throw new Error('LIVE_Meta tidak lengkap');
+          /* Peta fail-soft dipasang SEBELUM validasi meta: gangguan pada
+             LIVE_Meta tidak boleh membuang data tab lain yang berhasil
+             ditarik (2DSFull untuk Reminder Ordering, ItemDI/ItemGR,
+             stok SF) — data itu tetap terpakai walau badge jadi OFFLINE. */
           if (csvs[3]) state.extraMap = csvs[3];
           if (csvs[4]) state.diMap = csvs[4];
           if (csvs[5]) state.grMap = csvs[5];
           if (csvs[6]) { state.sfLive = csvs[6].map; state.sfLiveNames = csvs[6].names; }
           if (csvs[7]) state.ngFullRaw = csvs[7];
+          if (!meta.last_update) throw new Error('LIVE_Meta tidak lengkap');
           if (meta.di_window) state.diWindow = meta.di_window;
           if (meta.di_manifest_source) state.diSource = meta.di_manifest_source;
           if (meta.gr_source) state.grSource = meta.gr_source;
