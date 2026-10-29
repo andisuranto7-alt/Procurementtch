@@ -1,0 +1,1139 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="color-scheme" content="light dark" />
+    <link rel="icon" href="data:," />
+    <title>SPEED Clone — PT Trimitra Chitrahasta</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700;800&family=Barlow+Condensed:wght@600;700&display=swap" rel="stylesheet" />
+    <style>
+      :root{
+        color-scheme: light dark;
+        --bg:#eef2f6; --panel:#ffffff; --panel2:#f6f9fb; --ink:#152a3d; --muted:#5a7185;
+        --line:#d7e0e9; --line2:#c3d2df;
+        --blue:#1f4e79; --blue2:#2e6da4; --blue-soft:#e3edf6;
+        --red:#b91c1c; --red-soft:#fdecec; --green:#177245; --green-soft:#e5f4ec;
+        --amber:#9a6a00; --amber-soft:#fdf3d7; --gray-soft:#edf1f4;
+        --gold:#b98a1c;
+        --shadow:0 1px 3px rgba(21,42,61,.08),0 4px 14px rgba(21,42,61,.05);
+        --radius:10px;
+      }
+      @media (prefers-color-scheme: dark){
+        :root{
+          --bg:#0d151d; --panel:#152231; --panel2:#1a2a3c; --ink:#e4edf4; --muted:#93a9bc;
+          --line:#27394d; --line2:#33485f;
+          --blue:#7db3e8; --blue2:#5b97d6; --blue-soft:#1d3247;
+          --red:#f08a80; --red-soft:#3d2320; --green:#5fc98d; --green-soft:#1d3328;
+          --amber:#eec25e; --amber-soft:#38300f; --gray-soft:#1c2c3d;
+          --gold:#d9ab3c;
+          --shadow:0 1px 3px rgba(0,0,0,.4),0 4px 14px rgba(0,0,0,.3);
+        }
+      }
+      *{box-sizing:border-box}
+      html{scroll-behavior:smooth}
+      body{margin:0;font-family:"Barlow",system-ui,-apple-system,"Segoe UI",sans-serif;background:var(--bg);color:var(--ink);font-size:15px;line-height:1.45}
+      button,input,select{font:inherit;color:inherit}
+      a{color:var(--blue2)}
+      .num{font-variant-numeric:tabular-nums lining-nums;white-space:nowrap}
+
+      /* ===== Layout ===== */
+      .app{display:grid;grid-template-columns:236px 1fr;min-height:100vh}
+      aside{background:var(--blue);color:#eaf2f9;display:flex;flex-direction:column;position:sticky;top:0;height:100vh;z-index:40}
+      @media (prefers-color-scheme: dark){aside{background:#101d2b;border-right:1px solid var(--line)}}
+      .brand{padding:16px 16px 12px;border-bottom:1px solid rgba(255,255,255,.16)}
+      .brand .logo{font-family:"Barlow Condensed",sans-serif;font-size:31px;font-weight:700;letter-spacing:3.5px;line-height:1;color:#fff}
+      .brand .logo span{color:#f2c14e}
+      .brand .sub{font-size:11px;letter-spacing:.6px;text-transform:uppercase;opacity:.85;margin-top:5px;line-height:1.5}
+      .brand .clone{display:inline-block;margin-top:8px;font-size:11px;font-weight:600;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.3);padding:2px 8px;border-radius:20px;letter-spacing:.4px}
+      nav{padding:10px 10px 16px;overflow-y:auto;flex:1}
+      .nav-group{margin-top:12px}
+      .nav-group:first-child{margin-top:0}
+      .nav-label{font-size:11px;letter-spacing:1.2px;text-transform:uppercase;opacity:.65;padding:4px 10px}
+      .nav-item{display:flex;align-items:center;gap:9px;width:100%;text-align:left;background:none;border:0;color:inherit;padding:8px 10px;border-radius:7px;cursor:pointer;font-weight:500;font-size:14.5px}
+      .nav-item:hover{background:rgba(255,255,255,.12)}
+      .nav-item.active{background:rgba(255,255,255,.2);font-weight:700;box-shadow:inset 3px 0 0 #f2c14e}
+      .nav-item .ic{width:18px;text-align:center;flex:none;font-size:14px}
+      .nav-sub{margin:2px 0 4px 37px;display:flex;flex-direction:column;gap:1px}
+      .nav-sub button{background:none;border:0;color:inherit;text-align:left;padding:4px 8px;font-size:13.5px;border-radius:5px;cursor:pointer;opacity:.88}
+      .nav-sub button:hover{background:rgba(255,255,255,.12);opacity:1}
+      .side-foot{padding:12px 16px;border-top:1px solid rgba(255,255,255,.16);font-size:12px;opacity:.85;line-height:1.55}
+      main{min-width:0;display:flex;flex-direction:column}
+      header.top{background:var(--panel);border-bottom:1px solid var(--line);padding:12px 22px;display:flex;flex-wrap:wrap;gap:10px 16px;align-items:center;position:sticky;top:0;z-index:30;box-shadow:var(--shadow)}
+      header.top .co{font-weight:700;letter-spacing:.4px;font-size:16px}
+      header.top .co small{display:block;font-weight:500;color:var(--muted);font-size:12px;letter-spacing:0}
+      .top-right{margin-left:auto;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+      .acct{display:flex;align-items:center;gap:9px;background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:6px 12px 6px 7px}
+      .acct .avatar{width:30px;height:30px;border-radius:50%;background:var(--blue);color:#fff;display:grid;place-items:center;font-weight:700;font-size:13px}
+      .acct .who{line-height:1.25}
+      .acct .who b{font-size:13.5px}
+      .acct .who small{display:block;color:var(--muted);font-size:11.5px}
+      .badge-ro{font-size:11px;font-weight:700;letter-spacing:.5px;background:var(--amber-soft);color:var(--amber);border:1px solid currentColor;border-radius:20px;padding:3px 9px}
+      .refreshbox{font-size:12.5px;color:var(--muted);display:flex;align-items:center;gap:8px}
+      .btn{border:1px solid var(--line2);background:var(--panel);border-radius:7px;padding:6px 13px;cursor:pointer;font-weight:600;font-size:13.5px}
+      .btn:hover{border-color:var(--blue2);color:var(--blue)}
+      .btn.primary{background:var(--blue);border-color:var(--blue);color:#fff}
+      .btn.primary:hover{background:var(--blue2);color:#fff}
+      .wrap{padding:20px 22px 34px;max-width:1560px;width:100%;margin:0 auto}
+      .page{display:none}
+      .page.active{display:block}
+      h1.ptitle{font-size:23px;margin:2px 0 4px;font-weight:700}
+      .psub{color:var(--muted);margin:0 0 16px;font-size:14px}
+      .psub b{color:var(--ink)}
+
+      /* ===== Cards ===== */
+      .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin-bottom:12px}
+      .card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:14px 16px 12px;box-shadow:var(--shadow)}
+      .card .k{font-size:12.5px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:var(--muted);display:flex;align-items:center;gap:7px}
+      .card .v{font-size:34px;font-weight:700;line-height:1.12;margin-top:2px}
+      .card .d{font-size:12.5px;color:var(--muted);line-height:1.45;margin-top:3px}
+      .card .dot{width:9px;height:9px;border-radius:50%;flex:none}
+      .card.ng .v{color:var(--red)} .card.ok .v{color:var(--green)} .card.sched .v{color:var(--blue2)}
+      .cards4m{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:14px}
+      .card.mini .v{font-size:27px}
+      .note-strip{background:var(--blue-soft);border:1px solid var(--line2);border-radius:var(--radius);padding:11px 15px;font-size:13.5px;line-height:1.55;margin-bottom:16px}
+      .note-strip b{color:var(--blue)}
+      @media (prefers-color-scheme: dark){.note-strip b{color:var(--blue2)}}
+
+      /* ===== Panels ===== */
+      .grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+      @media (max-width:1080px){.grid2{grid-template-columns:1fr}}
+      .panel{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);margin-bottom:14px;overflow:hidden}
+      .panel > h3,.panel .phead{margin:0;padding:13px 16px 10px;font-size:16.5px;font-weight:700;display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+      .panel .phead small,.panel > h3 small{font-weight:500;color:var(--muted);font-size:12.5px}
+      .panel .pbody{padding:2px 16px 15px}
+      .sumline{display:flex;flex-wrap:wrap;gap:8px;padding:0 16px 12px}
+      .sumchip{font-size:13px;font-weight:600;border-radius:20px;padding:4px 12px;border:1px solid var(--line2);background:var(--panel2)}
+      .sumchip.good{background:var(--green-soft);color:var(--green);border-color:transparent}
+      .sumchip.warn{background:var(--amber-soft);color:var(--amber);border-color:transparent}
+      .sumchip.bad{background:var(--red-soft);color:var(--red);border-color:transparent}
+      .upd-list{list-style:none;margin:0;padding:0 8px 8px}
+      .upd-list li{display:flex;align-items:center;gap:10px;padding:7px 9px;border-radius:7px;font-size:14px}
+      .upd-list li:nth-child(odd){background:var(--panel2)}
+      .upd-list .vn{font-weight:700;min-width:86px}
+      .upd-list .vt{margin-left:auto;color:var(--muted);font-size:13px;text-align:right}
+      .st-ic{width:22px;height:22px;border-radius:50%;display:grid;place-items:center;font-size:12px;font-weight:800;flex:none}
+      .st-today{background:var(--green-soft);color:var(--green)}
+      .st-yday{background:var(--amber-soft);color:var(--amber)}
+      .st-stale{background:var(--red-soft);color:var(--red)}
+      .st-never{background:var(--gray-soft);color:var(--muted)}
+      .st-master{background:var(--blue-soft);color:var(--blue)}
+      .upd-group{font-size:12px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:var(--muted);padding:10px 10px 3px}
+
+      /* ===== Tables ===== */
+      .tblwrap{overflow:auto;border:1px solid var(--line);border-radius:var(--radius);background:var(--panel);box-shadow:var(--shadow)}
+      table{border-collapse:separate;border-spacing:0;width:100%;font-size:13.5px}
+      thead th{position:sticky;top:0;z-index:5;background:var(--blue);color:#fff;text-align:left;padding:9px 10px;font-size:12.5px;letter-spacing:.3px;white-space:nowrap;border-bottom:2px solid rgba(0,0,0,.15)}
+      @media (prefers-color-scheme: dark){thead th{background:#22384f}}
+      tbody td{padding:7px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+      tbody tr:hover td{background:var(--panel2)}
+      td.sticky1,th.sticky1{position:sticky;left:0;z-index:3}
+      td.sticky2,th.sticky2{position:sticky;z-index:3}
+      td.sticky3,th.sticky3{position:sticky;z-index:3}
+      tbody td.sticky1,tbody td.sticky2,tbody td.sticky3{background:var(--panel)}
+      tbody tr:hover td.sticky1,tbody tr:hover td.sticky2,tbody tr:hover td.sticky3{background:var(--panel2)}
+      thead th.sticky1,thead th.sticky2,thead th.sticky3{z-index:6}
+      .partcell{max-width:300px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+      tr.nocat td{background:var(--amber-soft)}
+      tr.nocat:hover td{background:var(--amber-soft);filter:brightness(.985)}
+      .judge{display:inline-block;font-weight:700;font-size:12px;padding:2.5px 9px;border-radius:20px;white-space:nowrap}
+      .j-ng{background:var(--red-soft);color:var(--red)}
+      .j-ok{background:var(--green-soft);color:var(--green)}
+      .j-nopo{background:#e8e0f4;color:#5b3fae}
+      @media (prefers-color-scheme: dark){.j-nopo{background:#2e2750;color:#c3b3f5}}
+      .jreason{display:block;font-size:11.5px;color:var(--muted);margin-top:3px;white-space:normal;min-width:130px}
+      .flag{display:inline-block;font-size:11px;font-weight:700;border-radius:4px;padding:1px 6px;margin-left:6px;vertical-align:1px;white-space:nowrap}
+      .flag.over{background:var(--amber-soft);color:var(--amber)}
+      .flag.neg{background:var(--blue-soft);color:var(--blue)}
+      .flag.late{background:var(--red-soft);color:var(--red)}
+      .flag.nocat{background:var(--amber-soft);color:var(--amber);margin-left:0}
+      .noupd{color:var(--muted);font-style:italic;white-space:nowrap}
+      .empty-note{padding:26px 18px;text-align:center;color:var(--muted);font-size:14px}
+
+      /* ===== Controls ===== */
+      .toolbar{display:flex;flex-wrap:wrap;gap:9px;align-items:center;margin-bottom:12px}
+      .toolbar .grow{flex:1;min-width:170px}
+      .search{width:100%;padding:8px 12px;border:1px solid var(--line2);border-radius:7px;background:var(--panel)}
+      select.sel{padding:8px 10px;border:1px solid var(--line2);border-radius:7px;background:var(--panel);max-width:230px}
+      input.datein{padding:7px 10px;border:1px solid var(--line2);border-radius:7px;background:var(--panel)}
+      .chips{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:12px}
+      .chip{border:1px solid var(--line2);background:var(--panel);border-radius:20px;padding:5px 14px;cursor:pointer;font-weight:600;font-size:13px}
+      .chip:hover{border-color:var(--blue2)}
+      .chip.on{background:var(--blue);border-color:var(--blue);color:#fff}
+      .chip .cnt{opacity:.75;font-weight:500}
+      .legend{background:var(--panel);border:1px solid var(--line);border-left:4px solid var(--gold);border-radius:8px;padding:10px 15px;font-size:13px;line-height:1.65;margin-bottom:12px}
+      .legend b{white-space:nowrap}
+      .pager{display:flex;gap:8px;align-items:center;justify-content:flex-end;padding:10px 4px 2px;font-size:13.5px;color:var(--muted);flex-wrap:wrap}
+      .pager button{border:1px solid var(--line2);background:var(--panel);border-radius:6px;padding:4px 12px;cursor:pointer;font-weight:600}
+      .pager button:disabled{opacity:.4;cursor:default}
+      .switch{display:inline-flex;align-items:center;gap:8px;font-size:13.5px;font-weight:600;cursor:pointer;user-select:none}
+      .switch input{accent-color:var(--blue);width:17px;height:17px;cursor:pointer}
+
+      .chartbox{padding:4px 10px 12px;overflow-x:auto}
+      .chartbox svg{display:block;min-width:520px;width:100%;height:auto}
+      .chart-legend{display:flex;gap:16px;flex-wrap:wrap;font-size:13px;color:var(--muted);padding:0 16px 10px}
+      .chart-legend i{display:inline-block;width:11px;height:11px;border-radius:3px;margin-right:6px;vertical-align:-1px}
+      .src{font-size:12px;color:var(--muted);padding:8px 16px 13px;border-top:1px dashed var(--line)}
+      .err-note{background:var(--red-soft);color:var(--red);border-radius:8px;padding:11px 15px;font-size:13.5px;margin-bottom:12px;font-weight:600}
+      .warn-note{background:var(--amber-soft);color:var(--amber);border-radius:8px;padding:11px 15px;font-size:13.5px;margin-bottom:12px;font-weight:600}
+      .loading{padding:44px 20px;text-align:center;color:var(--muted)}
+      .spin{display:inline-block;width:22px;height:22px;border:3px solid var(--line2);border-top-color:var(--blue2);border-radius:50%;animation:sp 0.9s linear infinite;vertical-align:-5px;margin-right:9px}
+      @keyframes sp{to{transform:rotate(360deg)}}
+      @media (prefers-reduced-motion: reduce){.spin{animation:none}html{scroll-behavior:auto}}
+      footer.foot{padding:16px 22px 26px;color:var(--muted);font-size:12.5px;max-width:1560px;margin:0 auto;width:100%;line-height:1.6}
+
+      /* ===== Mobile: sidebar menjadi bilah navigasi di atas (semua menu terlihat & terjangkau) ===== */
+      .menu-btn{display:none}
+      @media (max-width:860px){
+        .app{grid-template-columns:1fr}
+        aside{position:static;height:auto;width:auto;transform:none;box-shadow:none}
+        .brand{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:11px 14px}
+        .brand .logo{font-size:25px}
+        .brand .sub{display:none}
+        .brand .clone{margin-top:0}
+        nav{display:flex;flex-wrap:wrap;gap:4px;padding:9px 10px;overflow:visible}
+        .nav-group{display:contents}
+        .nav-label{display:none}
+        .nav-item{width:auto;padding:7px 12px;font-size:13.5px;background:rgba(255,255,255,.09)}
+        .nav-item.active{box-shadow:inset 0 -3px 0 #f2c14e}
+        .nav-sub{display:contents}
+        .nav-sub button{padding:7px 9px;font-size:12.5px;opacity:.85}
+        .side-foot{display:block;padding:9px 12px}
+        .side-foot .sf-note{display:none}
+        .side-foot .nav-item{margin-bottom:0 !important}
+        .wrap{padding:15px 13px 30px}
+        header.top{padding:10px 13px}
+        .card .v{font-size:29px}
+      }
+      .scrim{display:none}
+      .toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%) translateY(20px);background:var(--ink);color:var(--bg);padding:11px 18px;border-radius:9px;font-size:14px;font-weight:600;box-shadow:0 8px 28px rgba(0,0,0,.3);opacity:0;pointer-events:none;transition:opacity .2s ease,transform .2s ease;z-index:99;max-width:min(92vw,560px);text-align:center}
+      .toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
+    </style>
+  </head>
+  <body>
+    <div class="app">
+      <aside id="sidebar" aria-label="Navigasi utama">
+        <div class="brand">
+          <div class="logo">SPE<span>E</span>D</div>
+          <div class="sub">Supplier Performance<br />Evaluation &amp; Development</div>
+          <span class="clone">KLON BACA-SAJA</span>
+        </div>
+        <nav id="mainnav">
+          <div class="nav-group">
+            <button class="nav-item active" data-page="dashboard"><span class="ic">▦</span>Dashboard</button>
+          </div>
+          <div class="nav-group">
+            <div class="nav-label">Master Data</div>
+            <button class="nav-item" data-page="master"><span class="ic">▤</span>Master Data</button>
+            <div class="nav-sub">
+              <button data-page="master" data-anchor="master-vendor">Master Vendor</button>
+              <button data-page="master" data-anchor="master-part">Master Part</button>
+              <button data-page="master" data-anchor="master-po">Master PO</button>
+            </div>
+          </div>
+          <div class="nav-group">
+            <div class="nav-label">Monitoring</div>
+            <button class="nav-item" data-page="stock"><span class="ic">▥</span>2 Days Stock</button>
+          </div>
+          <div class="nav-group">
+            <div class="nav-label">Laporan</div>
+            <button class="nav-item" data-page="laporan"><span class="ic">▨</span>Laporan</button>
+            <div class="nav-sub">
+              <button data-page="laporan" data-anchor="lap-tren">Tren Bulanan</button>
+              <button data-page="laporan" data-anchor="lap-vendor-bulan">Per Vendor per Bulan</button>
+              <button data-page="laporan" data-anchor="lap-berjalan">Bulan Berjalan (DI · Delay · GR)</button>
+            </div>
+          </div>
+          <div class="nav-group">
+            <div class="nav-label">Penilaian</div>
+            <button class="nav-item" data-page="penilaian"><span class="ic">★</span>Penilaian Supplier</button>
+            <button class="nav-item" data-page="lmtp"><span class="ic">⚠</span>LMTP</button>
+            <div class="nav-sub">
+              <button data-page="lmtp" data-anchor="lmtp-tren">Tren per Bulan</button>
+              <button data-page="lmtp" data-anchor="lmtp-pareto">Pareto Vendor Terburuk</button>
+              <button data-page="lmtp" data-anchor="lmtp-tabel">Tabel Agregat Vendor</button>
+            </div>
+          </div>
+        </nav>
+        <div class="side-foot">
+          <button class="nav-item" id="nav-logout" type="button" style="margin-bottom:9px"><span class="ic">⏻</span>Logout</button>
+          <span class="sf-note">Mode baca-saja. Input vendor, upload &amp; submit adalah <b>fase 2</b> (butuh server + akun vendor) — tidak ada di halaman ini.</span>
+        </div>
+      </aside>
+      <div class="scrim" id="scrim"></div>
+      <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+      <main>
+        <header class="top">
+          <div class="co">PT TRIMITRA CHITRAHASTA<small>SPEED — Supplier Performance Evaluation &amp; Development (klon web)</small></div>
+          <div class="top-right">
+            <div class="refreshbox"><span id="refreshInfo">Memuat data…</span><button class="btn" id="btnRefresh" type="button">↻ Muat Ulang</button></div>
+            <span class="badge-ro">BACA SAJA</span>
+            <div class="acct"><div class="avatar">DV</div><div class="who"><b>DEVELOPMENT</b><small>Akun tampilan · tanpa login</small></div></div>
+          </div>
+        </header>
+
+        <div class="wrap">
+          <!-- ================= DASHBOARD ================= -->
+          <section class="page active" id="page-dashboard">
+            <h1 class="ptitle">Dashboard</h1>
+            <p class="psub" id="dashSub">Ringkasan monitoring 2 Days Stock dari data LIVE. Semua angka di halaman ini memakai <b>satu sumber &amp; tanggal data yang sama</b> (LIVE_2DSFull + LIVE_Meta) supaya kartu dan grafik tidak bertabrakan seperti di SPEED asli.</p>
+            <div id="dashErr"></div>
+            <div class="cards" id="dashCards"><div class="loading"><span class="spin"></span>Memuat kartu ringkasan…</div></div>
+            <div class="cards4m" id="dash4M"></div>
+            <div class="note-strip" id="dashDefs"></div>
+            <div class="grid2">
+              <div class="panel">
+                <h3>Vendor Performance <small>batang NG vs OK per vendor · sumber LIVE_2DSFull</small></h3>
+                <div class="pbody" style="padding-top:0">
+                  <label class="switch"><input type="checkbox" id="tglEmptyVendor" /> Tampilkan vendor kosong (belum ada item di snapshot)</label>
+                </div>
+                <div class="chart-legend"><span><i style="background:#b91c1c"></i>NG</span><span><i style="background:#177245"></i>OK</span><span><i style="background:#7a5fd0"></i>NO PO</span></div>
+                <div class="chartbox" id="chartVendorPerf"><div class="loading"><span class="spin"></span>Memuat grafik…</div></div>
+                <div class="src" id="srcVendorPerf"></div>
+              </div>
+              <div>
+                <div class="panel">
+                  <h3>Last Update <small>update stok vendor di SPEED</small></h3>
+                  <div class="sumline" id="updSummary"></div>
+                  <div id="updPanel"><div class="loading"><span class="spin"></span>Memuat panel…</div></div>
+                  <div class="src">Sumber: LIVE_2DS (baris panel Last Update) + LIVE_Meta. Vendor yang tidak muncul di panel SPEED dianggap belum pernah update pada snapshot ini.</div>
+                </div>
+                <div class="panel">
+                  <h3>Delay Manifest <small>bulan berjalan · sumber LIVE_Meta + LIVE_Delay</small></h3>
+                  <div class="pbody" id="dashDelay"></div>
+                </div>
+              </div>
+            </div>
+            <div class="panel">
+              <h3>Monitoring 2 Days Stock <small>pergerakan harian bulan berjalan — DI delay per tanggal jatuh tempo</small></h3>
+              <div class="chart-legend"><span><i style="background:#2e6da4"></i>Jumlah DI delay jatuh tempo per hari</span><span><i style="background:#b98a1c"></i>Garis kumulatif DI</span></div>
+              <div class="chartbox" id="chartMonitoring"><div class="loading"><span class="spin"></span>Memuat grafik…</div></div>
+              <div class="src" id="srcMonitoring"></div>
+            </div>
+          </section>
+
+          <!-- ================= 2 DAYS STOCK ================= -->
+          <section class="page" id="page-stock">
+            <h1 class="ptitle">2 Days Stock</h1>
+            <p class="psub">Semua baris seperti SPEED asli — <b>OK, NG, dan NO PO tampil campur</b> (bukan NG-only). Kolom mengikuti SPEED; kolom yang belum tersedia di backend publik ditandai di legenda, tidak dikarang.</p>
+            <div id="stockErr"></div>
+            <div class="panel" style="margin-bottom:12px">
+              <h3 style="padding-bottom:4px">Last Update <small>ringkasan — di SPEED asli panel ini hanya ada di Dashboard</small></h3>
+              <div class="sumline" id="updSummary2"></div>
+            </div>
+            <div class="toolbar">
+              <label>Tanggal data
+                <input type="date" class="datein" id="stockDate" />
+              </label>
+              <span id="stockDateNote" style="font-size:13px;color:var(--muted)"></span>
+              <div class="grow"><input type="search" class="search" id="stockSearch" placeholder="Search: vendor, item code, part, PO…" aria-label="Cari di tabel 2 Days Stock" /></div>
+              <select class="sel" id="stockVendor" aria-label="Saring per vendor"><option value="all">Semua Vendor</option></select>
+            </div>
+            <div class="sumline" id="stockSummary" style="padding:0 0 4px"></div>
+            <div class="chips" id="stockChips"></div>
+            <div class="legend" id="stockLegend"></div>
+            <div class="tblwrap"><table id="stockTable" aria-label="Tabel 2 Days Stock"></table></div>
+            <div class="pager" id="stockPager"></div>
+          </section>
+
+          <!-- ================= MASTER DATA ================= -->
+          <section class="page" id="page-master">
+            <h1 class="ptitle">Master Data</h1>
+            <p class="psub">Master resmi tersimpan di SPEED. Yang tampil di sini adalah <b>turunan dari tab LIVE</b> yang tersedia di backend publik — diberi label sumber di tiap tabel, dan bagian yang belum masuk backend dinyatakan apa adanya.</p>
+            <div id="masterErr"></div>
+            <div class="panel" id="master-vendor">
+              <h3>Master Vendor <small>nickname SPEED ↔ kode SAP ↔ status update</small></h3>
+              <div class="toolbar" style="padding:0 16px"><div class="grow"><input type="search" class="search" id="mvSearch" placeholder="Search: nickname, kode SAP, nama vendor…" aria-label="Cari master vendor" /></div></div>
+              <div class="tblwrap" style="box-shadow:none;border:0;border-top:1px solid var(--line);border-radius:0"><table id="mvTable"></table></div>
+              <div class="pager" id="mvPager" style="padding-right:14px"></div>
+              <div class="src">Sumber: peta nickname ↔ kode SAP (sistem DAILY PRO), nama PT dari LIVE_Delay &amp; LIVE_StockSF, status dari panel Last Update LIVE_2DS, jumlah item dari LIVE_2DSFull.</div>
+            </div>
+            <div class="panel" id="master-part">
+              <h3>Master Part <small>item yang muncul di data LIVE (2DS + DI bulan berjalan)</small></h3>
+              <div class="toolbar" style="padding:0 16px"><div class="grow"><input type="search" class="search" id="mpSearch" placeholder="Search: item code, part name, vendor…" aria-label="Cari master part" /></div></div>
+              <div class="tblwrap" style="box-shadow:none;border:0;border-top:1px solid var(--line);border-radius:0"><table id="mpTable"></table></div>
+              <div class="pager" id="mpPager" style="padding-right:14px"></div>
+              <div class="src">Catatan jujur: master part resmi SPEED belum dipublikasikan ke backend ini — daftar di atas hanya item yang benar-benar muncul di LIVE_2DSFull / LIVE_ItemDI, jadi jumlahnya bisa berbeda dari master resmi.</div>
+            </div>
+            <div class="panel" id="master-po">
+              <h3>Master PO <small>PO yang terlihat dari DI delay (LIVE_Delay)</small></h3>
+              <div class="pbody" id="poBody"><div class="loading"><span class="spin"></span>Memuat…</div></div>
+              <div class="src">Master PO lengkap (ribuan baris PO Q berjalan) hanya ada di SPEED dan belum masuk backend publik — tabel di atas hanya PO yang terhubung ke DI delay bulan berjalan, bukan master PO penuh.</div>
+            </div>
+          </section>
+
+          <!-- ================= LAPORAN ================= -->
+          <section class="page" id="page-laporan">
+            <h1 class="ptitle">Laporan</h1>
+            <p class="psub">Agregat bulanan dari data yang tersedia di backend. Laporan bulanan 2 Days Stock per vendor ala SPEED (rekap per tanggal terbit) <b>belum tersimpan di backend</b> — riwayat snapshot harian tidak disimpan, jadi yang ditampilkan hanya agregat yang benar-benar bisa dihitung dari tab LIVE.</p>
+            <div id="lapErr"></div>
+            <div class="panel" id="lap-tren">
+              <h3>Tren Bulanan <small>kasus LMTP per bulan (Delivery + Quality)</small></h3>
+              <div class="chart-legend"><span><i style="background:#2e6da4"></i>Total kasus</span><span><i style="background:#b91c1c"></i>Open</span><span><i style="background:#177245"></i>Close</span></div>
+              <div class="chartbox" id="chartLapTren"><div class="loading"><span class="spin"></span>Memuat grafik…</div></div>
+              <div class="tblwrap" style="box-shadow:none;border:0;border-top:1px solid var(--line);border-radius:0"><table id="lapTrenTable"></table></div>
+              <div class="src">Sumber: LIVE_LMTP (agregat Bulan × Vendor dari SPEED /lmtp). Bulan yang tidak muncul berarti belum ada data LMTP yang tersinkron untuk bulan itu.</div>
+            </div>
+            <div class="panel" id="lap-vendor-bulan">
+              <h3>Per Vendor per Bulan <small>LMTP</small></h3>
+              <div class="toolbar" style="padding:0 16px"><label>Bulan <select class="sel" id="lapMonth"></select></label></div>
+              <div class="tblwrap" style="box-shadow:none;border:0;border-top:1px solid var(--line);border-radius:0"><table id="lapVbTable"></table></div>
+              <div class="pager" id="lapVbPager" style="padding-right:14px"></div>
+            </div>
+            <div class="panel" id="lap-berjalan">
+              <h3>Bulan Berjalan — DI · Delay · GR per Vendor <small>Oktober 2026 (jendela DI di LIVE_Meta)</small></h3>
+              <div class="tblwrap" style="box-shadow:none;border:0;border-radius:0"><table id="lapRunTable"></table></div>
+              <div class="pager" id="lapRunPager" style="padding-right:14px"></div>
+              <div class="src">Sumber: LIVE_ItemDI (Total DI &amp; DI hari ini), LIVE_Delay (baris &amp; OS delay), LIVE_ItemGR (qty &amp; jumlah GR bulan ini). Vendor ditampilkan sebagai nickname SPEED bila kode SAP-nya dikenal.</div>
+            </div>
+          </section>
+
+          <!-- ================= PENILAIAN SUPPLIER ================= -->
+          <section class="page" id="page-penilaian">
+            <h1 class="ptitle">Penilaian Supplier</h1>
+            <p class="psub">Per <b>Vendor × Part</b>: Total DI dan jumlah keterlambatan dihitung dari LIVE_ItemDI + LIVE_Delay. Kolom <b>Reason</b> diisi dari Problem 2DS item yang sama bila ada — bila tidak ada datanya, dikosongkan (tidak dikarang).</p>
+            <div id="penErr"></div>
+            <div class="sumline" id="penSummary" style="padding:0 0 6px"></div>
+            <div class="toolbar">
+              <div class="grow"><input type="search" class="search" id="penSearch" placeholder="Search: vendor, item code, part…" aria-label="Cari penilaian supplier" /></div>
+              <label class="switch"><input type="checkbox" id="penLateOnly" /> Hanya yang terlambat</label>
+            </div>
+            <div class="tblwrap"><table id="penTable"></table></div>
+            <div class="pager" id="penPager"></div>
+          </section>
+
+          <!-- ================= LMTP ================= -->
+          <section class="page" id="page-lmtp">
+            <h1 class="ptitle">LMTP</h1>
+            <p class="psub">Laporan masalah supplier (Delivery &amp; Quality) — agregat Bulan × Vendor dari SPEED. Detail per-kasus LMTP hanya ada di SPEED dan belum masuk backend, jadi halaman ini menampilkan agregatnya saja.</p>
+            <div id="lmtpErr"></div>
+            <div class="toolbar"><label>Bulan <select class="sel" id="lmtpMonth"></select></label><span style="font-size:13px;color:var(--muted)">Pareto &amp; tabel mengikuti bulan terpilih; tren selalu menampilkan semua bulan.</span></div>
+            <div class="panel" id="lmtp-tren">
+              <h3>Tren per Bulan <small>total kasus LMTP semua vendor</small></h3>
+              <div class="chart-legend"><span><i style="background:#2e6da4"></i>Total</span><span><i style="background:#b91c1c"></i>Open</span><span><i style="background:#177245"></i>Close</span></div>
+              <div class="chartbox" id="chartLmtpTren"><div class="loading"><span class="spin"></span>Memuat grafik…</div></div>
+              <div class="src">Sumber: LIVE_LMTP. Pencapaian = % Close dari Total.</div>
+            </div>
+            <div class="panel" id="lmtp-pareto">
+              <h3>Pareto Vendor Terburuk <small id="paretoSub">total kasus terbanyak + garis kumulatif %</small></h3>
+              <div class="chartbox" id="chartLmtpPareto"><div class="loading"><span class="spin"></span>Memuat grafik…</div></div>
+            </div>
+            <div class="panel" id="lmtp-tabel">
+              <h3>Tabel Agregat per Vendor</h3>
+              <div class="tblwrap" style="box-shadow:none;border:0;border-top:1px solid var(--line);border-radius:0"><table id="lmtpTable"></table></div>
+              <div class="src">Kolom mengikuti SPEED: Total, Qty (kasus quantity/delivery), Quality, Open, Close, Plus, Minus, Salah Barang, Tidak Lot. Ejaan kategori disamakan menjadi <b>Method</b> di seluruh halaman ini.</div>
+            </div>
+          </section>
+        </div>
+
+        <footer class="foot">
+          SPEED Clone — replika baca-saja tampilan SPEED (speed.pttrimitra.com) untuk PT Trimitra Chitrahasta. Data dibaca langsung dari spreadsheet backend yang sama dengan DAILY PRO (tab LIVE_*) dan diperbarui otomatis tiap 60 detik. Halaman ini tidak terhubung ke SPEED asli: tidak ada login, input vendor, upload, atau submit — itu fase 2 yang membutuhkan server dan akun vendor. Bila sebuah tab gagal dimuat, bagian terkait menampilkan keterangan “data tidak tersedia” dan halaman lain tetap tampil.
+        </footer>
+      </main>
+    </div>
+
+    <script>
+    "use strict";
+    /* ================= DATA LAYER ================= */
+    var SHEET_ID = "154c18fGXyavo0NtbW2TrPae0ohMCGy2ieqOWzcHMZ0E";
+    var GID = { meta:494094783, delay:823507897, ds2:469995258, full:1216877239, itemDI:1393315535, itemGR:1902481281, stockSF:1261613325, lmtp:1090742054 };
+    var DATA = { meta:{}, metaOk:false, delay:null, panel:null, full:null, itemDI:null, itemGR:null, stockSF:null, lmtp:null };
+    var ERR = {};
+
+    function fetchTab(gid){
+      var url = "https://docs.google.com/spreadsheets/d/" + SHEET_ID + "/gviz/tq?tqx=out:json&gid=" + gid + "&headers=1";
+      return fetch(url).then(function(r){ if(!r.ok) throw new Error("HTTP " + r.status); return r.text(); })
+      .then(function(t){
+        var a = t.indexOf("("), b = t.lastIndexOf(")");
+        var j = JSON.parse(t.slice(a+1, b));
+        if (j.status === "error") throw new Error("gviz error");
+        var rows = (j.table.rows || []).map(function(r){
+          return (r.c || []).map(function(c){ return c ? (c.v === undefined ? null : c.v) : null; });
+        });
+        return rows;
+      });
+    }
+    function loadAll(){
+      var jobs = [
+        ["meta", GID.meta], ["delay", GID.delay], ["ds2", GID.ds2], ["full", GID.full],
+        ["itemDI", GID.itemDI], ["itemGR", GID.itemGR], ["stockSF", GID.stockSF], ["lmtp", GID.lmtp]
+      ];
+      return Promise.all(jobs.map(function(j){
+        return fetchTab(j[1]).then(function(rows){ return { k:j[0], rows:rows }; })
+          .catch(function(e){ return { k:j[0], rows:null, err:String(e && e.message || e) }; });
+      })).then(function(res){
+        res.forEach(function(r){
+          if (r.rows === null){ ERR[r.k] = r.err; return; }
+          delete ERR[r.k];
+          if (r.k === "meta"){
+            DATA.meta = {}; DATA.metaOk = true;
+            r.rows.forEach(function(row){ if (row[0] != null) DATA.meta[String(row[0])] = row[1]; });
+          } else if (r.k === "ds2"){
+            parseDS2(r.rows);
+          } else {
+            DATA[r.k] = r.rows;
+          }
+        });
+        renderAll();
+        var now = new Date();
+        document.getElementById("refreshInfo").textContent = "Terakhir dimuat " + now.toLocaleTimeString("id-ID") + " WIB · auto-refresh 60 dtk";
+      });
+    }
+    function parseDS2(rows){
+      var panel = [], items = [];
+      rows.forEach(function(r){
+        var b = r[1];
+        if (typeof b === "string" && /\d{1,2}:\d{2}/.test(b) && r[0]){ panel.push({ vendor:String(r[0]), when:b }); }
+        else if (r[0] && r[2]){ items.push(r); } /* baris item NG (tidak dipakai utk tabel; tabel pakai 2DSFull) */
+      });
+      DATA.panel = panel; DATA.ds2items = items;
+    }
+
+    /* ================= HELPERS ================= */
+    function esc(s){ return String(s == null ? "" : s).replace(/[&<>"']/g, function(c){ return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]; }); }
+    function num(v){ if (v === null || v === undefined || v === "") return null; var n = typeof v === "number" ? v : parseFloat(String(v).replace(/\./g,"").replace(",",".")); return isNaN(n) ? null : n; }
+    function numLoose(v){ if (v === null || v === undefined || v === "") return null; var n = typeof v === "number" ? v : parseFloat(String(v).replace(",",".")); return isNaN(n) ? null : n; }
+    function fmt(v){ if (v === null || v === undefined || isNaN(v)) return "—"; return Math.round(v).toLocaleString("id-ID"); }
+    function pct(a,b){ if (!b) return null; return a / b * 100; }
+    function fmtPct(v){ if (v === null || isNaN(v)) return "—"; return (Math.round(v * 10) / 10).toLocaleString("id-ID") + "%"; }
+    function normKat(k){ if (!k) return null; var s = String(k).trim(); if (/^methode$/i.test(s)) return "Method"; if (/^material$/i.test(s)) return "Material"; if (/^man$/i.test(s)) return "Man"; if (/^machine$/i.test(s)) return "Machine"; if (/^method$/i.test(s)) return "Method"; return s; }
+    var MONTH_ID = ["Jan","Feb","Mar","Apr","Mei","Jun","Jul","Agu","Sep","Okt","Nov","Des"];
+    var MONTH_EN = {Jan:0,Feb:1,Mar:2,Apr:3,May:4,Jun:5,Jul:6,Aug:7,Sep:8,Oct:9,Nov:10,Dec:11};
+    function fmtDateID(iso){ if (!iso) return "—"; var p = String(iso).split("-"); if (p.length !== 3) return String(iso); return parseInt(p[2],10) + " " + MONTH_ID[parseInt(p[1],10)-1] + " " + p[0]; }
+    function monthLabel(ym){ if (!ym) return "—"; var p = String(ym).split("-"); if (p.length !== 2) return String(ym); return MONTH_ID[parseInt(p[1],10)-1] + " " + p[0]; }
+    function refDate(){ var s = DATA.meta.twods_source_date; if (s){ var p = String(s).split("-"); if (p.length === 3) return new Date(+p[0], +p[1]-1, +p[2]); } return new Date(); }
+    function parsePanelDate(when){
+      var m = String(when).match(/(\d{1,2})\s+([A-Za-z]{3})/); if (!m) return null;
+      var ref = refDate(); var d = new Date(ref.getFullYear(), MONTH_EN[m[2]] !== undefined ? MONTH_EN[m[2]] : ref.getMonth(), +m[1]);
+      if (d - ref > 86400000 * 180) d.setFullYear(ref.getFullYear() - 1);
+      return d;
+    }
+    function dayDiff(a, b){ return Math.round((new Date(a.getFullYear(),a.getMonth(),a.getDate()) - new Date(b.getFullYear(),b.getMonth(),b.getDate())) / 86400000); }
+
+    /* nickname SPEED <-> kode SAP (peta yang sama dengan DAILY PRO) */
+    var NICK2CODE = {"AJM":"103208","ARL":"101141","ARJ":"101141","ARP":"102724","ASIANT":"100238","ASI":"100238","ASJ":"103315","ATC":"100497","BDP":"102436","BMT":"103094","BMU":"102381","BTI":"103092","BTP":"103092","CAP":"102384","CFI":"103097","CIP":"100078","CPM":"102359","DAF":"103099","DBA":"100282","DRC":"100285","DSI":"103101","DPP":"101354","EKN":"103410","EPINDO":"103104","EPI":"103104","FIK":"103204","GHNIYU":"102886","GHO":"102886","GIP":"100463","GMS":"101509","GMT":"103108","HJM":"100245","HTI":"101784","IJM":"100122","IPD":"103120","IPK":"102794","IPTI":"103119","IPT":"103119","KAI":"103200","KGM":"103129","KSM":"100484","KST":"100249","LTP":"102903","MAN":"103136","MHC":"102223","MMM":"102401","NUT":"103196","OMI":"100241","PHM":"103154","PLARCO":"103149","PLC":"103149","PMT":"102404","PPA":"100487","PRW":"101761","PUC":"101716","RJM":"103156","SAN":"100473","SCM":"100467","SGP":"103224","SGI":"103174","SHM":"102412","SHS":"103159","SJT":"100257","SLAI":"102720","SLA":"102720","SPI":"100517","SSA":"102747","STEP":"100258","STE":"100258","SUI":"100260","TMS2":"102661","TTI":"100461","TTJ":"103849","VAN":"103180","WHAIN":"103182","WHI":"103182","YFI":"103183","YOSO":"103187","YOS":"103187","CKC":"103729","ZRU":"104161"};
+    var CODE2NICK = {}; Object.keys(NICK2CODE).forEach(function(k){ var c = NICK2CODE[k]; if (!CODE2NICK[c] || k.length > CODE2NICK[c].length) CODE2NICK[c] = k; });
+    function codeName(code){ /* nama PT dari LIVE_Delay / LIVE_StockSF */
+      if (DATA.delay) for (var i=0;i<DATA.delay.length;i++){ if (String(DATA.delay[i][2]) === String(code) && DATA.delay[i][3]) return String(DATA.delay[i][3]); }
+      if (DATA.stockSF) for (var j=0;j<DATA.stockSF.length;j++){ if (String(DATA.stockSF[j][0]) === String(code) && DATA.stockSF[j][1]) return String(DATA.stockSF[j][1]); }
+      return "";
+    }
+    function vendorLabel(code){ var nick = CODE2NICK[String(code)]; var nm = codeName(code); if (nick) return nick + (nm ? " · " + nm : ""); return nm || ("Kode " + code); }
+
+    var TABLABEL = { full:"LIVE_2DSFull", lmtp:"LIVE_LMTP", itemDI:"LIVE_ItemDI", delay:"LIVE_Delay", ds2:"LIVE_2DS", meta:"LIVE_Meta" };
+    function errBox(id, tabLabel){
+      var el = document.getElementById(id); if (!el) return;
+      el.innerHTML = ERR[tabLabel] ? '<div class="err-note">Data ' + esc(TABLABEL[tabLabel] || tabLabel) + ' tidak tersedia — tab backend gagal dimuat (' + esc(ERR[tabLabel]) + '). Bagian lain tetap tampil; angka bagian ini tidak ditampilkan daripada dikarang.</div>' : "";
+    }
+    var toastTimer = null;
+    function showToast(msg){
+      var t = document.getElementById("toast"); if (!t) return;
+      t.textContent = msg; t.classList.add("on");
+      if (toastTimer) clearTimeout(toastTimer);
+      toastTimer = setTimeout(function(){ t.classList.remove("on"); }, 4200);
+    }
+    function pagerHTML(page, totalPages, total){
+      return '<button data-pg="prev" ' + (page<=1?"disabled":"") + '>‹ Sebelumnya</button>' +
+        '<span>Halaman <b>' + page + '</b> dari ' + totalPages + ' · ' + fmt(total) + ' baris</span>' +
+        '<button data-pg="next" ' + (page>=totalPages?"disabled":"") + '>Berikutnya ›</button>';
+    }
+    function bindPager(id, state, rerender){
+      var el = document.getElementById(id); if (!el) return;
+      el.querySelectorAll("button[data-pg]").forEach(function(b){
+        b.addEventListener("click", function(){ state.page += (b.getAttribute("data-pg") === "next" ? 1 : -1); rerender(); });
+      });
+    }
+
+    /* ================= DERIVED DATA ================= */
+    function fullRows(){ return (DATA.full || []).map(function(r){
+      return { vendor:String(r[0]||""), item:String(r[1]||""), part:String(r[2]||""), rm:numLoose(r[3]), wip:numLoose(r[4]), fg:numLoose(r[5]), std:numLoose(r[6]), judge:String(r[7]||"").toUpperCase(), hari:numLoose(r[8]), manifest:numLoose(r[9]), kat:normKat(r[10]), detail:r[11] ? String(r[11]) : "" };
+    });}
+    function stockTotal(r){ if (r.rm === null && r.wip === null && r.fg === null) return null; return (r.rm||0) + (r.wip||0) + (r.fg||0); }
+    function delayByItem(){
+      var map = {};
+      (DATA.delay || []).forEach(function(r){
+        var key = String(r[4]||"") + "|" + String(r[2]||"");
+        if (!map[key]) map[key] = { count:0, os:0, maxHK:0, po:r[8] ? String(r[8]) : "", desc:r[5] ? String(r[5]) : "", code:String(r[2]||""), name:r[3] ? String(r[3]) : "" };
+        map[key].count++; map[key].os += numLoose(r[6]) || 0; map[key].maxHK = Math.max(map[key].maxHK, numLoose(r[7]) || 0);
+        if (!map[key].po && r[8]) map[key].po = String(r[8]);
+      });
+      return map;
+    }
+    function itemDIMap(){ var m = {}; (DATA.itemDI || []).forEach(function(r){ m[String(r[0]||"") + "|" + String(r[1]||"")] = { total:numLoose(r[2])||0, today:numLoose(r[3])||0, todayCount:numLoose(r[4])||0 }; }); return m; }
+    function itemGRMap(){ var m = {}; (DATA.itemGR || []).forEach(function(r){ m[String(r[0]||"") + "|" + String(r[1]||"")] = { qty:numLoose(r[2])||0, count:numLoose(r[3])||0, last:r[4] }; }); return m; }
+    function partNameByItem(){
+      var m = {};
+      (DATA.full || []).forEach(function(r){ if (r[1] && r[2] && !m[String(r[1])]) m[String(r[1])] = String(r[2]); });
+      (DATA.delay || []).forEach(function(r){ if (r[4] && r[5] && !m[String(r[4])]) m[String(r[4])] = String(r[5]); });
+      (DATA.stockSF || []).forEach(function(r){ if (r[2] && r[3] && !m[String(r[2])]) m[String(r[2])] = String(r[3]); });
+      return m;
+    }
+    function problemByItem(){
+      var m = {};
+      (DATA.full || []).forEach(function(r){ if (r[1] && (r[10] || r[11]) && !m[String(r[1])]) m[String(r[1])] = { kat:normKat(r[10]), detail:r[11] ? String(r[11]) : "" }; });
+      return m;
+    }
+    function updateStatus(){
+      var ref = refDate(); var panel = DATA.panel || [];
+      var byVendor = {}, masters = [];
+      panel.forEach(function(p){
+        if (/^master/i.test(p.vendor)){ masters.push(p); return; }
+        var d = parsePanelDate(p.when); var diff = d ? dayDiff(ref, d) : null;
+        var st = diff === null ? "never" : diff <= 0 ? "today" : diff === 1 ? "yday" : diff > 7 ? "stale" : "ok";
+        byVendor[p.vendor] = { when:p.when, date:d, diff:diff, status:st };
+      });
+      return { byVendor:byVendor, masters:masters, ref:ref };
+    }
+
+    /* ================= DASHBOARD ================= */
+    function renderDashboard(){
+      errBox("dashErr", "full");
+      var cardsEl = document.getElementById("dashCards"), m4El = document.getElementById("dash4M"), defsEl = document.getElementById("dashDefs");
+      var srcDate = DATA.meta.twods_source_date ? fmtDateID(DATA.meta.twods_source_date) : "tanggal data tidak tersedia";
+      var srcLbl = DATA.meta.twods_source_label ? " · " + esc(DATA.meta.twods_source_label) : "";
+      if (!DATA.full){
+        cardsEl.innerHTML = '<div class="empty-note">Data LIVE_2DSFull tidak tersedia — kartu ringkasan tidak ditampilkan.</div>';
+        m4El.innerHTML = ""; defsEl.innerHTML = "";
+      } else {
+        var rows = fullRows();
+        var total = rows.length, ng = 0, ok = 0, sched = 0;
+        var kat = { Material:0, Man:0, Machine:0, Method:0 };
+        rows.forEach(function(r){
+          if (r.judge === "NG") ng++; else if (r.judge === "OK") ok++;
+          if (r.hari !== null && r.hari <= 0) sched++;
+          if (r.kat && kat.hasOwnProperty(r.kat)) kat[r.kat]++;
+        });
+        var katTotal = kat.Material + kat.Man + kat.Machine + kat.Method;
+        var ngNoKat = rows.filter(function(r){ return r.judge === "NG" && !r.kat; }).length;
+        function card(cls, dot, k, v, d){ return '<div class="card ' + cls + '"><div class="k"><span class="dot" style="background:' + dot + '"></span>' + k + '</div><div class="v num">' + fmt(v) + '</div><div class="d">' + d + '</div></div>'; }
+        cardsEl.innerHTML =
+          card("", "#2e6da4", "Total Item", total, "Semua baris snapshot 2DS · per " + srcDate + srcLbl) +
+          card("ng", "#b91c1c", "Total Item NG", ng, fmtPct(pct(ng,total)) + " dari total item · stok di bawah Std. 2HK / terlambat / belum update") +
+          card("ok", "#177245", "Total Item OK", ok, fmtPct(pct(ok,total)) + " dari total item · stok memenuhi Std. 2HK") +
+          card("sched", "#b98a1c", "On Schedule", sched, "Item dengan keterlambatan ≤ 0 hari (tidak terlambat) pada snapshot ini");
+        m4El.innerHTML =
+          card("mini", "#b91c1c", "Material", kat.Material, "Kasus kategori Material") +
+          card("mini", "#7a5fd0", "Man", kat.Man, "Kasus kategori Man") +
+          card("mini", "#9a6a00", "Machine", kat.Machine, "Kasus kategori Machine") +
+          card("mini", "#2e6da4", "Method", kat.Method, "Kasus kategori Method (ejaan disamakan dari “Methode”)");
+        defsEl.innerHTML = "<b>Definisi &amp; rumus.</b> <b>On Schedule</b> = jumlah item yang kolom keterlambatannya ≤ 0 hari pada snapshot LIVE_2DSFull tanggal " + srcDate + " (item belum jatuh tempo terlambat). " +
+          "<b>Kenapa total 4M (" + fmt(katTotal) + ") tidak sama dengan NG (" + fmt(ng) + ")?</b> Karena kategori 4M hanya terisi bila vendor sudah memilih Kategori Problem — saat ini " + fmt(ngNoKat) + " item NG belum memilih kategori (di SPEED tampil sebagai “- Pilih -”), dan sebagian baris berkategori bukan berstatus NG. Jadi 4M menghitung <i>kasus yang sudah dikategorikan</i>, sedangkan NG menghitung <i>semua item yang dinilai NG</i>." +
+          (DATA.meta.last_update ? " Backend terakhir disinkron " + esc(DATA.meta.last_update) + " WIB." : "");
+      }
+      renderVendorPerf(); renderUpdPanel(); renderDashDelay(); renderMonitoring();
+    }
+    function renderVendorPerf(){
+      var box = document.getElementById("chartVendorPerf"), src = document.getElementById("srcVendorPerf");
+      if (!DATA.full){ box.innerHTML = '<div class="empty-note">Data tidak tersedia.</div>'; src.textContent = ""; return; }
+      var agg = {};
+      fullRows().forEach(function(r){
+        if (!agg[r.vendor]) agg[r.vendor] = { ng:0, ok:0, nopo:0 };
+        if (r.judge === "NG") agg[r.vendor].ng++; else if (r.judge === "OK") agg[r.vendor].ok++; else agg[r.vendor].nopo++;
+      });
+      var showEmpty = document.getElementById("tglEmptyVendor").checked;
+      if (showEmpty && DATA.panel){
+        DATA.panel.forEach(function(p){ if (!/^master/i.test(p.vendor) && !agg[p.vendor]) agg[p.vendor] = { ng:0, ok:0, nopo:0 }; });
+      }
+      var list = Object.keys(agg).map(function(v){ var a = agg[v]; a.vendor = v; a.total = a.ng + a.ok + a.nopo; return a; })
+        .sort(function(a,b){ return b.ng - a.ng || b.total - a.total; });
+      var max = Math.max.apply(null, list.map(function(a){ return a.total; }).concat([1]));
+      var W = 760, rowh = 21, H = list.length * rowh + 8, labelW = 92, chartW = W - labelW - 64;
+      var s = '<svg viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="Grafik Vendor Performance NG vs OK per vendor">';
+      list.forEach(function(a, i){
+        var y = 4 + i * rowh;
+        var wNg = a.ng / max * chartW, wOk = a.ok / max * chartW, wNp = a.nopo / max * chartW;
+        s += '<text x="' + (labelW - 8) + '" y="' + (y + 13) + '" text-anchor="end" font-size="12" font-weight="600" fill="currentColor">' + esc(a.vendor) + '</text>';
+        if (a.total === 0){
+          s += '<text x="' + (labelW + 4) + '" y="' + (y + 13) + '" font-size="11.5" fill="currentColor" opacity=".55">— belum ada item di snapshot</text>';
+        } else {
+          if (wNg > 0) s += '<rect x="' + labelW + '" y="' + y + '" width="' + wNg + '" height="15" rx="2" fill="#b91c1c"><title>' + esc(a.vendor) + ' — NG: ' + a.ng + ' item</title></rect>';
+          if (wOk > 0) s += '<rect x="' + (labelW + wNg) + '" y="' + y + '" width="' + wOk + '" height="15" rx="2" fill="#177245"><title>' + esc(a.vendor) + ' — OK: ' + a.ok + ' item</title></rect>';
+          if (wNp > 0) s += '<rect x="' + (labelW + wNg + wOk) + '" y="' + y + '" width="' + wNp + '" height="15" rx="2" fill="#7a5fd0"><title>' + esc(a.vendor) + ' — NO PO: ' + a.nopo + ' item</title></rect>';
+          s += '<text x="' + (labelW + wNg + wOk + wNp + 7) + '" y="' + (y + 12.5) + '" font-size="11.5" fill="currentColor" opacity=".75">' + a.total + ' item</text>';
+        }
+      });
+      s += "</svg>";
+      box.innerHTML = s;
+      src.textContent = "Sumber: LIVE_2DSFull per " + (DATA.meta.twods_source_date ? fmtDateID(DATA.meta.twods_source_date) : "—") + " · " + list.length + " vendor ditampilkan, urut NG terbanyak. Arahkan kursor ke batang untuk rincian per status" + (showEmpty ? "." : " · vendor tanpa item disembunyikan (aktifkan opsi di atas untuk melihatnya).");
+    }
+    function updSummaryHTML(){
+      if (!DATA.panel) return "";
+      var st = updateStatus();
+      var vendorsInFull = {};
+      if (DATA.full) fullRows().forEach(function(r){ vendorsInFull[r.vendor] = true; });
+      var today = 0, yday = 0, stale = 0;
+      Object.keys(st.byVendor).forEach(function(v){ var s = st.byVendor[v].status; if (s === "today") today++; else if (s === "yday") yday++; else if (s === "stale") stale++; });
+      var never = Object.keys(vendorsInFull).filter(function(v){ return !st.byVendor[v]; }).length;
+      return '<span class="sumchip good">✓ ' + today + ' vendor update hari ini</span>' +
+        '<span class="sumchip warn">◐ ' + yday + ' vendor update kemarin</span>' +
+        '<span class="sumchip bad">✕ ' + stale + ' vendor basi &gt; 7 hari</span>' +
+        '<span class="sumchip">— ' + never + ' vendor belum pernah update</span>' +
+        '<span class="sumchip">⟳ ' + st.masters.length + ' baris master (DI &amp; PO)</span>';
+    }
+    function renderUpdPanel(){
+      ["updSummary","updSummary2"].forEach(function(id){ var el = document.getElementById(id); if (el) el.innerHTML = updSummaryHTML(); });
+      var box = document.getElementById("updPanel"); if (!box) return;
+      if (!DATA.panel){ box.innerHTML = '<div class="empty-note">Data panel Last Update (LIVE_2DS) tidak tersedia.</div>'; return; }
+      var st = updateStatus();
+      var vendorsInFull = {};
+      if (DATA.full) fullRows().forEach(function(r){ vendorsInFull[r.vendor] = true; });
+      function icon(s){ return s === "today" ? '<span class="st-ic st-today">✓</span>' : s === "yday" ? '<span class="st-ic st-yday">◐</span>' : s === "stale" ? '<span class="st-ic st-stale">✕</span>' : s === "master" ? '<span class="st-ic st-master">M</span>' : '<span class="st-ic st-never">—</span>'; }
+      function label(s, diff){ return s === "today" ? "Hari ini" : s === "yday" ? "Kemarin" : s === "stale" ? "Basi " + diff + " hari" : s === "master" ? "Master" : "Belum pernah update"; }
+      var html = '<ul class="upd-list">';
+      var entries = Object.keys(st.byVendor).map(function(v){ return { vendor:v, info:st.byVendor[v] }; })
+        .sort(function(a,b){ return (a.info.date || 0) - (b.info.date || 0); });
+      entries.slice().reverse().forEach(function(e){
+        html += '<li>' + icon(e.info.status) + '<span class="vn">' + esc(e.vendor) + '</span><span>' + label(e.info.status, e.info.diff) + '</span><span class="vt num">' + esc(e.info.when) + '</span></li>';
+      });
+      st.masters.forEach(function(m){
+        html += '<li>' + icon("master") + '<span class="vn">' + esc(m.vendor) + '</span><span>Master</span><span class="vt num">' + esc(m.when) + '</span></li>';
+      });
+      html += "</ul>";
+      var neverList = Object.keys(vendorsInFull).filter(function(v){ return !st.byVendor[v]; }).sort();
+      if (neverList.length){
+        html += '<div class="upd-group" style="padding-left:18px">No Update — tidak ada di panel (' + neverList.length + ' vendor)</div>' +
+          '<ul class="upd-list" id="neverList" style="display:none">' + neverList.map(function(v){ return '<li>' + icon("never") + '<span class="vn">' + esc(v) + '</span><span>Belum pernah update</span><span class="vt">—</span></li>'; }).join("") + "</ul>" +
+          '<div style="padding:2px 16px 13px"><button class="btn" id="btnNever" type="button">Tampilkan semua vendor No Update (' + neverList.length + ')</button></div>';
+      }
+      box.innerHTML = html;
+      var btn = document.getElementById("btnNever");
+      if (btn) btn.addEventListener("click", function(){
+        var l = document.getElementById("neverList"); var open = l.style.display !== "none";
+        l.style.display = open ? "none" : ""; btn.textContent = open ? "Tampilkan semua vendor No Update (" + neverList.length + ")" : "Sembunyikan vendor No Update";
+      });
+    }
+    function renderDashDelay(){
+      var el = document.getElementById("dashDelay"); if (!el) return;
+      if (!DATA.metaOk && !DATA.delay){ el.innerHTML = '<div class="empty-note">Data delay tidak tersedia.</div>'; return; }
+      var rows = DATA.meta.delay_rows, di = DATA.meta.delay_di, os = DATA.meta.delay_os_pcs;
+      var worst = "";
+      if (DATA.delay){
+        var byV = {};
+        DATA.delay.forEach(function(r){ var k = String(r[3] || r[2] || ""); byV[k] = (byV[k] || 0) + (numLoose(r[6]) || 0); });
+        var top = Object.keys(byV).sort(function(a,b){ return byV[b] - byV[a]; })[0];
+        if (top) worst = '<p style="margin:10px 0 0">OS delay terbesar: <b>' + esc(top) + '</b> — <span class="num">' + fmt(byV[top]) + '</span> pcs.</p>';
+      }
+      el.innerHTML = '<div style="display:flex;gap:22px;flex-wrap:wrap">' +
+        '<div><div style="font-size:26px;font-weight:700" class="num">' + fmt(numLoose(rows)) + '</div><div style="color:var(--muted);font-size:12.5px">Baris DI delay</div></div>' +
+        '<div><div style="font-size:26px;font-weight:700" class="num">' + fmt(numLoose(di)) + '</div><div style="color:var(--muted);font-size:12.5px">DI unik terlambat</div></div>' +
+        '<div><div style="font-size:26px;font-weight:700" class="num">' + fmt(numLoose(os)) + '</div><div style="color:var(--muted);font-size:12.5px">Total OS delay (pcs)</div></div></div>' +
+        '<p style="margin:10px 0 0;color:var(--muted);font-size:13px">Jendela DI: ' + esc(DATA.meta.di_window || "—") + ' · sumber file ' + esc(DATA.meta.di_manifest_source || "—") + '. Keterlambatan dihitung per hari kerja (HK).</p>' + worst;
+    }
+    function renderMonitoring(){
+      var box = document.getElementById("chartMonitoring"), src = document.getElementById("srcMonitoring");
+      if (!DATA.delay){ box.innerHTML = '<div class="empty-note">Data LIVE_Delay tidak tersedia — grafik monitoring tidak ditampilkan.</div>'; src.textContent = ""; return; }
+      var byDay = {};
+      DATA.delay.forEach(function(r){
+        var d = String(r[1] || ""); var p = d.split("/"); if (p.length !== 3) return;
+        var key = p[2] + "-" + p[1] + "-" + p[0];
+        byDay[key] = (byDay[key] || 0) + 1;
+      });
+      var ref = refDate(); var y = ref.getFullYear(), mo = ref.getMonth();
+      var lastDay = ref.getDate();
+      var days = []; for (var d = 1; d <= lastDay; d++){ var key = y + "-" + String(mo+1).padStart(2,"0") + "-" + String(d).padStart(2,"0"); days.push({ d:d, n:byDay[key] || 0 }); }
+      var max = Math.max.apply(null, days.map(function(x){ return x.n; }).concat([1]));
+      var cum = 0; days.forEach(function(x){ cum += x.n; x.cum = cum; });
+      var W = 900, H = 250, base = H - 34, top = 16, chartH = base - top, stepX = (W - 56) / days.length, barW = Math.max(6, stepX * 0.68);
+      var s = '<svg viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="Grafik monitoring harian DI delay bulan berjalan">';
+      s += '<line x1="46" y1="' + base + '" x2="' + (W - 10) + '" y2="' + base + '" stroke="currentColor" opacity=".3"/>';
+      [0, 0.5, 1].forEach(function(f){ var gy = base - chartH * f; s += '<line x1="46" y1="' + gy + '" x2="' + (W - 10) + '" y2="' + gy + '" stroke="currentColor" opacity=".08"/><text x="40" y="' + (gy + 4) + '" text-anchor="end" font-size="11" fill="currentColor" opacity=".6">' + Math.round(max * f) + '</text>'; });
+      var pts = [];
+      days.forEach(function(x, i){
+        var cx = 46 + i * stepX + stepX / 2, bh = x.n / max * chartH, by = base - bh;
+        if (x.n > 0) s += '<rect x="' + (cx - barW/2) + '" y="' + by + '" width="' + barW + '" height="' + bh + '" rx="2" fill="#2e6da4"><title>' + x.d + ' ' + MONTH_ID[mo] + ' ' + y + ' — ' + x.n + ' DI delay jatuh tempo (kumulatif ' + x.cum + ')</title></rect>';
+        else s += '<rect x="' + (cx - barW/2) + '" y="' + (base - 2) + '" width="' + barW + '" height="2" fill="currentColor" opacity=".25"><title>' + x.d + ' ' + MONTH_ID[mo] + ' ' + y + ' — tidak ada DI delay jatuh tempo</title></rect>';
+        var cy = base - (x.cum / (cum || 1)) * chartH;
+        pts.push((cx) + "," + cy);
+        if (x.d === 1 || x.d % 5 === 0 || x.d === lastDay) s += '<text x="' + cx + '" y="' + (base + 17) + '" text-anchor="middle" font-size="11" fill="currentColor" opacity=".65">' + x.d + '</text>';
+      });
+      if (cum > 0) s += '<polyline points="' + pts.join(" ") + '" fill="none" stroke="#b98a1c" stroke-width="2"><title>Garis kumulatif DI delay</title></polyline>';
+      s += "</svg>";
+      box.innerHTML = s;
+      var missing = days.filter(function(x){ return x.n === 0; }).length;
+      src.textContent = "Sumber: LIVE_Delay — tanggal jatuh tempo (Delivery Date) DI yang masih outstanding, bulan " + MONTH_ID[mo] + " " + y + " s/d tanggal data " + fmtDateID(DATA.meta.twods_source_date) + ". " + missing + " tanggal tanpa batang berarti tidak ada DI delay jatuh tempo pada tanggal itu (bukan data hilang). Riwayat bulanan 2DS per tanggal terbit belum tersimpan di backend, jadi grafik menampilkan pergerakan harian bulan berjalan, bukan tren antar-bulan. Arahkan kursor ke batang untuk nilai per tanggal.";
+    }
+
+    /* ================= 2 DAYS STOCK ================= */
+    var stockState = { q:"", chip:"all", vendor:"all", page:1, per:50 };
+    function judgeReason(r){
+      var st = stockTotal(r);
+      if (r.judge === "NG"){
+        if (st === null) return "NG: stok belum di-update vendor";
+        if (r.std !== null && st < r.std) return "NG: stok " + fmt(st) + " < Std. 2HK " + fmt(r.std);
+        if (r.hari !== null && r.hari > 0) return "NG: terlambat " + r.hari + " hari";
+        return "NG: tidak memenuhi standar 2HK";
+      }
+      if (r.judge === "OK") return "OK: stok memenuhi Std. 2HK";
+      if (r.judge === "NO PO") return "NO PO: belum ada PO aktif untuk item ini";
+      return r.judge;
+    }
+    function stockFiltered(){
+      var rows = fullRows();
+      var di = itemDIMap(), gr = itemGRMap(), dl = delayByItem();
+      rows.forEach(function(r){
+        var code = NICK2CODE[r.vendor] || "";
+        var k = r.item + "|" + code;
+        r._di = di[k] || null; r._gr = gr[k] || null; r._dl = dl[k] || null;
+        r._po = r._dl && r._dl.po ? r._dl.po : "";
+        var st = stockTotal(r);
+        r._pct = (r.std !== null && r.std > 0 && st !== null) ? st / r.std * 100 : null;
+      });
+      var f = rows;
+      if (stockState.chip === "ng") f = f.filter(function(r){ return r.judge === "NG"; });
+      else if (stockState.chip === "ok") f = f.filter(function(r){ return r.judge === "OK"; });
+      else if (stockState.chip === "nopo") f = f.filter(function(r){ return r.judge === "NO PO"; });
+      else if (stockState.chip === "nocat") f = f.filter(function(r){ return r.judge === "NG" && !r.kat; });
+      if (stockState.vendor !== "all") f = f.filter(function(r){ return r.vendor === stockState.vendor; });
+      if (stockState.q){
+        var q = stockState.q.toLowerCase();
+        f = f.filter(function(r){ return (r.vendor + " " + r.item + " " + r.part + " " + r._po + " " + (r.kat||"") + " " + r.detail).toLowerCase().indexOf(q) >= 0; });
+      }
+      return { all:rows, filtered:f };
+    }
+    function renderStock(){
+      errBox("stockErr", "full");
+      var legend = document.getElementById("stockLegend");
+      legend.innerHTML = "<b>Legenda (selalu tampil):</b> <b>Frek. DI</b> = jumlah DI terbit hari ini per item (LIVE_ItemDI) · <b>Frek. Delv.</b> = jumlah GR bulan berjalan per item (LIVE_ItemGR) · <b>Persentase Pemenuhan</b> = (RM+WIP+FG) ÷ Std. 2HK × 100% · <b>RM / WIP / FG</b> = stok bahan / proses / jadi di vendor · <b>Std. 2HK</b> = standar stok 2 hari kerja · <b>Delay</b> = qty DI outstanding dari Manifest (pcs) · <b>Keterlambatan</b> = hari keterlambatan (negatif = datang lebih awal) · <b>Penilaian</b> = judgement SPEED (OK / NG / NO PO) beserta alasannya · <b>PO</b> = nomor PO dari DI delay item (LIVE_Delay); kosong berarti item tidak punya DI delay bulan ini, bukan berarti PO tidak ada. Sel bertuliskan <span class='noupd'>— belum update</span> berarti vendor belum mengisi stok (berbeda dari angka 0). Baris NG berwarna kuning = Kategori Problem belum dipilih.";
+      var dateIn = document.getElementById("stockDate");
+      if (DATA.meta.twods_source_date && !dateIn.value) dateIn.value = DATA.meta.twods_source_date;
+      document.getElementById("stockDateNote").textContent = DATA.meta.twods_source_date ?
+        "Snapshot backend tersedia: " + fmtDateID(DATA.meta.twods_source_date) + (DATA.meta.twods_source_label ? " (" + DATA.meta.twods_source_label + ")" : "") + ". Riwayat snapshot tanggal lain belum tersimpan di backend." : "";
+      var tbl = document.getElementById("stockTable"), sum = document.getElementById("stockSummary"), chipsEl = document.getElementById("stockChips"), pager = document.getElementById("stockPager");
+      if (!DATA.full){ tbl.innerHTML = '<tr><td class="empty-note">Data LIVE_2DSFull tidak tersedia.</td></tr>'; sum.innerHTML = ""; chipsEl.innerHTML = ""; pager.innerHTML = ""; return; }
+      var vsel = document.getElementById("stockVendor");
+      if (vsel.options.length <= 1){
+        var vs = {}; fullRows().forEach(function(r){ vs[r.vendor] = true; });
+        Object.keys(vs).sort().forEach(function(v){ var o = document.createElement("option"); o.value = v; o.textContent = v; vsel.appendChild(o); });
+      }
+      var res = stockFiltered(), all = res.all, f = res.filtered;
+      var cNg = all.filter(function(r){ return r.judge === "NG"; }).length;
+      var cOk = all.filter(function(r){ return r.judge === "OK"; }).length;
+      var cNp = all.filter(function(r){ return r.judge === "NO PO"; }).length;
+      var cNc = all.filter(function(r){ return r.judge === "NG" && !r.kat; }).length;
+      sum.innerHTML = '<span class="sumchip">Total item: <b>' + fmt(all.length) + '</b></span>' +
+        '<span class="sumchip bad">NG: <b>' + fmt(cNg) + '</b></span>' +
+        '<span class="sumchip good">OK: <b>' + fmt(cOk) + '</b></span>' +
+        '<span class="sumchip">NO PO: <b>' + fmt(cNp) + '</b></span>' +
+        '<span class="sumchip warn">NG tanpa kategori: <b>' + fmt(cNc) + '</b></span>' +
+        '<span class="sumchip">Hasil saring: <b>' + fmt(f.length) + '</b> baris</span>';
+      var chips = [["all","Semua", all.length],["ng","NG saja", cNg],["ok","OK saja", cOk],["nopo","NO PO", cNp],["nocat","Tanpa Kategori", cNc]];
+      chipsEl.innerHTML = chips.map(function(c){ return '<button class="chip' + (stockState.chip === c[0] ? " on" : "") + '" data-chip="' + c[0] + '" type="button">' + c[1] + ' <span class="cnt">' + fmt(c[2]) + '</span></button>'; }).join("");
+      chipsEl.querySelectorAll("button[data-chip]").forEach(function(b){ b.addEventListener("click", function(){ stockState.chip = b.getAttribute("data-chip"); stockState.page = 1; renderStock(); }); });
+      var totalPages = Math.max(1, Math.ceil(f.length / stockState.per));
+      if (stockState.page > totalPages) stockState.page = totalPages;
+      var start = (stockState.page - 1) * stockState.per;
+      var pageRows = f.slice(start, start + stockState.per);
+      var head = "<thead><tr>" +
+        '<th class="sticky1" style="left:0;min-width:86px">Vendor</th>' +
+        '<th class="sticky2" style="min-width:128px">Item Code</th>' +
+        '<th class="sticky3" style="min-width:210px">Part</th>' +
+        "<th>PO</th><th>Frek. DI</th><th>Frek. Delv.</th><th>Persentase Pemenuhan</th><th>RM</th><th>WIP</th><th>FG</th><th>Std. 2HK</th><th>Delay (pcs)</th><th>Keterlambatan (Hari)</th><th>Penilaian</th><th>Kategori Problem</th><th>Detail Problem</th></tr></thead>";
+      function stockCell(v){ return v === null ? '<span class="noupd">— belum update</span>' : '<span class="num">' + fmt(v) + '</span>'; }
+      var body = pageRows.map(function(r){
+        var nocat = r.judge === "NG" && !r.kat;
+        var pctCell = "—";
+        if (r._pct !== null){ pctCell = '<span class="num">' + fmtPct(r._pct) + '</span>' + (r._pct > 100 ? '<span class="flag over">&gt;100%</span>' : ""); }
+        var hariCell = "—";
+        if (r.hari !== null){
+          hariCell = '<span class="num">' + r.hari + '</span>' + (r.hari > 0 ? '<span class="flag late">terlambat</span>' : r.hari < 0 ? '<span class="flag neg">lebih awal</span>' : "");
+        }
+        var jcls = r.judge === "NG" ? "j-ng" : r.judge === "OK" ? "j-ok" : "j-nopo";
+        return '<tr' + (nocat ? ' class="nocat"' : "") + '>' +
+          '<td class="sticky1" style="left:0"><b>' + esc(r.vendor) + '</b></td>' +
+          '<td class="sticky2 num">' + esc(r.item) + '</td>' +
+          '<td class="sticky3 partcell" title="' + esc(r.part) + '">' + esc(r.part) + '</td>' +
+          '<td class="num">' + (r._po ? esc(r._po) : "—") + '</td>' +
+          '<td class="num">' + (r._di ? fmt(r._di.todayCount) : "—") + '</td>' +
+          '<td class="num">' + (r._gr ? fmt(r._gr.count) : "—") + '</td>' +
+          '<td>' + pctCell + '</td>' +
+          '<td>' + stockCell(r.rm) + '</td><td>' + stockCell(r.wip) + '</td><td>' + stockCell(r.fg) + '</td>' +
+          '<td class="num">' + fmt(r.std) + '</td>' +
+          '<td class="num">' + fmt(r.manifest) + '</td>' +
+          '<td>' + hariCell + '</td>' +
+          '<td><span class="judge ' + jcls + '">' + esc(r.judge) + '</span><span class="jreason">' + esc(judgeReason(r)) + '</span></td>' +
+          '<td>' + (r.kat ? esc(r.kat) : (r.judge === "NG" ? '<span class="flag nocat">— belum dipilih</span>' : "—")) + '</td>' +
+          '<td>' + (r.detail ? esc(r.detail) : "—") + '</td></tr>';
+      }).join("");
+      tbl.innerHTML = head + "<tbody>" + (body || '<tr><td colspan="16" class="empty-note">Tidak ada baris yang cocok dengan saringan.</td></tr>') + "</tbody>";
+      fixStickyOffsets(tbl);
+      pager.innerHTML = pagerHTML(stockState.page, totalPages, f.length);
+      bindPager("stockPager", stockState, renderStock);
+    }
+    function fixStickyOffsets(tbl){
+      var ths = tbl.querySelectorAll("thead th");
+      if (ths.length < 3) return;
+      var w1 = ths[0].offsetWidth, w2 = ths[1].offsetWidth;
+      tbl.querySelectorAll(".sticky2").forEach(function(el){ el.style.left = w1 + "px"; });
+      tbl.querySelectorAll(".sticky3").forEach(function(el){ el.style.left = (w1 + w2) + "px"; });
+    }
+
+    /* ================= MASTER DATA ================= */
+    var mvState = { q:"", page:1, per:50 }, mpState = { q:"", page:1, per:50 };
+    function renderMaster(){
+      errBox("masterErr", "full");
+      renderMasterVendor(); renderMasterPart(); renderMasterPO();
+    }
+    function masterVendorRows(){
+      var st = updateStatus(); var counts = {};
+      if (DATA.full) fullRows().forEach(function(r){ counts[r.vendor] = (counts[r.vendor] || 0) + 1; });
+      var codes = {};
+      if (DATA.itemDI) DATA.itemDI.forEach(function(r){ if (r[1]) codes[String(r[1])] = true; });
+      if (DATA.stockSF) DATA.stockSF.forEach(function(r){ if (r[0]) codes[String(r[0])] = true; });
+      Object.keys(NICK2CODE).forEach(function(n){ codes[NICK2CODE[n]] = true; });
+      var rows = Object.keys(codes).map(function(code){
+        var nick = CODE2NICK[code] || "—";
+        var upd = st.byVendor[nick];
+        return { code:code, nick:nick, name:codeName(code), items:counts[nick] || 0, upd:upd ? upd.when : null, status:upd ? upd.status : "never" };
+      });
+      rows.sort(function(a,b){ return b.items - a.items || a.nick.localeCompare(b.nick); });
+      return rows;
+    }
+    function renderMasterVendor(){
+      var tbl = document.getElementById("mvTable"), pager = document.getElementById("mvPager");
+      var rows = masterVendorRows();
+      if (mvState.q){ var q = mvState.q.toLowerCase(); rows = rows.filter(function(r){ return (r.code + " " + r.nick + " " + r.name).toLowerCase().indexOf(q) >= 0; }); }
+      var totalPages = Math.max(1, Math.ceil(rows.length / mvState.per)); if (mvState.page > totalPages) mvState.page = totalPages;
+      var pr = rows.slice((mvState.page - 1) * mvState.per, mvState.page * mvState.per);
+      var stLabel = { today:"Update hari ini", yday:"Update kemarin", ok:"Update minggu ini", stale:"Basi > 7 hari", never:"Belum pernah update" };
+      tbl.innerHTML = "<thead><tr><th>Kode SAP</th><th>Nickname SPEED</th><th>Nama Vendor</th><th>Item di Snapshot 2DS</th><th>Update Terakhir</th><th>Status</th></tr></thead><tbody>" +
+        (pr.map(function(r){
+          var cls = r.status === "today" ? "j-ok" : r.status === "stale" || r.status === "never" ? "j-ng" : "";
+          return "<tr><td class='num'>" + esc(r.code) + "</td><td><b>" + esc(r.nick) + "</b></td><td>" + (r.name ? esc(r.name) : "—") + '</td><td class="num">' + fmt(r.items) + '</td><td class="num">' + (r.upd ? esc(r.upd) : "—") + '</td><td>' + (cls ? '<span class="judge ' + cls + '">' + stLabel[r.status] + "</span>" : stLabel[r.status]) + "</td></tr>";
+        }).join("") || '<tr><td colspan="6" class="empty-note">Tidak ada vendor yang cocok.</td></tr>') + "</tbody>";
+      pager.innerHTML = pagerHTML(mvState.page, totalPages, rows.length);
+      bindPager("mvPager", mvState, renderMasterVendor);
+    }
+    function renderMasterPart(){
+      var tbl = document.getElementById("mpTable"), pager = document.getElementById("mpPager");
+      var map = {};
+      if (DATA.full) fullRows().forEach(function(r){ map[r.item + "|" + r.vendor] = { item:r.item, part:r.part, vendor:r.vendor, std:r.std, judge:r.judge }; });
+      if (DATA.itemDI) DATA.itemDI.forEach(function(r){ var nick = CODE2NICK[String(r[1])] || ("Kode " + r[1]); var k = String(r[0]) + "|" + nick; if (!map[k]) map[k] = { item:String(r[0]), part:"", vendor:nick, std:null, judge:"" }; });
+      var names = partNameByItem();
+      var rows = Object.keys(map).map(function(k){ var r = map[k]; if (!r.part) r.part = names[r.item] || "—"; return r; });
+      rows.sort(function(a,b){ return a.item.localeCompare(b.item); });
+      if (mpState.q){ var q = mpState.q.toLowerCase(); rows = rows.filter(function(r){ return (r.item + " " + r.part + " " + r.vendor).toLowerCase().indexOf(q) >= 0; }); }
+      var totalPages = Math.max(1, Math.ceil(rows.length / mpState.per)); if (mpState.page > totalPages) mpState.page = totalPages;
+      var pr = rows.slice((mpState.page - 1) * mpState.per, mpState.page * mpState.per);
+      tbl.innerHTML = "<thead><tr><th>Item Code</th><th>Part Name</th><th>Vendor</th><th>Std. 2HK</th><th>Judgement Terakhir</th></tr></thead><tbody>" +
+        (pr.map(function(r){ return '<tr><td class="num">' + esc(r.item) + '</td><td class="partcell" title="' + esc(r.part) + '">' + esc(r.part) + '</td><td><b>' + esc(r.vendor) + '</b></td><td class="num">' + fmt(r.std) + '</td><td>' + (r.judge ? esc(r.judge) : "—") + "</td></tr>"; }).join("") || '<tr><td colspan="5" class="empty-note">Tidak ada part yang cocok.</td></tr>') + "</tbody>";
+      pager.innerHTML = pagerHTML(mpState.page, totalPages, rows.length);
+      bindPager("mpPager", mpState, renderMasterPart);
+    }
+    function renderMasterPO(){
+      var el = document.getElementById("poBody"); if (!el) return;
+      if (!DATA.delay){ el.innerHTML = '<div class="empty-note">Data LIVE_Delay tidak tersedia.</div>'; return; }
+      var byPO = {};
+      DATA.delay.forEach(function(r){ var po = r[8] ? String(r[8]) : ""; if (!po) return; if (!byPO[po]) byPO[po] = { po:po, vendor:r[3] || r[2] || "", n:0, os:0 }; byPO[po].n++; byPO[po].os += numLoose(r[6]) || 0; });
+      var rows = Object.keys(byPO).map(function(k){ return byPO[k]; }).sort(function(a,b){ return b.os - a.os; }).slice(0, 50);
+      el.innerHTML = '<p style="margin-top:4px">Ditemukan <b>' + fmt(Object.keys(byPO).length) + ' nomor PO</b> yang terhubung ke DI delay bulan berjalan. 50 PO dengan OS delay terbesar:</p>' +
+        '<div class="tblwrap" style="box-shadow:none"><table><thead><tr><th>No. PO</th><th>Vendor</th><th>Jumlah DI Delay</th><th>Total OS (pcs)</th></tr></thead><tbody>' +
+        rows.map(function(r){ return '<tr><td class="num">' + esc(r.po) + '</td><td>' + esc(r.vendor) + '</td><td class="num">' + fmt(r.n) + '</td><td class="num">' + fmt(r.os) + "</td></tr>"; }).join("") + "</tbody></table></div>";
+    }
+
+    /* ================= LAPORAN ================= */
+    var lapState = { month:"all", vbPage:1, runPage:1, per:50 };
+    function lmtpRows(){ return (DATA.lmtp || []).map(function(r){ return { bulan:String(r[0]||""), vendor:String(r[1]||""), vname:String(r[2]||""), total:numLoose(r[3])||0, qty:numLoose(r[4])||0, quality:numLoose(r[5])||0, open:numLoose(r[6])||0, close:numLoose(r[7])||0, plus:numLoose(r[8])||0, minus:numLoose(r[9])||0, salah:numLoose(r[10])||0, tidaklot:numLoose(r[11])||0 }; }); }
+    function lmtpMonths(){ var m = {}; lmtpRows().forEach(function(r){ if (r.bulan) m[r.bulan] = true; }); return Object.keys(m).sort(); }
+    function trendChart(elId, rows){
+      var box = document.getElementById(elId);
+      if (!rows.length){ box.innerHTML = '<div class="empty-note">Data LMTP tidak tersedia.</div>'; return; }
+      var byM = {};
+      rows.forEach(function(r){ if (!byM[r.bulan]) byM[r.bulan] = { total:0, open:0, close:0 }; byM[r.bulan].total += r.total; byM[r.bulan].open += r.open; byM[r.bulan].close += r.close; });
+      var months = Object.keys(byM).sort();
+      var max = Math.max.apply(null, months.map(function(m){ return byM[m].total; }).concat([1]));
+      var W = 860, H = 264, base = H - 36, top = 18, chartH = base - top, slot = (W - 70) / months.length, bw = Math.min(34, slot / 4);
+      var s = '<svg viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="Grafik tren LMTP per bulan">';
+      [0, 0.5, 1].forEach(function(f){ var gy = base - chartH * f; s += '<line x1="48" y1="' + gy + '" x2="' + (W - 12) + '" y2="' + gy + '" stroke="currentColor" opacity=".1"/><text x="42" y="' + (gy + 4) + '" text-anchor="end" font-size="11" fill="currentColor" opacity=".6">' + Math.round(max * f) + '</text>'; });
+      months.forEach(function(m, i){
+        var cx = 48 + i * slot + slot / 2, d = byM[m];
+        var series = [["total","#2e6da4"],["open","#b91c1c"],["close","#177245"]];
+        series.forEach(function(sr, j){
+          var v = d[sr[0]], bh = v / max * chartH, x = cx + (j - 1) * (bw + 3) - bw / 2;
+          s += '<rect x="' + x + '" y="' + (base - bh) + '" width="' + bw + '" height="' + bh + '" rx="2" fill="' + sr[1] + '"><title>' + monthLabel(m) + ' — ' + sr[0] + ': ' + v + ' kasus</title></rect>';
+        });
+        s += '<text x="' + cx + '" y="' + (base + 18) + '" text-anchor="middle" font-size="12" font-weight="600" fill="currentColor">' + monthLabel(m) + '</text>';
+        s += '<text x="' + cx + '" y="' + (base - d.total / max * chartH - 6) + '" text-anchor="middle" font-size="12" font-weight="700" fill="currentColor">' + d.total + '</text>';
+      });
+      s += '<line x1="48" y1="' + base + '" x2="' + (W - 12) + '" y2="' + base + '" stroke="currentColor" opacity=".3"/></svg>';
+      box.innerHTML = s;
+    }
+    function renderLaporan(){
+      errBox("lapErr", "lmtp");
+      var rows = lmtpRows();
+      trendChart("chartLapTren", rows);
+      var byM = {};
+      rows.forEach(function(r){ if (!byM[r.bulan]) byM[r.bulan] = { total:0, qty:0, quality:0, open:0, close:0 }; var d = byM[r.bulan]; d.total += r.total; d.qty += r.qty; d.quality += r.quality; d.open += r.open; d.close += r.close; });
+      var months = Object.keys(byM).sort();
+      document.getElementById("lapTrenTable").innerHTML = "<thead><tr><th>Bulan</th><th>Total Kasus</th><th>Qty (Delivery)</th><th>Quality</th><th>Open</th><th>Close</th><th>Pencapaian (% Close)</th></tr></thead><tbody>" +
+        (months.map(function(m){ var d = byM[m]; return "<tr><td><b>" + monthLabel(m) + '</b></td><td class="num">' + fmt(d.total) + '</td><td class="num">' + fmt(d.qty) + '</td><td class="num">' + fmt(d.quality) + '</td><td class="num">' + fmt(d.open) + '</td><td class="num">' + fmt(d.close) + '</td><td class="num">' + fmtPct(pct(d.close, d.total)) + "</td></tr>"; }).join("") || '<tr><td colspan="7" class="empty-note">Data tidak tersedia.</td></tr>') + "</tbody>";
+      var sel = document.getElementById("lapMonth");
+      if (sel.options.length === 0){
+        sel.innerHTML = '<option value="all">Semua Bulan</option>' + months.map(function(m){ return '<option value="' + m + '">' + monthLabel(m) + "</option>"; }).join("");
+        sel.value = lapState.month;
+      }
+      var vb = rows.filter(function(r){ return lapState.month === "all" || r.bulan === lapState.month; })
+        .sort(function(a,b){ return a.bulan.localeCompare(b.bulan) || b.total - a.total; });
+      var tp = Math.max(1, Math.ceil(vb.length / lapState.per)); if (lapState.vbPage > tp) lapState.vbPage = tp;
+      var pr = vb.slice((lapState.vbPage - 1) * lapState.per, lapState.vbPage * lapState.per);
+      document.getElementById("lapVbTable").innerHTML = "<thead><tr><th>Bulan</th><th>Vendor</th><th>Nama Vendor</th><th>Total</th><th>Qty</th><th>Quality</th><th>Open</th><th>Close</th><th>% Close</th></tr></thead><tbody>" +
+        (pr.map(function(r){ return "<tr><td>" + monthLabel(r.bulan) + "</td><td><b>" + esc(r.vendor) + '</b></td><td>' + esc(r.vname || "—") + '</td><td class="num">' + fmt(r.total) + '</td><td class="num">' + fmt(r.qty) + '</td><td class="num">' + fmt(r.quality) + '</td><td class="num">' + fmt(r.open) + '</td><td class="num">' + fmt(r.close) + '</td><td class="num">' + fmtPct(pct(r.close, r.total)) + "</td></tr>"; }).join("") || '<tr><td colspan="9" class="empty-note">Tidak ada data.</td></tr>') + "</tbody>";
+      var pg = document.getElementById("lapVbPager"); pg.innerHTML = pagerHTML(lapState.vbPage, tp, vb.length);
+      bindPager("lapVbPager", { get page(){ return lapState.vbPage; }, set page(v){ lapState.vbPage = v; } }, renderLaporan);
+      renderLapRunning();
+    }
+    function renderLapRunning(){
+      var tbl = document.getElementById("lapRunTable"), pager = document.getElementById("lapRunPager");
+      if (!DATA.itemDI){ tbl.innerHTML = '<tr><td class="empty-note">Data LIVE_ItemDI tidak tersedia.</td></tr>'; pager.innerHTML = ""; return; }
+      var agg = {};
+      function A(code){ if (!agg[code]) agg[code] = { code:code, totalDI:0, today:0, items:0, delayRows:0, delayItems:{}, os:0, grQty:0, grCount:0 }; return agg[code]; }
+      DATA.itemDI.forEach(function(r){ var a = A(String(r[1] || "")); a.totalDI += numLoose(r[2]) || 0; a.today += numLoose(r[3]) || 0; a.items++; });
+      (DATA.delay || []).forEach(function(r){ var a = A(String(r[2] || "")); a.delayRows++; a.delayItems[String(r[4])] = true; a.os += numLoose(r[6]) || 0; });
+      (DATA.itemGR || []).forEach(function(r){ if (!r[1]) return; var a = A(String(r[1])); a.grQty += numLoose(r[2]) || 0; a.grCount += numLoose(r[3]) || 0; });
+      var rows = Object.keys(agg).map(function(k){ var a = agg[k]; a.delayItemCount = Object.keys(a.delayItems).length; return a; })
+        .sort(function(a,b){ return b.totalDI - a.totalDI; });
+      var tp = Math.max(1, Math.ceil(rows.length / lapState.per)); if (lapState.runPage > tp) lapState.runPage = tp;
+      var pr = rows.slice((lapState.runPage - 1) * lapState.per, lapState.runPage * lapState.per);
+      tbl.innerHTML = "<thead><tr><th>Vendor</th><th>Item dengan DI</th><th>Total DI (pcs)</th><th>DI Hari Ini (pcs)</th><th>Item Delay</th><th>Baris DI Delay</th><th>OS Delay (pcs)</th><th>GR Bulan Ini (pcs)</th><th>Jumlah GR</th></tr></thead><tbody>" +
+        (pr.map(function(a){ return "<tr><td><b>" + esc(vendorLabel(a.code)) + '</b></td><td class="num">' + fmt(a.items) + '</td><td class="num">' + fmt(a.totalDI) + '</td><td class="num">' + fmt(a.today) + '</td><td class="num">' + fmt(a.delayItemCount) + '</td><td class="num">' + fmt(a.delayRows) + '</td><td class="num">' + fmt(a.os) + '</td><td class="num">' + fmt(a.grQty) + '</td><td class="num">' + fmt(a.grCount) + "</td></tr>"; }).join("") || '<tr><td colspan="9" class="empty-note">Tidak ada data.</td></tr>') + "</tbody>";
+      pager.innerHTML = pagerHTML(lapState.runPage, tp, rows.length);
+      bindPager("lapRunPager", { get page(){ return lapState.runPage; }, set page(v){ lapState.runPage = v; } }, renderLapRunning);
+    }
+
+    /* ================= PENILAIAN SUPPLIER ================= */
+    var penState = { q:"", lateOnly:false, page:1, per:50 };
+    function renderPenilaian(){
+      errBox("penErr", "itemDI");
+      var tbl = document.getElementById("penTable"), pager = document.getElementById("penPager"), sum = document.getElementById("penSummary");
+      if (!DATA.itemDI){ tbl.innerHTML = '<tr><td class="empty-note">Data LIVE_ItemDI tidak tersedia — penilaian tidak dapat dihitung.</td></tr>'; pager.innerHTML = ""; sum.innerHTML = ""; return; }
+      var dl = delayByItem(), probs = problemByItem(), names = partNameByItem();
+      var rows = DATA.itemDI.map(function(r){
+        var item = String(r[0] || ""), code = String(r[1] || "");
+        var d = dl[item + "|" + code];
+        var p = probs[item];
+        return { item:item, code:code, vendor:vendorLabel(code), part:names[item] || "—", total:numLoose(r[2]) || 0, today:numLoose(r[3]) || 0, late:d ? d.count : 0, os:d ? d.os : 0, maxHK:d ? d.maxHK : 0, reason:p ? ((p.kat || "Problem 2DS") + (p.detail ? " — " + p.detail : "")) : "" };
+      });
+      var totDI = rows.reduce(function(s,r){ return s + r.total; }, 0);
+      var lateRows = rows.filter(function(r){ return r.late > 0; });
+      var totOS = rows.reduce(function(s,r){ return s + r.os; }, 0);
+      sum.innerHTML = '<span class="sumchip">Vendor × Part: <b>' + fmt(rows.length) + '</b></span>' +
+        '<span class="sumchip">Total DI bulan berjalan: <b>' + fmt(totDI) + ' pcs</b></span>' +
+        '<span class="sumchip bad">Item terlambat: <b>' + fmt(lateRows.length) + '</b></span>' +
+        '<span class="sumchip bad">Total OS delay: <b>' + fmt(totOS) + ' pcs</b></span>';
+      var f = rows.slice().sort(function(a,b){ return b.late - a.late || b.os - a.os || b.total - a.total; });
+      if (penState.lateOnly) f = f.filter(function(r){ return r.late > 0; });
+      if (penState.q){ var q = penState.q.toLowerCase(); f = f.filter(function(r){ return (r.vendor + " " + r.item + " " + r.part + " " + r.reason).toLowerCase().indexOf(q) >= 0; }); }
+      var tp = Math.max(1, Math.ceil(f.length / penState.per)); if (penState.page > tp) penState.page = tp;
+      var pr = f.slice((penState.page - 1) * penState.per, penState.page * penState.per);
+      tbl.innerHTML = "<thead><tr><th>Vendor</th><th>Item Code</th><th>Part</th><th>Total DI (pcs)</th><th>DI Hari Ini (pcs)</th><th>Jumlah Keterlambatan (kali)</th><th>OS Delay (pcs)</th><th>Terlambat Maks. (HK)</th><th>Reason (Problem 2DS)</th></tr></thead><tbody>" +
+        (pr.map(function(r){
+          return "<tr><td><b>" + esc(r.vendor) + '</b></td><td class="num">' + esc(r.item) + '</td><td class="partcell" title="' + esc(r.part) + '">' + esc(r.part) + '</td><td class="num">' + fmt(r.total) + '</td><td class="num">' + fmt(r.today) + '</td><td class="num">' + (r.late ? "<b>" + fmt(r.late) + "</b>" : "0") + '</td><td class="num">' + fmt(r.os) + '</td><td class="num">' + (r.late ? fmt(r.maxHK) : "—") + '</td><td>' + (r.reason ? esc(r.reason) : "—") + "</td></tr>";
+        }).join("") || '<tr><td colspan="9" class="empty-note">Tidak ada baris yang cocok.</td></tr>') + "</tbody>";
+      fixStickyOffsets(tbl);
+      pager.innerHTML = pagerHTML(penState.page, tp, f.length);
+      bindPager("penPager", penState, renderPenilaian);
+    }
+
+    /* ================= LMTP ================= */
+    var lmtpState = { month:"all" };
+    function renderLmtp(){
+      errBox("lmtpErr", "lmtp");
+      var rows = lmtpRows();
+      trendChart("chartLmtpTren", rows);
+      var sel = document.getElementById("lmtpMonth");
+      var months = lmtpMonths();
+      if (sel.options.length === 0){
+        sel.innerHTML = '<option value="all">Semua Bulan</option>' + months.map(function(m){ return '<option value="' + m + '">' + monthLabel(m) + "</option>"; }).join("");
+        sel.value = lmtpState.month;
+      }
+      var scoped = rows.filter(function(r){ return lmtpState.month === "all" || r.bulan === lmtpState.month; });
+      document.getElementById("paretoSub").textContent = (lmtpState.month === "all" ? "semua bulan" : monthLabel(lmtpState.month)) + " · total kasus terbanyak + garis kumulatif %";
+      /* Pareto */
+      var byV = {};
+      scoped.forEach(function(r){ if (!byV[r.vendor]) byV[r.vendor] = { vendor:r.vendor, vname:r.vname, total:0 }; byV[r.vendor].total += r.total; if (!byV[r.vendor].vname) byV[r.vendor].vname = r.vname; });
+      var plist = Object.keys(byV).map(function(k){ return byV[k]; }).sort(function(a,b){ return b.total - a.total; });
+      var grand = plist.reduce(function(s,a){ return s + a.total; }, 0);
+      var box = document.getElementById("chartLmtpPareto");
+      if (!plist.length || !grand){ box.innerHTML = '<div class="empty-note">Tidak ada data LMTP untuk pilihan ini.</div>'; }
+      else {
+        var W = 900, H = 272, base = H - 52, top = 16, chartH = base - top, slot = (W - 64) / plist.length, bw = Math.min(46, slot * 0.66);
+        var max = Math.max.apply(null, plist.map(function(a){ return a.total; }).concat([1]));
+        var s = '<svg viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="Pareto vendor terburuk LMTP">';
+        [0, 0.5, 1].forEach(function(fr){ var gy = base - chartH * fr; s += '<line x1="46" y1="' + gy + '" x2="' + (W - 44) + '" y2="' + gy + '" stroke="currentColor" opacity=".1"/><text x="40" y="' + (gy + 4) + '" text-anchor="end" font-size="11" fill="currentColor" opacity=".6">' + Math.round(max * fr) + '</text><text x="' + (W - 38) + '" y="' + (gy + 4) + '" font-size="11" fill="#b98a1c">' + Math.round(fr * 100) + '%</text>'; });
+        var gy80 = base - chartH * 0.8;
+        s += '<line x1="46" y1="' + gy80 + '" x2="' + (W - 44) + '" y2="' + gy80 + '" stroke="#b98a1c" stroke-dasharray="5 4" opacity=".55"><title>Garis 80% kumulatif</title></line>';
+        var cum = 0, pts = [];
+        plist.forEach(function(a, i){
+          var cx = 46 + i * slot + slot / 2, bh = a.total / max * chartH;
+          s += '<rect x="' + (cx - bw/2) + '" y="' + (base - bh) + '" width="' + bw + '" height="' + bh + '" rx="2" fill="#2e6da4"><title>' + esc(a.vendor) + (a.vname ? " (" + esc(a.vname) + ")" : "") + " — " + a.total + " kasus (" + fmtPct(pct(a.total, grand)) + ")</title></rect>";
+          s += '<text x="' + cx + '" y="' + (base - bh - 5) + '" text-anchor="middle" font-size="11.5" font-weight="700" fill="currentColor">' + a.total + '</text>';
+          s += '<text x="' + cx + '" y="' + (base + 15) + '" text-anchor="end" font-size="11" font-weight="600" fill="currentColor" transform="rotate(-32 ' + cx + ' ' + (base + 15) + ')">' + esc(a.vendor) + '</text>';
+          cum += a.total; pts.push(cx + "," + (base - (cum / grand) * chartH));
+        });
+        s += '<polyline points="' + pts.join(" ") + '" fill="none" stroke="#b98a1c" stroke-width="2"/>';
+        plist.forEach(function(a, i){ var cx = 46 + i * slot + slot / 2; var cy = base - (plist.slice(0, i + 1).reduce(function(sm, x){ return sm + x.total; }, 0) / grand) * chartH; s += '<circle cx="' + cx + '" cy="' + cy + '" r="3" fill="#b98a1c"><title>Kumulatif s/d ' + esc(a.vendor) + ": " + fmtPct(pct(plist.slice(0, i + 1).reduce(function(sm, x){ return sm + x.total; }, 0), grand)) + "</title></circle>"; });
+        s += '<line x1="46" y1="' + base + '" x2="' + (W - 44) + '" y2="' + base + '" stroke="currentColor" opacity=".3"/></svg>';
+        box.innerHTML = s;
+      }
+      /* Tabel agregat */
+      var agg = {};
+      scoped.forEach(function(r){
+        if (!agg[r.vendor]) agg[r.vendor] = { vendor:r.vendor, vname:r.vname, total:0, qty:0, quality:0, open:0, close:0, plus:0, minus:0, salah:0, tidaklot:0 };
+        var a = agg[r.vendor]; a.total += r.total; a.qty += r.qty; a.quality += r.quality; a.open += r.open; a.close += r.close; a.plus += r.plus; a.minus += r.minus; a.salah += r.salah; a.tidaklot += r.tidaklot;
+        if (!a.vname) a.vname = r.vname;
+      });
+      var trows = Object.keys(agg).map(function(k){ return agg[k]; }).sort(function(a,b){ return b.total - a.total; });
+      var tot = trows.reduce(function(sm, a){ return { total:sm.total + a.total, qty:sm.qty + a.qty, quality:sm.quality + a.quality, open:sm.open + a.open, close:sm.close + a.close, plus:sm.plus + a.plus, minus:sm.minus + a.minus, salah:sm.salah + a.salah, tidaklot:sm.tidaklot + a.tidaklot }; }, { total:0, qty:0, quality:0, open:0, close:0, plus:0, minus:0, salah:0, tidaklot:0 });
+      document.getElementById("lmtpTable").innerHTML = "<thead><tr><th>Vendor</th><th>Nama Vendor</th><th>Total</th><th>Qty</th><th>Quality</th><th>Open</th><th>Close</th><th>Plus</th><th>Minus</th><th>Salah Barang</th><th>Tidak Lot</th><th>Pencapaian (% Close)</th></tr></thead><tbody>" +
+        (trows.map(function(a){ return "<tr><td><b>" + esc(a.vendor) + "</b></td><td>" + esc(a.vname || "—") + '</td><td class="num">' + fmt(a.total) + '</td><td class="num">' + fmt(a.qty) + '</td><td class="num">' + fmt(a.quality) + '</td><td class="num">' + fmt(a.open) + '</td><td class="num">' + fmt(a.close) + '</td><td class="num">' + fmt(a.plus) + '</td><td class="num">' + fmt(a.minus) + '</td><td class="num">' + fmt(a.salah) + '</td><td class="num">' + fmt(a.tidaklot) + '</td><td class="num">' + fmtPct(pct(a.close, a.total)) + "</td></tr>"; }).join("") || '<tr><td colspan="12" class="empty-note">Tidak ada data.</td></tr>') +
+        (trows.length ? '<tr style="font-weight:700;background:var(--panel2)"><td colspan="2">TOTAL (' + (lmtpState.month === "all" ? "semua bulan" : monthLabel(lmtpState.month)) + ')</td><td class="num">' + fmt(tot.total) + '</td><td class="num">' + fmt(tot.qty) + '</td><td class="num">' + fmt(tot.quality) + '</td><td class="num">' + fmt(tot.open) + '</td><td class="num">' + fmt(tot.close) + '</td><td class="num">' + fmt(tot.plus) + '</td><td class="num">' + fmt(tot.minus) + '</td><td class="num">' + fmt(tot.salah) + '</td><td class="num">' + fmt(tot.tidaklot) + '</td><td class="num">' + fmtPct(pct(tot.close, tot.total)) + "</td></tr>" : "") + "</tbody>";
+    }
+
+    /* ================= NAV & WIRING ================= */
+    function renderAll(){
+      renderDashboard(); renderStock(); renderMaster(); renderLaporan(); renderPenilaian(); renderLmtp();
+      fixStickyOffsets(document.getElementById("stockTable"));
+    }
+    function showPage(id, anchor){
+      document.querySelectorAll(".page").forEach(function(p){ p.classList.toggle("active", p.id === "page-" + id); });
+      document.querySelectorAll("#mainnav .nav-item[data-page]").forEach(function(b){ b.classList.toggle("active", b.getAttribute("data-page") === id); });
+      document.getElementById("sidebar").classList.remove("open");
+      document.getElementById("scrim").classList.remove("on");
+      if (anchor){ var t = document.getElementById(anchor); if (t) setTimeout(function(){ t.scrollIntoView({ behavior:"smooth", block:"start" }); }, 40); }
+      else window.scrollTo({ top:0 });
+      if (id === "stock") setTimeout(function(){ fixStickyOffsets(document.getElementById("stockTable")); }, 60);
+    }
+    document.querySelectorAll("#mainnav [data-page]").forEach(function(b){
+      b.addEventListener("click", function(){ showPage(b.getAttribute("data-page"), b.getAttribute("data-anchor")); });
+    });
+    document.getElementById("nav-logout").addEventListener("click", function(){
+      showToast("Halaman ini klon baca-saja tanpa login — tidak ada sesi yang perlu diakhiri. Di SPEED asli, tombol ini mengakhiri sesi akun.");
+    });
+    var sb = document.getElementById("sidebar"), scrim = document.getElementById("scrim");
+    scrim.addEventListener("click", function(){ sb.classList.remove("open"); scrim.classList.remove("on"); });
+    document.getElementById("btnRefresh").addEventListener("click", function(){ document.getElementById("refreshInfo").textContent = "Memuat ulang…"; loadAll(); });
+    document.getElementById("tglEmptyVendor").addEventListener("change", renderVendorPerf);
+    document.getElementById("stockSearch").addEventListener("input", function(e){ stockState.q = e.target.value; stockState.page = 1; renderStock(); });
+    document.getElementById("stockVendor").addEventListener("change", function(e){ stockState.vendor = e.target.value; stockState.page = 1; renderStock(); });
+    document.getElementById("stockDate").addEventListener("change", function(e){
+      var note = document.getElementById("stockDateNote");
+      if (DATA.meta.twods_source_date && e.target.value && e.target.value !== DATA.meta.twods_source_date){
+        note.innerHTML = "Snapshot tanggal " + fmtDateID(e.target.value) + " belum tersimpan di backend — tetap menampilkan data " + fmtDateID(DATA.meta.twods_source_date) + ".";
+      } else if (DATA.meta.twods_source_date){
+        note.textContent = "Snapshot backend tersedia: " + fmtDateID(DATA.meta.twods_source_date) + ". Riwayat snapshot tanggal lain belum tersimpan di backend.";
+      }
+    });
+    document.getElementById("mvSearch").addEventListener("input", function(e){ mvState.q = e.target.value; mvState.page = 1; renderMasterVendor(); });
+    document.getElementById("mpSearch").addEventListener("input", function(e){ mpState.q = e.target.value; mpState.page = 1; renderMasterPart(); });
+    document.getElementById("penSearch").addEventListener("input", function(e){ penState.q = e.target.value; penState.page = 1; renderPenilaian(); });
+    document.getElementById("penLateOnly").addEventListener("change", function(e){ penState.lateOnly = e.target.checked; penState.page = 1; renderPenilaian(); });
+    document.getElementById("lapMonth").addEventListener("change", function(e){ lapState.month = e.target.value; lapState.vbPage = 1; renderLaporan(); });
+    document.getElementById("lmtpMonth").addEventListener("change", function(e){ lmtpState.month = e.target.value; renderLmtp(); });
+
+    loadAll();
+    setInterval(loadAll, 60000);
+    </script>
+  </body>
+</html>
