@@ -950,42 +950,13 @@
       .lmtp-foot p { margin: 0; font-size: 12.5px; color: var(--muted); line-height: 1.55; }
       /* ---------- Monitor LMTP — Status OPEN & CLOSE ----------
          OPEN = merah (--red), CLOSE = hijau (--green), konsisten dengan
-         badge & kartu yang sudah ada. Dipakai di modal (grafik SVG penuh)
-         dan di halaman utama (panel ringkas per vendor). */
+         badge & kartu yang sudah ada. Dipakai di modal Pencapaian
+         (grafik SVG penuh). */
       .lmtp-sec-title.status { background: var(--surface-2); color: var(--brand-dark); border: 1px solid var(--line-strong); }
       .lmtp-sec-title.status .st-sub { color: var(--ink-2); }
       .lmtp-status-legend { display: flex; flex-wrap: wrap; gap: 4px 14px; margin-top: 6px; font-size: 11.5px; color: var(--ink-2); justify-content: center; }
       .lmtp-status-legend .lg-item { display: inline-flex; align-items: center; gap: 5px; white-space: nowrap; }
       .lmtp-status-legend .lg-sw { width: 10px; height: 10px; border-radius: 3px; flex: 0 0 auto; }
-      /* Panel ringkas di halaman utama (di bawah grafik Pareto & donat) */
-      .lmtp-home { margin-top: 12px; flex: 0 0 auto; }
-      .lmtp-home-card { padding: 10px 13px 9px; }
-      .lh-head { display: flex; align-items: center; gap: 8px 12px; flex-wrap: wrap; }
-      .lh-head h3 { margin: 0; font-size: 13px; font-weight: 700; letter-spacing: .5px; color: var(--brand-dark); }
-      .lh-month { font-size: 12px; font-weight: 700; color: var(--gold-ink); background: var(--gold-bg); border: 1px solid #eadfae; border-radius: 999px; padding: 2px 9px; white-space: nowrap; }
-      .lh-chips { margin-left: auto; display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
-      .lh-chip { font-size: 12px; font-weight: 700; padding: 4px 10px; border-radius: 999px; white-space: nowrap; font-variant-numeric: tabular-nums; }
-      .lh-chip.open { background: var(--red-bg); color: var(--red); border: 1px solid #f0a49f; }
-      .lh-chip.close { background: var(--green-bg); color: var(--green); border: 1px solid #9fd4ba; }
-      .lh-chip.pct { background: var(--brand-soft); color: var(--brand-dark); border: 1px solid var(--line-strong); }
-      .lh-open-btn {
-        font: inherit; font-size: 12.5px; font-weight: 700; color: var(--brand);
-        background: #fff; border: 1px solid var(--line-strong); border-radius: 9px;
-        padding: 7px 12px; min-height: 36px; cursor: pointer; white-space: nowrap;
-      }
-      .lh-open-btn:hover { background: var(--brand-soft); color: var(--brand-dark); border-color: var(--accent); }
-      .lh-open-btn:focus-visible { outline: 2px solid var(--accent-2); outline-offset: 1px; }
-      .lh-rows { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 5px 26px; margin-top: 9px; }
-      .lh-row { display: grid; grid-template-columns: 96px minmax(0, 1fr) auto; align-items: center; gap: 9px; font-size: 12.5px; min-width: 0; }
-      .lh-vendor { font-weight: 700; color: var(--brand); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-      .lh-bar { display: flex; height: 12px; border-radius: 99px; overflow: hidden; background: var(--line); }
-      .lh-bar .seg-open { display: block; height: 100%; background: #d64541; flex: 0 0 auto; }
-      .lh-bar .seg-close { display: block; height: 100%; background: #1d9d74; flex: 0 0 auto; }
-      .lh-nums { font-variant-numeric: tabular-nums; color: var(--ink-2); white-space: nowrap; font-size: 12px; }
-      .lh-nums .o { color: var(--red); font-weight: 700; }
-      .lh-nums .c { color: var(--green); font-weight: 700; }
-      .lh-empty { margin: 9px 0 2px; font-size: 12.5px; color: var(--muted); }
-      .lh-note { margin: 7px 0 0; font-size: 11px; color: var(--muted); }
       /* Ringkasan LMTP di halaman utama — baris kartu yang sama persis
          dengan modal Pencapaian (TOTAL LMTP / QUANTITY / QUALITY / OPEN /
          CLOSE / PENCAPAIAN KESELURUHAN), tampil langsung di bawah donat
@@ -999,11 +970,6 @@
       .lsh-head .lmtp-controls { margin-left: auto; }
       .lsh-head .lmtp-controls select { min-height: 38px; padding: 6px 10px; font-size: 13.5px; }
       @media (max-width: 760px) { .lsh-head .lmtp-controls { margin-left: 0; } }
-      @media (max-width: 760px) {
-        .lh-rows { grid-template-columns: minmax(0, 1fr); }
-        .lh-chips { margin-left: 0; }
-        .lh-row { grid-template-columns: 82px minmax(0, 1fr) auto; }
-      }
       @media (max-width: 760px) {
         .lmtp-overlay { padding: 0; }
         .lmtp-sheet { width: 100%; min-height: 100dvh; margin: 0; border: 0; border-radius: 0; }
@@ -1812,10 +1778,6 @@
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" aria-hidden="true"><path d="M20.5 12a8.5 8.5 0 1 1-2.4-5.9"/><path d="M12 3.5v5M12 12l3.5 2"/></svg>
           Problem 4M
         </a>
-        <a class="sb-link" href="#secLmtpHome" id="navLmtpHome" title="Monitor LMTP — status OPEN dan CLOSE per vendor">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" aria-hidden="true"><path d="M4 20V9"/><path d="M10 20V4"/><path d="M16 20v-9"/><path d="M21 20H3"/></svg>
-          Monitor LMTP
-        </a>
         <a class="sb-link" href="#secDetail" id="navDetail">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" aria-hidden="true"><rect x="3.5" y="4.5" width="17" height="15" rx="2"/><path d="M3.5 9.5h17M3.5 14.5h17M9.5 4.5v15M15.5 4.5v15"/></svg>
           Detail Item
@@ -1991,24 +1953,6 @@
         </div>
       </section>
 
-      <!-- ===== MONITOR LMTP — STATUS OPEN & CLOSE (halaman utama) =====
-           Panel ringkas per vendor untuk bulan terpilih pada modal
-           Pencapaian (default Oktober 2026), di-render renderLmtpHome()
-           dari data yang sama dengan modal: LIVE_LMTP (SPEED), fail-soft
-           ke snapshot 22 Okt 2026. Grafik lengkapnya (batang bertumpuk
-           per vendor + tren per bulan) ada di modal Pencapaian. -->
-      <section class="lmtp-home" id="secLmtpHome" aria-label="Monitor LMTP status OPEN dan CLOSE per vendor">
-        <div class="chart-card lmtp-home-card">
-          <div class="lh-head">
-            <h3>MONITOR LMTP — STATUS OPEN &amp; CLOSE PER VENDOR</h3>
-            <span class="lh-month" id="lmtpHomeMonth">—</span>
-            <div class="lh-chips" id="lmtpHomeChips"></div>
-            <button type="button" class="lh-open-btn" id="lmtpHomeBtn" title="Buka grafik lengkap Monitor LMTP di modal Pencapaian Delivery Supplier">Grafik Detail</button>
-          </div>
-          <div id="lmtpHomeBody"><div class="chart-empty">Memuat data LMTP…</div></div>
-          <p class="lh-note">OPEN = kasus belum tuntas · CLOSE = kasus sudah tuntas · urutan vendor: OPEN terbanyak dulu · bulan mengikuti pemilih bulan pada ringkasan LMTP di atas (tersinkron dengan modal Pencapaian Delivery Supplier).</p>
-        </div>
-      </section>
      </div>
 
      <div class="rt-stack" id="secDetail">
@@ -5783,9 +5727,7 @@
             urutan OPEN terbanyak dulu agar vendor yang belum tuntas
             paling menonjol.
          2) Tren per bulan — batang berkelompok OPEN vs CLOSE untuk
-            setiap bulan yang ada di monthAgg (SPEED: Jul–Des 2026).
-         Panel ringkas halaman utama (renderLmtpHome) memakai data &
-         urutan yang sama dalam bentuk batang horizontal. */
+            setiap bulan yang ada di monthAgg (SPEED: Jul–Des 2026). */
       var LMTP_OPEN_C1 = '#ef7a72', LMTP_OPEN_C2 = '#b91c1c';
       var LMTP_CLOSE_C1 = '#34b37e', LMTP_CLOSE_C2 = '#047857';
       function lmtpStatusLegendHTML() {
@@ -5882,61 +5824,6 @@
         });
         return '<svg viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="Grafik tren status OPEN dan CLOSE LMTP per bulan">' + s + '</svg>';
       }
-      /* Panel ringkas halaman utama: chip total OPEN / CLOSE / pencapaian
-         bulan terpilih + batang horizontal bertumpuk per vendor (8 teratas
-         menurut OPEN + satu baris ringkasan "Lainnya", agar baris selalu
-         menjumlah ke chip total). Lebar segmen terhadap total terbesar
-         bulan itu, jadi vendor dengan kasus terbanyak batangnya paling
-         panjang. */
-      function renderLmtpHome(monthName, isRecap) {
-        var body = $('lmtpHomeBody'), chips = $('lmtpHomeChips'), mon = $('lmtpHomeMonth');
-        if (!body || !chips || !mon) return;
-        mon.textContent = monthName + ' 2026 · ' + (lmtp.live ? 'LIVE — SPEED' : 'Snapshot 22 Okt 2026');
-        if (isRecap) {
-          chips.innerHTML = '<span class="lh-chip open">OPEN —</span><span class="lh-chip close">CLOSE —</span><span class="lh-chip pct">Pencapaian —</span>';
-          body.innerHTML = '<p class="lh-empty">Status OPEN/CLOSE tidak tersedia pada data rekap ' + monthName + ' 2026 — data LMTP SPEED tersedia mulai Juli 2026. Buka Grafik Detail lalu pilih bulan Juli–Oktober untuk melihat monitornya.</p>';
-          return;
-        }
-        var agg = lmtp.monthAgg[lmtp.sel];
-        if (!agg) {
-          chips.innerHTML = '<span class="lh-chip open">OPEN —</span><span class="lh-chip close">CLOSE —</span><span class="lh-chip pct">Pencapaian —</span>';
-          body.innerHTML = '<p class="lh-empty">Belum ada data LMTP SPEED untuk ' + monthName + ' 2026.</p>';
-          return;
-        }
-        chips.innerHTML = '<span class="lh-chip open">OPEN ' + fmt(agg.open) + '</span>' +
-          '<span class="lh-chip close">CLOSE ' + fmt(agg.close) + '</span>' +
-          '<span class="lh-chip pct">Pencapaian ' + lmtpPctTxt(lmtpPct(agg.close, agg.total)) + '</span>';
-        var allRows = lmtp.rows
-          .filter(function (r) { return r.bulan === lmtp.sel && r.total > 0; })
-          .sort(function (a, b) { return (b.open - a.open) || (b.total - a.total); });
-        var rows = allRows.slice(0, 8);
-        if (!rows.length) {
-          body.innerHTML = '<p class="lh-empty">' + (lmtp.live ? 'Tidak ada kasus LMTP pada ' + monthName + ' 2026.' : 'Rincian per vendor untuk ' + monthName + ' 2026 tidak ada di snapshot 22 Okt 2026 (rincian tersedia untuk Oktober 2026).') + '</p>';
-          return;
-        }
-        /* Vendor di luar 8 teratas diringkas jadi satu baris "Lainnya"
-           agar jumlah baris yang tampil selalu sama dengan chip total
-           OPEN / CLOSE / Pencapaian di kepala panel. */
-        if (allRows.length > rows.length) {
-          var restOpen = 0, restClose = 0, restNames = [];
-          allRows.slice(rows.length).forEach(function (r) { restOpen += r.open; restClose += r.close; restNames.push(r.vendor); });
-          rows = rows.concat([{ vendor: 'Lainnya (' + (allRows.length - rows.length) + ')', vendorName: restNames.join(', '), open: restOpen, close: restClose, total: restOpen + restClose }]);
-        }
-        var maxT = 0;
-        rows.forEach(function (r) { if (r.total > maxT) maxT = r.total; });
-        var s = '<div class="lh-rows">';
-        rows.forEach(function (r) {
-          var ow = maxT ? (r.open / maxT * 100) : 0, cw = maxT ? (r.close / maxT * 100) : 0;
-          s += '<div class="lh-row"><span class="lh-vendor" title="' + esc(r.vendorName) + '">' + esc(r.vendor) + '</span>' +
-            '<span class="lh-bar" role="img" aria-label="' + esc(r.vendorName) + ': OPEN ' + r.open + ', CLOSE ' + r.close + '">' +
-            (r.open > 0 ? '<span class="seg-open" style="width:' + ow.toFixed(1) + '%"></span>' : '') +
-            (r.close > 0 ? '<span class="seg-close" style="width:' + cw.toFixed(1) + '%"></span>' : '') +
-            '</span>' +
-            '<span class="lh-nums"><span class="o">OPEN ' + fmt(r.open) + '</span> · <span class="c">CLOSE ' + fmt(r.close) + '</span></span></div>';
-        });
-        body.innerHTML = s + '</div>';
-      }
-
       function lmtpCardsHTML() {
         var agg = lmtp.monthAgg[lmtp.sel];
         if (!agg) {
@@ -6060,8 +5947,7 @@
            bulan terpilih + tren OPEN vs CLOSE per bulan (monthAgg).
            Bulan rekap: status tidak ada di rekap → keterangan; tren
            bulanan SPEED tetap ditampilkan karena memakai semua bulan
-           di monthAgg, bukan bulan terpilih. Panel ringkas halaman
-           utama ikut di-render dari data yang sama. ---- */
+           di monthAgg, bukan bulan terpilih. ---- */
         if (isRecap) {
           $('lmtpStatusVendor').innerHTML = '<h4>OPEN &amp; CLOSE PER VENDOR — ' + monthName.toUpperCase() + ' 2026</h4>' +
             '<div class="lmtp-empty">Status OPEN/CLOSE tidak tersedia pada data rekap ' + monthName + ' 2026 — data LMTP SPEED tersedia mulai Juli 2026.</div>';
@@ -6084,8 +5970,6 @@
           $('lmtpStatusTrend').innerHTML = '<h4>TREN STATUS OPEN &amp; CLOSE PER BULAN — 2026</h4>' +
             '<div class="lmtp-empty">Belum ada data bulanan LMTP SPEED.</div>';
         }
-        renderLmtpHome(monthName, isRecap);
-
         /* ---- DELIVERY (Quantity) — tren 12 bulan: Jan–Jun rekap,
            Jul–Des LIVE_LMTP / snapshot ---- */
         var dTrend = lmtpDeliveryTrend();
@@ -6179,8 +6063,6 @@
         if (b && b.focus) b.focus();
       }
       $('lmtpBtn').addEventListener('click', openLMTP);
-      var lmtpHomeBtn = $('lmtpHomeBtn');
-      if (lmtpHomeBtn) lmtpHomeBtn.addEventListener('click', openLMTP);
       $('lmtpClose').addEventListener('click', closeLMTP);
       lmtpOverlay.addEventListener('click', function (e) { if (e.target === lmtpOverlay) closeLMTP(); });
       document.addEventListener('keydown', function (e) {
@@ -6202,7 +6084,7 @@
       });
       lmtpApplySnapshot();
       renderLMTP();
-      /* Monitor LMTP di halaman utama perlu data secepatnya: tarik
+      /* Ringkasan LMTP di halaman utama perlu data secepatnya: tarik
          LIVE_LMTP sejak halaman dimuat (fail-soft — gagal/kosong tetap
          snapshot di atas; renderLMTP dipanggil lagi saat selesai). */
       loadLMTP();
