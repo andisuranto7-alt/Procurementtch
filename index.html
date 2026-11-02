@@ -2546,9 +2546,40 @@
         }
         return n;
       }
+      /* Dataset delay KOSONG yang sah: tab LIVE_Delay berhasil ditarik
+         (header valid) tetapi tidak memuat satu pun baris delay — keadaan
+         normal misalnya di awal bulan berjalan, saat belum ada DI yang
+         lewat tanggal delivery (1 Nov 2026 jatuh hari Minggu). Bentuknya
+         sama persis dengan hasil parseDelayAgg berisi data (array baris +
+         properti retensi), hanya semuanya kosong, supaya pemakai di
+         loadLive() & render() berperilaku persis seperti data berisi 0:
+         badge tetap LIVE dan tabel/grafik menampilkan keadaan kosongnya.
+         Ini BUKAN jalur kegagalan: fetch yang gagal (jaringan/HTTP/bukan
+         CSV) tetap menolak promise di fetchText dan halaman tetap
+         OFFLINE seperti sebelumnya. */
+      function emptyDelayAgg() {
+        var out = [];
+        out.diUnique = { total: 0, byVendor: {} };
+        out.agingTop = [];
+        out.diAging = {};
+        out.itemAging = {};
+        return out;
+      }
       function parseDelayAgg(csv) {
         var rows = parseCSV(csv);
-        if (rows.length < 2) throw new Error('LIVE_Delay kosong');
+        if (rows.length < 2) {
+          /* Tab kosong total (tanpa header) atau hanya header: kosong
+             yang sah bila baris tunggalnya kosong, atau header-nya
+             memang header LIVE_Delay yang dikenal. Header asing yang
+             tidak dikenal tetap error (struktur tab rusak), sama seperti
+             jalur data berisi di bawah. */
+          if (!rows.length) return emptyDelayAgg();
+          var onlyHead = rows[0].map(function (h) { return String(h).trim().toLowerCase(); });
+          var onlyTxt = onlyHead.join('').trim();
+          if (!onlyTxt) return emptyDelayAgg();
+          if (onlyHead.indexOf('item code') !== -1 && onlyHead.indexOf('os di') !== -1) return emptyDelayAgg();
+          throw new Error('Header LIVE_Delay tidak dikenal');
+        }
         var head = rows[0].map(function (h) { return String(h).trim().toLowerCase(); });
         function col(name) { return head.indexOf(name); }
         var cVC = col('vendor code'), cVN = col('vendor name'), cItem = col('item code'),
@@ -2645,7 +2676,11 @@
             if (hkRow > iaRec.hk) iaRec.hk = hkRow;
           }
         }
-        if (!order.length) throw new Error('LIVE_Delay tanpa baris data');
+        /* order boleh KOSONG di sini — bukan error: semua baris tab bisa
+           sah tersaring habis oleh saringan tanggal di atas (semua
+           delivery date = hari ini / lebih baru, mis. awal bulan).
+           outRows kosong + properti retensi kosong di bawah adalah
+           dataset delay kosong yang sah; halaman tetap LIVE. */
         var outRows = order.map(function (k) {
           var a = agg[k];
           delete a._best;
