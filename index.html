@@ -2414,7 +2414,8 @@
                 <option value="2026-07">Juli 2026</option>
                 <option value="2026-08">Agustus 2026</option>
                 <option value="2026-09">September 2026</option>
-                <option value="2026-10" selected>Oktober 2026</option>
+                <option value="2026-10">Oktober 2026</option>
+                <option value="2026-11" selected>November 2026</option>
               </select>
               <span class="lmtp-badge snap" id="lmtpSrcBadgeHome">Snapshot 22 Okt 2026</span>
             </div>
@@ -2802,7 +2803,8 @@
               <option value="2026-07">Juli 2026</option>
               <option value="2026-08">Agustus 2026</option>
               <option value="2026-09">September 2026</option>
-              <option value="2026-10" selected>Oktober 2026</option>
+              <option value="2026-10">Oktober 2026</option>
+              <option value="2026-11" selected>November 2026</option>
             </select>
             <span class="lmtp-badge snap" id="lmtpSrcBadge">Snapshot 22 Okt 2026</span>
           </div>
@@ -6399,7 +6401,7 @@
         return n ? out : null;
       }
 
-      var lmtp = { loaded: false, loading: false, live: false, rows: [], monthAgg: {}, sel: '2026-10' };
+      var lmtp = { loaded: false, loading: false, live: false, rows: [], monthAgg: {}, sel: '2026-11' };
       function lmtpAggRows(rows) {
         var agg = {};
         rows.forEach(function (r) {
