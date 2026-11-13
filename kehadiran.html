@@ -284,6 +284,23 @@
       @media (prefers-reduced-motion: no-preference) {
         .card:hover { transform: translateY(-3px); border-color: var(--stc); box-shadow: var(--shadow-lg); }
       }
+      /* ---------- Animasi pilihan Mas (1 & 2, 4 Nov 2026) ----------
+         1. card-enter: kartu masuk bertahap (fade + naik) — dipasang JS
+            hanya pada render pertama; fill backwards supaya setelah
+            animasi selesai, hover tetap berfungsi (tidak tertahan fill
+            forwards yang akan mengalahkan transform hover).
+         2. status-flash: kilau sekali saat status berubah — warna
+            mengikuti status baru (var --stc); hanya box-shadow, jadi
+            tidak mengganggu transform hover. */
+      @media (prefers-reduced-motion: no-preference) {
+        .card.card-enter { animation: card-in .3s ease backwards; }
+        @keyframes card-in { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+        .card.status-flash { animation: status-flash 1.2s ease-out; }
+        @keyframes status-flash {
+          0% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--stc) 55%, transparent), var(--shadow); }
+          100% { box-shadow: 0 0 0 14px transparent, var(--shadow); }
+        }
+      }
       .card:active { transform: scale(.99); }
       .card-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; }
       .avatar { position: relative; width: 84px; height: 84px; flex: none; }
@@ -416,6 +433,102 @@
         .card { break-inside: avoid; }
         .controls { position: static; }
       }
+
+      /* ---------- Pop-up besar: Dinas Luar & Training ----------
+         Muncul otomatis saat halaman dibuka bila ada yang dinas luar
+         atau training; kartu besar berisi foto, nama, jabatan, dan
+         keterangan — supaya langsung kelihatan dari jauh (mode TV). */
+      :root { --training: #b25e00; --training-bg: #fdeeda; }
+      @media (prefers-color-scheme: dark) { :root { --training: #f2a65a; --training-bg: #3d2a12; } }
+      .outpop-backdrop {
+        position: fixed; inset: 0; z-index: 60; display: none;
+        align-items: center; justify-content: center; padding: 20px;
+        background: linear-gradient(160deg, rgba(10, 26, 20, .82), rgba(11, 32, 48, .86));
+        -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px);
+      }
+      .outpop-backdrop.open { display: flex; }
+      .outpop {
+        width: min(980px, 100%); max-height: calc(100dvh - 40px); overflow: auto;
+        background: var(--surface); border: 1px solid var(--line); border-radius: 28px;
+        box-shadow: 0 30px 80px -20px rgba(0,0,0,.55); position: relative;
+      }
+      .outpop-head {
+        padding: 30px 30px 22px; text-align: center;
+        background: linear-gradient(135deg, #1f3864 0%, #0b6e4f 100%);
+        color: #fff; border-radius: 28px 28px 0 0;
+      }
+      .outpop-eyebrow { margin: 0 0 6px; font-size: 12.5px; font-weight: 800; letter-spacing: .16em; text-transform: uppercase; color: #ffd9a8; }
+      .outpop-head h2 { margin: 0; font-size: clamp(28px, 5vw, 44px); font-weight: 800; letter-spacing: -.02em; line-height: 1.08; }
+      .outpop-sub { margin: 10px auto 0; max-width: 52ch; font-size: 15.5px; font-weight: 600; color: rgba(255,255,255,.88); }
+      .outpop-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 18px; padding: 26px 28px 10px; }
+      .outpop-float { height: 100%; }
+      .outpop-card {
+        --stc: var(--training);
+        background: var(--surface-2); border: 1px solid var(--line); border-radius: 22px;
+        padding: 26px 20px 22px; text-align: center; position: relative; overflow: hidden;
+        height: 100%;
+      }
+      .outpop-card::before { content: ""; position: absolute; top: 0; left: 0; right: 0; height: 6px; background: var(--stc); }
+      .outpop-card.kind-dinas { --stc: var(--dinas); }
+      .outpop-card.kind-training { --stc: var(--training); }
+      .outpop-photo { display: flex; justify-content: center; }
+      .outpop-photo .avatar { width: 132px; height: 132px; }
+      .outpop-photo .avatar .initials { font-size: 44px; }
+      .outpop-name { margin-top: 16px; font-size: 25px; font-weight: 800; letter-spacing: -.01em; line-height: 1.2; }
+      .outpop-role { margin-top: 4px; font-size: 14px; font-weight: 600; color: var(--ink-2); }
+      .outpop-tags { display: flex; justify-content: center; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
+      .outpop-tag {
+        font-size: 12px; font-weight: 800; letter-spacing: .06em; text-transform: uppercase;
+        border-radius: 999px; padding: 5px 12px; color: var(--training); background: var(--training-bg);
+        display: inline-flex; align-items: center; gap: 6px;
+      }
+      .outpop-tag::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: currentColor; }
+      .outpop-ket { margin: 14px 0 0; font-size: 17px; font-weight: 700; line-height: 1.5; }
+      .outpop-foot { display: flex; align-items: center; gap: 14px; padding: 8px 28px 22px; }
+      .outpop-count { font-weight: 700; color: var(--muted); font-size: 13.5px; white-space: nowrap; }
+      .outpop-timer { flex: 1; height: 6px; border-radius: 999px; background: var(--line); overflow: hidden; }
+      .outpop-timer i { display: block; height: 100%; width: 100%; background: linear-gradient(90deg, #ed7d31, #0b6e4f); border-radius: 999px; }
+      .outpop-cta {
+        border: 0; border-radius: 999px; padding: 11px 22px; font: inherit; font-weight: 800; font-size: 14.5px;
+        background: var(--accent-strong); color: #fff; cursor: pointer; flex: none;
+      }
+      .outpop-close {
+        position: absolute; top: 14px; right: 14px; z-index: 2; width: 40px; height: 40px; border-radius: 50%;
+        border: 1px solid rgba(255,255,255,.4); background: rgba(0,0,0,.25); color: #fff;
+        font-size: 20px; cursor: pointer; line-height: 1;
+      }
+      .outpop-fab {
+        position: fixed; right: 18px; bottom: 18px; z-index: 55;
+        display: inline-flex; align-items: center; gap: 9px;
+        border: 1px solid var(--accent-strong); border-radius: 999px; padding: 13px 18px;
+        background: var(--accent-strong); color: #fff; font: inherit; font-size: 14.5px; font-weight: 800;
+        box-shadow: 0 14px 30px -10px rgba(0,0,0,.45); cursor: pointer;
+      }
+      .outpop-fab[hidden] { display: none; }
+      @media (max-width: 560px) {
+        .outpop-backdrop { padding: 0; align-items: flex-end; }
+        .outpop { border-radius: 26px 26px 0 0; max-height: calc(100dvh - 30px); }
+        .outpop-head { border-radius: 26px 26px 0 0; padding: 24px 20px 16px; }
+        .outpop-grid { padding: 18px 16px 6px; gap: 12px; }
+        .outpop-photo .avatar { width: 104px; height: 104px; }
+        .outpop-name { font-size: 21px; }
+        .outpop-foot { padding: 6px 16px 18px; }
+      }
+      @media (prefers-reduced-motion: no-preference) {
+        .outpop-backdrop.open { animation: outpop-fade .25s ease; }
+        @keyframes outpop-fade { from { opacity: 0; } to { opacity: 1; } }
+        .outpop-backdrop.open .outpop { animation: outpop-in .45s cubic-bezier(.34, 1.56, .64, 1); }
+        @keyframes outpop-in { from { opacity: 0; transform: translateY(34px) scale(.8); } to { opacity: 1; transform: none; } }
+        /* Kartu: zoom-in membesar dari kecil (maju ke depan), lalu
+           melayang naik-turun pelan supaya terasa hidup. */
+        .outpop-card { animation: outpop-card-in .55s cubic-bezier(.34, 1.56, .64, 1) backwards; }
+        @keyframes outpop-card-in { from { opacity: 0; transform: translateY(26px) scale(.55); } to { opacity: 1; transform: none; } }
+        .outpop-float { animation: outpop-float 3.2s ease-in-out infinite; }
+        @keyframes outpop-float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-7px); } }
+        .outpop-fab { animation: outpop-fab-in .3s ease backwards; }
+        @keyframes outpop-fab-in { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+      }
+      @media print { .outpop-backdrop, .outpop-fab { display: none !important; } }
     </style>
   </head>
   <body>
@@ -465,7 +578,27 @@
         <button class="modal-close" id="modalClose" aria-label="Tutup profil">×</button>
         <div id="modalBody"></div>
       </div>
+    <div class="outpop-backdrop" id="outPopBackdrop" role="dialog" aria-modal="true" aria-labelledby="outPopTitle">
+      <div class="outpop" id="outPop">
+        <button class="outpop-close" id="outPopClose" aria-label="Tutup pop-up">×</button>
+        <div class="outpop-head">
+          <p class="outpop-eyebrow">Kehadiran hari ini · <span id="outPopDate"></span></p>
+          <h2 id="outPopTitle">Dinas Luar &amp; Training</h2>
+          <p class="outpop-sub">Mereka sedang tidak di meja kerja hari ini — dinas luar atau training.</p>
+        </div>
+        <div class="outpop-grid" id="outPopGrid"></div>
+        <div class="outpop-foot">
+          <span class="outpop-count" id="outPopCount"></span>
+          <span class="outpop-timer" aria-hidden="true"><i id="outPopTimerBar"></i></span>
+          <button type="button" class="outpop-cta" id="outPopCloseBtn">Tutup</button>
+        </div>
+      </div>
     </div>
+
+    <button type="button" class="outpop-fab" id="outPopFab" hidden>
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
+      <span id="outPopFabText"></span>
+    </button>
 
     <script>
       var MEETING_KET = "meeting online alih loading bersama PT ATMI Cikarang di ruang Dharma TCH";
@@ -640,6 +773,15 @@
           + "</button>";
       }
 
+      /* Animasi 1 & 2 (pilihan Mas, 4 Nov 2026): entrance hanya render
+         pertama; kilau status hanya pada render setelah perubahan status
+         dari tarikan LIVE. Keduanya dikonsumsi sekali lalu dibersihkan,
+         supaya refresh 60 detik / filter / pencarian tidak memutar ulang
+         animasi. Kunci nama dibuat lowercase agar cocok walau kapitalisasi
+         tab dan snapshot berbeda. */
+      var enterDone = false;
+      var flashNames = {};
+
       function renderGroups() {
         var main = document.getElementById("groups");
         var anyVisible = false;
@@ -667,7 +809,15 @@
         var cards = main.querySelectorAll(".card");
         for (var k = 0; k < cards.length; k++) {
           cards[k].addEventListener("click", function () { openModal(parseInt(this.getAttribute("data-idx"), 10)); });
+          if (!enterDone) {
+            cards[k].classList.add("card-enter");
+            cards[k].style.animationDelay = (k * 40) + "ms";
+          }
+          var owner = PEOPLE[parseInt(cards[k].getAttribute("data-idx"), 10)];
+          if (owner && flashNames[owner.name.toLowerCase()]) cards[k].classList.add("status-flash");
         }
+        enterDone = true;
+        flashNames = {};
       }
 
       /* ---------- Modal ---------- */
@@ -697,6 +847,103 @@
       document.getElementById("modalClose").addEventListener("click", closeModal);
       backdrop.addEventListener("click", function (e) { if (e.target === backdrop) closeModal(); });
       document.addEventListener("keydown", function (e) { if (e.key === "Escape") closeModal(); });
+
+      /* ---------- Pop-up besar: Dinas Luar & Training ----------
+         Aturan tampil: status "Dinas Luar", ATAU status Hadir dengan
+         keterangan mengandung kata "training" (mis. Yeyeh & Dhita hari
+         ini). Cuti / Sakit / Izin sengaja tidak ikut — sesuai permintaan
+         Mas, hanya dinas luar & training. Muncul otomatis sekali saat
+         halaman dibuka (sesudah data live terbaca), menutup sendiri
+         setelah 20 detik, dan bisa dibuka lagi lewat tombol melayang. */
+      var outPopBackdrop = document.getElementById("outPopBackdrop");
+      var outPopGrid = document.getElementById("outPopGrid");
+      var outPopFab = document.getElementById("outPopFab");
+      var outPopTimer = null;
+      var outAutoShown = false;
+      var outDismissed = false;
+      var OUTPOP_SECONDS = 20;
+
+      function isOutPerson(p) {
+        if (!p) return false;
+        if (p.status === "Dinas Luar") return true;
+        return !!p.ket && /training/i.test(p.ket);
+      }
+      function outPeople() { return PEOPLE.filter(isOutPerson); }
+      function outKind(p) { return p.status === "Dinas Luar" ? "dinas" : "training"; }
+
+      function outPopCardHTML(p, i) {
+        var kind = outKind(p);
+        var tag = kind === "dinas"
+          ? '<span class="badge dinas">Dinas Luar</span>'
+          : '<span class="outpop-tag">Training</span>';
+        var ket = p.ket ? esc(p.ket) : (kind === "dinas" ? "Dinas luar" : "Training");
+        return '<div class="outpop-float" style="animation-delay:' + (i * 350) + 'ms">'
+          + '<article class="outpop-card kind-' + kind + '" style="animation-delay:' + (i * 90) + 'ms">'
+          + '<div class="outpop-photo">' + avatarHTML(p) + "</div>"
+          + '<div class="outpop-name">' + esc(p.name) + "</div>"
+          + '<div class="outpop-role">' + esc(roleLine(p)) + "</div>"
+          + '<div class="outpop-tags">' + tag + genderChip(p) + "</div>"
+          + '<p class="outpop-ket">' + ket + "</p>"
+          + "</article></div>";
+      }
+
+      function fillOutPopup(list) {
+        document.getElementById("outPopDate").textContent = document.getElementById("dateText").textContent;
+        document.getElementById("outPopCount").textContent = list.length + (list.length === 1 ? " orang" : " orang");
+        outPopGrid.innerHTML = list.map(function (p, i) { return outPopCardHTML(p, i); }).join("");
+      }
+
+      function restartOutTimer() {
+        clearTimeout(outPopTimer);
+        var bar = document.getElementById("outPopTimerBar");
+        bar.style.transition = "none";
+        bar.style.width = "100%";
+        void bar.offsetWidth;
+        bar.style.transition = "width " + OUTPOP_SECONDS + "s linear";
+        bar.style.width = "0%";
+        outPopTimer = setTimeout(closeOutPopup, OUTPOP_SECONDS * 1000);
+      }
+
+      function openOutPopup() {
+        var list = outPeople();
+        if (!list.length) return;
+        fillOutPopup(list);
+        outPopBackdrop.className = "outpop-backdrop open";
+        outPopFab.hidden = true;
+        restartOutTimer();
+      }
+
+      function closeOutPopup() {
+        clearTimeout(outPopTimer);
+        outPopBackdrop.className = "outpop-backdrop";
+        outDismissed = true;
+        renderOutPopup();
+      }
+
+      /* Isi ulang pop-up bila sedang terbuka + atur tombol melayang.
+         Dipanggil dari applyLive setiap data live masuk. */
+      function renderOutPopup() {
+        var list = outPeople();
+        outPopFab.hidden = list.length === 0 || outPopBackdrop.className.indexOf("open") !== -1;
+        if (list.length) document.getElementById("outPopFabText").textContent = list.length + " dinas · training";
+        if (outPopBackdrop.className.indexOf("open") !== -1) fillOutPopup(list);
+      }
+
+      function maybeAutoShowOutPopup() {
+        if (outAutoShown || outDismissed) return;
+        if (!outPeople().length) return;
+        if (backdrop.className.indexOf("open") !== -1) return;
+        outAutoShown = true;
+        setTimeout(function () { if (!outDismissed) openOutPopup(); }, 900);
+      }
+
+      document.getElementById("outPopClose").addEventListener("click", closeOutPopup);
+      document.getElementById("outPopCloseBtn").addEventListener("click", closeOutPopup);
+      outPopBackdrop.addEventListener("click", function (e) { if (e.target === outPopBackdrop) closeOutPopup(); });
+      outPopFab.addEventListener("click", function () { outDismissed = false; openOutPopup(); });
+      document.addEventListener("keydown", function (e) {
+        if (e.key === "Escape" && outPopBackdrop.className.indexOf("open") !== -1) closeOutPopup();
+      });
 
       /* ---------- Wiring ---------- */
       document.getElementById("filterChips").addEventListener("click", function (e) {
@@ -1008,6 +1255,9 @@
       }
 
       function applyLive(entries) {
+        var wasLive = liveActive;
+        var prevStatus = {};
+        if (wasLive) PEOPLE.forEach(function (p) { prevStatus[p.name.toLowerCase()] = p.status; });
         PEOPLE = entries.map(function (e) {
           var snap = SNAP_BY_NAME[e.nama.toLowerCase()] || null;
           var key = attStatusKey(e.status);
@@ -1026,11 +1276,19 @@
             group: groupOf(role, snap)
           };
         });
+        if (wasLive) {
+          PEOPLE.forEach(function (p) {
+            var prev = prevStatus[p.name.toLowerCase()];
+            if (prev && prev !== p.status) flashNames[p.name.toLowerCase()] = true;
+          });
+        }
         liveActive = true;
         if (activeStatus !== "Semua" && !PEOPLE.some(function (p) { return p.status === activeStatus; })) activeStatus = "Semua";
         renderSummary();
         renderChips();
         renderGroups();
+        renderOutPopup();
+        maybeAutoShowOutPopup();
         var now = new Intl.DateTimeFormat("id-ID", { timeZone: "Asia/Jakarta", hour: "2-digit", minute: "2-digit" }).format(new Date());
         setSrc("live", "Diperbarui pukul " + now + " WIB · otomatis tiap 60 detik");
         document.getElementById("dateText").textContent = new Intl.DateTimeFormat("id-ID", {
