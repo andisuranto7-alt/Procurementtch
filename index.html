@@ -1504,7 +1504,9 @@
         font-size: 20px; cursor: pointer; line-height: 1;
       }
       .outpop-fab {
-        position: fixed; right: 18px; bottom: 18px; z-index: 55;
+        /* Naik di atas tombol "Tanya Data" (chat-fab, bottom 18px, tinggi
+           ±48px) supaya tidak saling menutupi di pojok kanan bawah. */
+        position: fixed; right: 18px; bottom: calc(84px + env(safe-area-inset-bottom, 0px)); z-index: 55;
         display: inline-flex; align-items: center; gap: 9px;
         border: 1px solid var(--accent); border-radius: 999px; padding: 13px 18px;
         background: var(--accent); color: #fff; font: inherit; font-size: 14.5px; font-weight: 800;
