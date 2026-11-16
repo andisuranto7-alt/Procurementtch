@@ -1,6 +1,6 @@
 /* Abnormality TCH — service worker (cache app shell saja, data live selalu dari jaringan) */
 const CACHE = "abnormality-tch-v1";
-const ASSETS = ["abnormality.html", "manifest.json", "icon-192.png", "icon-512.png", "icon-180.png"];
+const ASSETS = ["abnormality.html", "manifest.json", "icon.svg"];
 
 self.addEventListener("install", (e) => {
   e.waitUntil(caches.open(CACHE).then((c) => c.addAll(ASSETS)).then(() => self.skipWaiting()));
