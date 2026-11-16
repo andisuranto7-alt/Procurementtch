@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Abnormality TCH — Info Procurement</title>
+<meta name="description" content="Info Abnormality Procurement PT Trimitra Chitrahasta — delay, 2DS NG, LMTP, vendor belum update. Live dari Daily Pro.">
+<meta name="theme-color" content="#1F3864">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-180.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Abnormality TCH">
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;background:#F2F4F7;color:#1c2733;}
+  .wrap{max-width:520px;margin:0 auto;padding-bottom:40px}
+  header{background:#1F3864;color:#fff;padding:18px 16px 14px;position:sticky;top:0;z-index:20}
+  header h1{font-size:20px;letter-spacing:.3px}
+  header h1 .warn{color:#ED7D31}
+  header p{font-size:12px;opacity:.85;margin-top:3px}
+  .live{display:inline-block;background:#1e9e4a;color:#fff;font-size:11px;font-weight:700;padding:3px 8px;border-radius:20px;margin-top:8px}
+  .live.off{background:#c0392b}
+  .upd{font-size:11px;opacity:.8;margin-top:6px}
+  .refresh{background:#2E75B6;color:#fff;border:0;border-radius:8px;padding:7px 12px;font-size:13px;font-weight:600;cursor:pointer;margin-top:8px}
+  .refresh:active{transform:scale(.97)}
+  main{padding:12px}
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
+  .stat{background:#fff;border-radius:12px;padding:12px;box-shadow:0 1px 4px rgba(0,0,0,.08)}
+  .stat .lbl{font-size:11px;color:#6b7a8d;text-transform:uppercase;letter-spacing:.5px;font-weight:700}
+  .stat .num{font-size:26px;font-weight:800;color:#1F3864;margin:4px 0 2px}
+  .stat .sub{font-size:12px;color:#43536a}
+  .stat.red .num{color:#c0392b}
+  .stat.amber .num{color:#b7791f}
+  .stat.green .num{color:#1e9e4a}
+  .sec{font-size:13px;font-weight:800;color:#1F3864;text-transform:uppercase;letter-spacing:.6px;margin:16px 2px 8px}
+  .card{background:#fff;border-radius:12px;padding:14px;box-shadow:0 1px 4px rgba(0,0,0,.08);margin-bottom:12px;border-left:5px solid #2E75B6}
+  .card.red{border-left-color:#c0392b}
+  .card.amber{border-left-color:#ED7D31}
+  .card.green{border-left-color:#1e9e4a}
+  .card h3{font-size:15px;color:#1F3864;margin-bottom:6px}
+  .card .meta{font-size:12px;color:#6b7a8d;margin-bottom:8px}
+  .card ul{list-style:none}
+  .card li{font-size:13.5px;line-height:1.5;padding:5px 0;border-top:1px solid #eef1f4}
+  .card li:first-child{border-top:0}
+  .card li b{color:#1F3864}
+  .pill{display:inline-block;font-size:11px;font-weight:700;padding:2px 7px;border-radius:20px;background:#fdecea;color:#c0392b;margin-left:6px}
+  .pill.ok{background:#e6f4ea;color:#1e7a34}
+  .pill.warn{background:#fef3e2;color:#b7791f}
+  .wa{display:inline-block;background:#25D366;color:#fff;font-weight:700;font-size:13.5px;text-decoration:none;padding:9px 14px;border-radius:9px;margin-top:10px}
+  .wa:active{transform:scale(.97)}
+  .wa.big{display:block;text-align:center;padding:12px;font-size:15px}
+  .note{font-size:12px;color:#6b7a8d;line-height:1.5;margin-top:6px}
+  .empty{font-size:13px;color:#6b7a8d}
+  /* Quiz */
+  .quiz-q{font-size:16px;font-weight:700;line-height:1.45;margin:8px 0}
+  .timerbar{height:8px;background:#e8edf2;border-radius:6px;overflow:hidden;margin:8px 0 12px}
+  .timerbar>div{height:100%;background:#ED7D31;width:100%}
+  .opt{display:block;width:100%;text-align:left;background:#f2f6fb;border:1px solid #d7e0ea;border-radius:10px;padding:12px;font-size:14.5px;margin-bottom:8px;cursor:pointer;color:#1c2733}
+  .opt:active{background:#dbe7f3}
+  .opt.correct{background:#d9f2e2;border-color:#1e9e4a}
+  .opt.wrong{background:#fdecea;border-color:#c0392b}
+  .opt:disabled{opacity:.85}
+  .btn{background:#1F3864;color:#fff;border:0;border-radius:9px;padding:11px 16px;font-size:14px;font-weight:700;cursor:pointer;width:100%}
+  .btn.gold{background:#ED7D31}
+  .score{font-size:34px;font-weight:800;color:#1F3864;text-align:center;margin:6px 0}
+  .board{font-size:13.5px;line-height:1.7}
+  .board li{padding:4px 0;border-top:1px solid #eef1f4}
+  .install{background:#fff3e0;border:1px solid #f0c98f;border-radius:12px;padding:12px 14px;margin-bottom:12px;font-size:13px;line-height:1.5;color:#5b4636}
+  footer{font-size:11.5px;color:#8a97a8;text-align:center;line-height:1.6;padding:14px}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <h1>⚠️ Abnormality <span class="warn">TCH</span></h1>
+  <p>Info Abnormality — Procurement PT Trimitra Chitrahasta</p>
+  <span class="live" id="liveBadge">● LIVE</span>
+  <div class="upd" id="updLine">Memuat data live…</div>
+  <button class="refresh" onclick="loadAll()">↻ Perbarui Data</button>
+</header>
+<main>
+  <div id="installBox"></div>
+
+  <div class="grid">
+    <div class="stat red"><div class="lbl">Item Delay</div><div class="num" id="stDelay">–</div><div class="sub" id="stDelaySub">memuat…</div></div>
+    <div class="stat amber"><div class="lbl">Item NG 2DS</div><div class="num" id="stNG">–</div><div class="sub" id="stNGSub">memuat…</div></div>
+    <div class="stat"><div class="lbl">LMTP November</div><div class="num" id="stLMTP">–</div><div class="sub" id="stLMTPSub">memuat…</div></div>
+    <div class="stat red"><div class="lbl">Vendor Belum Update 2DS</div><div class="num" id="stVendor">–</div><div class="sub" id="stVendorSub">memuat…</div></div>
+  </div>
+
+  <div class="sec">📋 Feed Abnormality Hari Ini</div>
+  <div id="feed"><div class="card"><p class="empty">Memuat feed abnormality…</p></div></div>
+
+  <div class="sec">📤 Ringkasan Harian (siap kirim WA)</div>
+  <div class="card">
+    <h3>Ringkasan Abnormality — <span id="sumDate">hari ini</span></h3>
+    <pre id="sumText" style="white-space:pre-wrap;font-family:inherit;font-size:13.5px;line-height:1.55;color:#1c2733">Memuat ringkasan…</pre>
+    <a class="wa big" id="sumWA" href="#" target="_blank" rel="noopener">💬 Kirim Ringkasan ke WhatsApp</a>
+    <p class="note">Ketuk tombol di atas, pilih grup tim Procurement atau PIC vendor, lalu kirim. Tanpa biaya, tanpa API.</p>
+  </div>
+
+  <div class="sec">🎯 Kuis Kilat — Abnormality</div>
+  <div class="card" id="quizCard">
+    <h3>Kuis Kilat Abnormality</h3>
+    <p class="meta">5 soal · 30 detik/soal · soal dibuat dari data live hari ini</p>
+    <div id="quizBody">
+      <p class="note">Soal disusun otomatis dari data abnormality yang sedang tampil. Mainkan dan uji seberapa hafal kondisi vendor hari ini.</p>
+      <button class="btn gold" id="quizStart" onclick="startQuiz()" disabled>Memuat soal…</button>
+    </div>
+    <div id="quizBoard" style="margin-top:12px"></div>
+  </div>
+
+  <div class="sec">ℹ️ Tentang Aplikasi Ini</div>
+  <div class="card green">
+    <h3>Data live, publik, gratis</h3>
+    <p class="note">Data diambil langsung dari backend yang sama dengan Daily Pro (Google Sheet). Tidak ada login, tidak ada biaya. Tombol WhatsApp memakai tautan wa.me — pesan sudah disiapkan, Anda yang memilih penerimanya saat mengirim.</p>
+    <p class="note" id="srcLine"></p>
+  </div>
+</main>
+<footer>
+  Abnormality TCH · Procurement PT Trimitra Chitrahasta<br>
+  Dibangun untuk tim Procurement TCH · Data: Daily Pro (live)
+</footer>
+</div>
+
+<script>
+const SHEET_ID = "154c18fGXyavo0NtbW2TrPae0ohMCGy2ieqOWzcHMZ0E";
+const GID = { meta: 494094783, delay: 823507897, twods: 469995258, lmtp: 1090742054 };
+const MONITORED = ["ATC","DRC","IPTI","PHM","KSM","RJM","SJT","WHAIN","SLAI","SPI","DBA","MMM","HTI","ASIANT"];
+const MONTHS_ID = {Jan:0,Feb:1,Mar:2,Apr:3,Mei:4,May:4,Jun:5,Jul:6,Agu:7,Aug:7,Sep:8,Okt:9,Oct:9,Nov:10,Des:11,Dec:11};
+
+function esc(s){ return String(s==null?"":s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
+function num(n){ return Number(n||0).toLocaleString("id-ID"); }
+function waLink(text){ return "https://wa.me/?text=" + encodeURIComponent(text); }
+
+async function fetchGviz(gid){
+  const url = "https://docs.google.com/spreadsheets/d/"+SHEET_ID+"/gviz/tq?tqx=out:json&gid="+gid;
+  const res = await fetch(url);
+  const text = await res.text();
+  const a = text.indexOf("{"), b = text.lastIndexOf("}");
+  const j = JSON.parse(text.slice(a, b+1));
+  const cols = (j.table.cols||[]).map(c=>c.label||"");
+  const rows = (j.table.rows||[]).map(r=>(r.c||[]).map(c=>c?c.v:null));
+  return { cols, rows };
+}
+
+function parseLastUpdate(s){
+  if(!s) return null;
+  const m = String(s).match(/(\d{1,2})\s+([A-Za-z]{3})\s*(\d{4})?/);
+  if(!m) return null;
+  const d = parseInt(m[1],10), mo = MONTHS_ID[m[2]] ?? 0, y = m[3]?parseInt(m[3],10):2026;
+  return new Date(y, mo, d);
+}
+function fmtDate(d){ return d ? d.toLocaleDateString("id-ID",{day:"numeric",month:"short",year:"numeric"}) : "–"; }
+function todayStr(){ return new Date().toLocaleDateString("id-ID",{weekday:"long",day:"numeric",month:"long",year:"numeric"}); }
+
+// Tab 2DS berisi dua bagian: tabel Last Update vendor (atas) lalu
+// baris "NG Items" dan daftar item NG. Pisahkan keduanya.
+function splitTwods(rows){
+  const hdr = rows.findIndex(r=>String(r[0]||"").indexOf("NG Items")===0);
+  const cut = hdr>=0 ? hdr : 0;
+  return { updates: rows.slice(0, cut), ng: rows.slice(cut+1).filter(r=>r[0]) };
+}
+
+let DATA = null;
+
+async function loadAll(){
+  document.getElementById("liveBadge").textContent = "● MEMUAT…";
+  try{
+    const [meta, delay, twods, lmtp] = await Promise.all([
+      fetchGviz(GID.meta), fetchGviz(GID.delay), fetchGviz(GID.twods), fetchGviz(GID.lmtp)
+    ]);
+    DATA = { meta, delay, twods, lmtp };
+    renderAll();
+    document.getElementById("liveBadge").textContent = "● LIVE";
+    document.getElementById("liveBadge").classList.remove("off");
+  }catch(e){
+    document.getElementById("liveBadge").textContent = "● GAGAL MEMUAT";
+    document.getElementById("liveBadge").classList.add("off");
+    document.getElementById("updLine").textContent = "Tidak bisa membaca data live. Periksa koneksi lalu ketuk Perbarui Data.";
+  }
+}
+
+function metaVal(key){
+  if(!DATA) return null;
+  const r = DATA.meta.rows.find(x=>x[0]===key);
+  return r ? r[1] : null;
+}
+
+// last_update backend ditulis sync dalam UTC (jam VM) — tampilkan sebagai WIB (+7 jam).
+// Nilainya ada di label kolom ke-2 tab Meta ("Value 16/11/2026 04:56").
+function metaLastUpdate(){
+  if(!DATA || !DATA.meta) return null;
+  const label = (DATA.meta.cols && DATA.meta.cols[1]) || "";
+  const m = label.match(/(\d{2})\/(\d{2})\/(\d{4})\s+(\d{2}):(\d{2})/);
+  if(!m) return null;
+  const utc = Date.UTC(+m[3], +m[2]-1, +m[1], +m[4], +m[5]);
+  return new Date(utc + 7*60*60*1000);
+}
+
+function renderAll(){
+  const d = DATA;
+  const delayRows = d.delay.rows.filter(r=>r[0]);
+  const diSet = new Set(delayRows.map(r=>r[0]));
+  const osTotal = delayRows.reduce((s,r)=>s+(+r[6]||0),0);
+  const tw = splitTwods(d.twods.rows);
+  const ngRows = tw.ng;
+  const twodsDate = metaVal("twods_source_date") || "";
+  const publishDate = twodsDate ? new Date(twodsDate+"T00:00:00") : null;
+
+  // vendor 2DS status
+  const lastByVendor = {};
+  tw.updates.forEach(r=>{
+    const v = (r[0]||"").toString().trim().toUpperCase();
+    if(MONITORED.includes(v)){
+      const dt = parseLastUpdate(r[1]);
+      if(dt && (!lastByVendor[v] || dt > lastByVendor[v])) lastByVendor[v] = dt;
+    }
+  });
+  const updated = [], late = [];
+  MONITORED.forEach(v=>{
+    const dt = lastByVendor[v];
+    const ok = dt && publishDate && dt.getTime() === publishDate.getTime();
+    (ok ? updated : late).push({ v, dt });
+  });
+
+  // LMTP November 2026
+  let lmtpNov = { total:0, open:0, close:0 };
+  d.lmtp.rows.forEach(r=>{
+    if(String(r[0])==="2026-11"){
+      lmtpNov.total += (+r[3]||0); lmtpNov.open += (+r[6]||0); lmtpNov.close += (+r[7]||0);
+    }
+  });
+
+  // ---- summary cards ----
+  document.getElementById("stDelay").textContent = num(delayRows.length);
+  document.getElementById("stDelaySub").textContent = num(diSet.size)+" DI unik · OS "+num(osTotal)+" pcs";
+  document.getElementById("stNG").textContent = num(ngRows.length);
+  const ngByVendor = {};
+  ngRows.forEach(r=>{ ngByVendor[r[0]] = (ngByVendor[r[0]]||0)+1; });
+  const topNG = Object.entries(ngByVendor).sort((a,b)=>b[1]-a[1])[0];
+  document.getElementById("stNGSub").textContent = topNG ? "Terbanyak: "+topNG[0]+" ("+num(topNG[1])+")" : "Data "+fmtDate(publishDate);
+  document.getElementById("stLMTP").textContent = num(lmtpNov.total);
+  document.getElementById("stLMTPSub").textContent = "Open "+num(lmtpNov.open)+" · Close "+num(lmtpNov.close)+" (Nov 2026)";
+  document.getElementById("stVendor").textContent = num(late.length)+" / "+MONITORED.length;
+  document.getElementById("stVendorSub").textContent = late.length ? "Belum: "+late.map(x=>x.v).join(", ") : "Semua sudah update ✓";
+
+  const lu = metaLastUpdate();
+  document.getElementById("updLine").textContent =
+    "Data terakhir: " + (lu ? lu.toLocaleDateString("id-ID",{day:"numeric",month:"short",year:"numeric"}) + ", " + lu.toLocaleTimeString("id-ID",{hour:"2-digit",minute:"2-digit"}) + " WIB" : todayStr()) + " · 2DS terbit " + fmtDate(publishDate);
+  document.getElementById("srcLine").textContent =
+    "Sumber: " + (metaVal("di_manifest_source")||"DI Manifest") + " · 2DS: " + (metaVal("twods_source_label")||"");
+
+  // ---- feed ----
+  const feed = [];
+  // 1. Delay per vendor
+  const delayByVendor = {};
+  delayRows.forEach(r=>{ const k=r[3]||r[2]||"?"; delayByVendor[k]=(delayByVendor[k]||0)+1; });
+  const topDelayV = Object.entries(delayByVendor).sort((a,b)=>b[1]-a[1]).slice(0,5);
+  const aging = delayRows.slice().sort((a,b)=>(+b[7]||0)-(+a[7]||0)).slice(0,5);
+  feed.push({ cls:"red", title:"🔴 Delay Hari Ini — "+num(delayRows.length)+" item / "+num(diSet.size)+" DI",
+    meta:"OS "+num(osTotal)+" pcs · Bulan berjalan",
+    items: topDelayV.map(([v,c])=>"<b>"+esc(v)+"</b> — "+num(c)+" item delay").concat(
+      aging.map(r=>"<b>"+esc(r[4]||"")+"</b> "+esc(r[5]||"")+" — telat "+(+r[7]||0)+" HK · OS "+num(r[6])+" pcs ("+esc(r[3]||"")+")")),
+    wa:"*ABNORMALITY TCH — DELAY*\n"+todayStr()+"\n\nTotal delay: "+delayRows.length+" item ("+diSet.size+" DI), OS "+osTotal.toLocaleString("id-ID")+" pcs.\n\nPer vendor terbanyak:\n"+topDelayV.map(([v,c],i)=>(i+1)+". "+v+" — "+c+" item").join("\n")+"\n\nItem paling telat:\n"+aging.map((r,i)=>(i+1)+". "+(r[4]||"")+" ("+(r[3]||"")+") — telat "+(+r[7]||0)+" HK, OS "+(+r[6]||0)+" pcs").join("\n") });
+
+  // 2. 2DS NG
+  const topNGV = Object.entries(ngByVendor).sort((a,b)=>b[1]-a[1]).slice(0,5);
+  const ngSample = ngRows.slice(0,5);
+  feed.push({ cls:"amber", title:"🟠 Item NG 2DS — "+num(ngRows.length)+" item",
+    meta:"Data terbit "+fmtDate(publishDate)+" · "+num(Object.keys(ngByVendor).length)+" vendor",
+    items: topNGV.map(([v,c])=>"<b>"+esc(v)+"</b> — "+num(c)+" item NG").concat(
+      ngSample.map(r=>"<b>"+esc(r[1]||"")+"</b> "+esc(r[2]||"")+" ("+esc(r[0]||"")+") — Std 2HK "+num(r[6])+" pcs")),
+    wa:"*ABNORMALITY TCH — 2DS NG*\n"+todayStr()+"\n\nTotal item NG 2DS: "+ngRows.length+" item (data terbit "+fmtDate(publishDate)+").\n\nPer vendor terbanyak:\n"+topNGV.map(([v,c],i)=>(i+1)+". "+v+" — "+c+" item NG").join("\n") });
+
+  // 3. Vendor belum update 2DS
+  feed.push({ cls: late.length?"red":"green", title:(late.length?"🔴":"🟢")+" Vendor Belum Update 2DS — "+num(late.length)+" vendor",
+    meta:"Data terbit "+fmtDate(publishDate)+" · yang sudah update: "+num(updated.length)+" vendor",
+    items: late.length ? late.map(x=>"<b>"+esc(x.v)+"</b> — terakhir update "+fmtDate(x.dt)+" <span class='pill'>telat</span>") :
+      ["<span class='pill ok'>Semua 14 vendor sudah update ✓</span>"],
+    wa:"*ABNORMALITY TCH — 2DS BELUM UPDATE*\n"+todayStr()+"\n\nVendor belum update 2DS (data terbit "+fmtDate(publishDate)+"):\n"+(late.length? late.map((x,i)=>(i+1)+". "+x.v+" — terakhir "+fmtDate(x.dt)).join("\n") : "Semua 14 vendor sudah update. ✓")+"\n\nMohon segera update 2 Days Stock. Terima kasih." });
+
+  // 4. LMTP November
+  feed.push({ cls: lmtpNov.open>0?"red":"green", title:"📦 LMTP November 2026 — "+num(lmtpNov.total)+" kasus",
+    meta:"Open "+num(lmtpNov.open)+" · Close "+num(lmtpNov.close),
+    items: (lmtpNov.open>0? ["<b>"+num(lmtpNov.open)+" kasus masih OPEN</b> — segera tindak lanjuti."] :
+      ["<span class='pill ok'>Semua kasus November CLOSE ✓</span>"]).concat(
+      ["Total kasus LMTP November: <b>"+num(lmtpNov.total)+"</b>, Close <b>"+num(lmtpNov.close)+"</b>."]),
+    wa:"*ABNORMALITY TCH — LMTP NOVEMBER*\n"+todayStr()+"\n\nTotal kasus LMTP November 2026: "+lmtpNov.total+" kasus.\nOpen: "+lmtpNov.open+" · Close: "+lmtpNov.close+"." });
+
+  document.getElementById("feed").innerHTML = feed.map(f=>
+    "<div class='card "+f.cls+"'><h3>"+f.title+"</h3><div class='meta'>"+f.meta+"</div><ul>"+
+    f.items.map(it=>"<li>"+it+"</li>").join("")+"</ul>"+
+    "<a class='wa' href='"+waLink(f.wa)+"' target='_blank' rel='noopener'>💬 Kirim ke WhatsApp</a></div>"
+  ).join("");
+
+  // ---- daily summary ----
+  document.getElementById("sumDate").textContent = todayStr();
+  const summary =
+"*ABNORMALITY TCH — RINGKASAN HARIAN*\n"+todayStr()+"\n\n"+
+"🔴 Delay: "+delayRows.length+" item ("+diSet.size+" DI), OS "+osTotal.toLocaleString("id-ID")+" pcs.\n"+
+"   Terbanyak: "+topDelayV.slice(0,3).map(([v,c])=>v+" ("+c+")").join(", ")+".\n"+
+"🟠 Item NG 2DS: "+ngRows.length+" item (data "+fmtDate(publishDate)+"). Terbanyak: "+(topNG? topNG[0]+" ("+topNG[1]+")":"-")+".\n"+
+"📦 LMTP November: "+lmtpNov.total+" kasus (Open "+lmtpNov.open+", Close "+lmtpNov.close+").\n"+
+"⏰ Vendor belum update 2DS: "+late.length+" dari "+MONITORED.length+(late.length? " ("+late.map(x=>x.v).join(", ")+")":" — semua sudah update ✓")+".\n\n"+
+"Detail lengkap: https://andisuranto7-alt.github.io/Procurementtch/abnormality.html";
+  document.getElementById("sumText").textContent = summary;
+  document.getElementById("sumWA").href = waLink(summary);
+
+  buildQuiz();
+}
+
+// ---------- Quiz ----------
+let QUIZ = null, quizTimer = null;
+function buildQuiz(){
+  const startBtn = document.getElementById("quizStart");
+  if(!DATA){ startBtn.disabled = true; startBtn.textContent = "Memuat soal…"; return; }
+  const d = DATA;
+  const delayRows = d.delay.rows.filter(r=>r[0]);
+  const diSet = new Set(delayRows.map(r=>r[0]));
+  const osTotal = delayRows.reduce((s,r)=>s+(+r[6]||0),0);
+  const tw = splitTwods(d.twods.rows);
+  const ngRows = tw.ng;
+  const ngByVendor = {};
+  ngRows.forEach(r=>{ ngByVendor[r[0]] = (ngByVendor[r[0]]||0)+1; });
+  const topNG = Object.entries(ngByVendor).sort((a,b)=>b[1]-a[1]);
+  const delayByVendor = {};
+  delayRows.forEach(r=>{ const k=r[3]||r[2]||"?"; delayByVendor[k]=(delayByVendor[k]||0)+1; });
+  const topDelay = Object.entries(delayByVendor).sort((a,b)=>b[1]-a[1]);
+  const publishDate = metaVal("twods_source_date") ? new Date(metaVal("twods_source_date")+"T00:00:00") : null;
+  const lastByVendor = {};
+  tw.updates.forEach(r=>{
+    const v=(r[0]||"").toString().trim().toUpperCase();
+    if(MONITORED.includes(v)){ const dt=parseLastUpdate(r[1]); if(dt&&(!lastByVendor[v]||dt>lastByVendor[v])) lastByVendor[v]=dt; }
+  });
+  const late = MONITORED.filter(v=>{ const dt=lastByVendor[v]; return !(dt&&publishDate&&dt.getTime()===publishDate.getTime()); });
+  let lmtpNov={total:0,open:0};
+  d.lmtp.rows.forEach(r=>{ if(String(r[0])==="2026-11"){ lmtpNov.total+=(+r[3]||0); lmtpNov.open+=(+r[6]||0); } });
+
+  function nearNums(n, spread){
+    const s = new Set([n]);
+    let k = 1;
+    while(s.size<4){ s.add(Math.max(0, n + (k%2? 1:-1)*Math.ceil(k/2)*spread)); k++; }
+    return shuffle([...s]);
+  }
+  function shuffle(a){ for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; }
+  function vendorOpts(correct, pool){
+    const opts = shuffle([correct, ...shuffle(pool.filter(v=>v!==correct)).slice(0,3)]);
+    return opts;
+  }
+
+  const qs = [];
+  if(delayRows.length){
+    qs.push({ q:"Berapa total item delay hari ini?", opts: nearNums(delayRows.length, 7).map(String), a: String(delayRows.length) });
+    qs.push({ q:"Berapa jumlah DI unik yang delay?", opts: nearNums(diSet.size, 3).map(String), a: String(diSet.size) });
+    if(topDelay[0]) qs.push({ q:"Vendor mana yang paling banyak item delay hari ini?", opts: vendorOpts(topDelay[0][0], topDelay.map(x=>x[0])), a: topDelay[0][0] });
+  }
+  if(ngRows.length){
+    qs.push({ q:"Berapa total item NG 2DS (data terbit "+fmtDate(publishDate)+")?", opts: nearNums(ngRows.length, 13).map(String), a: String(ngRows.length) });
+    if(topNG[0]) qs.push({ q:"Vendor mana yang paling banyak item NG 2DS?", opts: vendorOpts(topNG[0][0], topNG.map(x=>x[0])), a: topNG[0][0] });
+  }
+  if(late.length){
+    qs.push({ q:"Vendor mana yang BELUM update 2DS hari ini?", opts: vendorOpts(late[0], shuffle(MONITORED)), a: late[0] });
+  }
+  qs.push({ q:"Berapa total kasus LMTP November 2026?", opts: nearNums(lmtpNov.total, 2).map(String), a: String(lmtpNov.total) });
+  qs.push({ q:"Berapa total OS delay hari ini (pcs)?", opts: nearNums(osTotal, 1200).map(v=>num(v)), a: num(osTotal) });
+
+  QUIZ = shuffle(qs).slice(0,5);
+  startBtn.disabled = false;
+  startBtn.textContent = "▶ Mulai Kuis (5 soal)";
+  renderBoard();
+}
+
+function renderBoard(){
+  const el = document.getElementById("quizBoard");
+  let board = [];
+  try{ board = JSON.parse(localStorage.getItem("abn_quiz_board")||"[]"); }catch(e){}
+  if(!board.length){ el.innerHTML = ""; return; }
+  board.sort((a,b)=>b.score-a.score || a.time-b.time);
+  el.innerHTML = "<h3 style='margin-bottom:6px'>🏆 Papan Peringkat (perangkat ini)</h3><ol class='board'>"+
+    board.slice(0,5).map((b,i)=>"<li><b>"+(i+1)+". "+esc(b.name)+"</b> — "+b.score+"/5 benar · "+b.time.toFixed(1)+" dtk/soal · "+esc(b.date)+"</li>").join("")+"</ol>";
+}
+
+function startQuiz(){
+  if(!QUIZ || !QUIZ.length) return;
+  const body = document.getElementById("quizBody");
+  let idx = 0, score = 0, totalTime = 0, tLeft = 30;
+  clearInterval(quizTimer);
+  function showQ(){
+    const q = QUIZ[idx];
+    tLeft = 30;
+    body.innerHTML =
+      "<div class='meta'>Soal "+(idx+1)+" dari "+QUIZ.length+" · Skor: "+score+"</div>"+
+      "<div class='timerbar'><div id='tbar'></div></div>"+
+      "<div class='quiz-q'>"+esc(q.q)+"</div>"+
+      q.opts.map((o,i)=>"<button class='opt' onclick='answerQuiz("+i+")'>"+esc(o)+"</button>").join("")+
+      "<div class='note'>Sisa waktu: <b id='tleft'>30</b> detik</div>";
+    quizTimer = setInterval(()=>{
+      tLeft -= 0.1; totalTime += 0.1;
+      const bar = document.getElementById("tbar"), tl = document.getElementById("tleft");
+      if(bar) bar.style.width = Math.max(0, tLeft/30*100)+"%";
+      if(tl) tl.textContent = Math.max(0, tLeft).toFixed(0);
+      if(tLeft<=0){ clearInterval(quizTimer); answerQuiz(-1); }
+    }, 100);
+  }
+  window.answerQuiz = function(i){
+    clearInterval(quizTimer);
+    const q = QUIZ[idx];
+    const btns = body.querySelectorAll(".opt");
+    btns.forEach((b,j)=>{
+      b.disabled = true;
+      if(q.opts[j]===q.a) b.classList.add("correct");
+      else if(j===i) b.classList.add("wrong");
+    });
+    if(i>=0 && q.opts[i]===q.a) score++;
+    setTimeout(()=>{
+      idx++;
+      if(idx<QUIZ.length) showQ(); else finishQuiz(score, totalTime);
+    }, 900);
+  };
+  window.finishQuiz = function(sc, tt){
+    const avg = tt/QUIZ.length;
+    let board = [];
+    try{ board = JSON.parse(localStorage.getItem("abn_quiz_board")||"[]"); }catch(e){}
+    const name = prompt("Skor kamu "+sc+"/5. Masukkan nama untuk papan peringkat:", "") || "Tanpa Nama";
+    board.push({ name: name.slice(0,20), score: sc, time: +avg.toFixed(1), date: new Date().toLocaleDateString("id-ID",{day:"numeric",month:"short"}) });
+    try{ localStorage.setItem("abn_quiz_board", JSON.stringify(board)); }catch(e){}
+    body.innerHTML =
+      "<div class='score'>"+sc+" / "+QUIZ.length+"</div>"+
+      "<p style='text-align:center;font-size:14px'>"+(sc===5?"🌟 Sempurna!":sc>=3?"👍 Bagus, hafal kondisi vendor hari ini.":"💪 Coba lagi — cek feed abnormality di atas dulu.")+"</p>"+
+      "<p style='text-align:center;font-size:13px;color:#6b7a8d;margin:6px 0'>Rata-rata "+avg.toFixed(1)+" detik/soal</p>"+
+      "<button class='btn' onclick='startQuiz()'>↻ Main Lagi</button>";
+    renderBoard();
+  };
+  showQ();
+}
+
+// ---------- PWA install ----------
+let deferredPrompt = null;
+window.addEventListener("beforeinstallprompt", (e)=>{
+  e.preventDefault(); deferredPrompt = e;
+  const box = document.getElementById("installBox");
+  box.innerHTML = "<div class='install'>📱 <b>Instal aplikasi ini di HP</b> — ketuk tombol di bawah, ikon Abnormality TCH akan muncul di layar utama dan bisa dibuka seperti aplikasi biasa.<br><button class='btn gold' style='margin-top:8px' onclick='installApp()'>⬇ Instal Abnormality TCH</button></div>";
+});
+window.installApp = async function(){
+  if(deferredPrompt){ deferredPrompt.prompt(); await deferredPrompt.userChoice; deferredPrompt = null; }
+};
+(function iosHint(){
+  const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
+  const standalone = window.navigator.standalone === true;
+  if(isIOS && !standalone){
+    document.getElementById("installBox").innerHTML =
+      "<div class='install'>📱 <b>iPhone:</b> ketuk tombol <b>Bagikan</b> (kotak dengan panah ke atas) di Safari, lalu pilih <b>“Tambah ke Layar Utama”</b> — ikon Abnormality TCH akan muncul di layar utama.</div>";
+  }
+})();
+
+if("serviceWorker" in navigator){
+  window.addEventListener("load", ()=>{
+    navigator.serviceWorker.register("sw.js").catch(()=>{});
+  });
+}
+
+loadAll();
+</script>
+</body>
+</html>
