@@ -42,7 +42,7 @@
   .card h3{font-size:15px;color:#1F3864;margin-bottom:6px}
   .card .meta{font-size:12px;color:#6b7a8d;margin-bottom:8px}
   .card ul{list-style:none}
-  .card li{font-size:13.5px;line-height:1.5;padding:5px 0;border-top:1px solid #eef1f4}
+  .card li{font-size:13.5px;line-height:1.5;padding:5px 0;border-top:1px solid #eef1f4;overflow-wrap:break-word;word-break:break-word}
   .card li:first-child{border-top:0}
   .card li b{color:#1F3864}
   .pill{display:inline-block;font-size:11px;font-weight:700;padding:2px 7px;border-radius:20px;background:#fdecea;color:#c0392b;margin-left:6px}
@@ -189,15 +189,14 @@ function metaVal(key){
   return r ? r[1] : null;
 }
 
-// last_update backend ditulis sync dalam UTC (jam VM) — tampilkan sebagai WIB (+7 jam).
-// Nilainya ada di label kolom ke-2 tab Meta ("Value 16/11/2026 04:56").
-function metaLastUpdate(){
-  if(!DATA || !DATA.meta) return null;
-  const label = (DATA.meta.cols && DATA.meta.cols[1]) || "";
-  const m = label.match(/(\d{2})\/(\d{2})\/(\d{4})\s+(\d{2}):(\d{2})/);
-  if(!m) return null;
-  const utc = Date.UTC(+m[3], +m[2]-1, +m[1], +m[4], +m[5]);
-  return new Date(utc + 7*60*60*1000);
+// last_update backend TIDAK dipakai untuk stempel waktu tampil: nilainya
+// ditulis sync dgn datetime.now() sehingga zonanya ikut proses yang jalan
+// (kadang UTC, kadang WIB) — pernah tampil 19.06 saat jam 12.08. Sebagai gantinya
+// tampilkan jam saat app memuat data (jam perangkat, WIB untuk Mas).
+function nowWIB(){
+  const n = new Date();
+  return n.toLocaleDateString("id-ID",{day:"numeric",month:"short",year:"numeric"}) + ", " +
+         n.toLocaleTimeString("id-ID",{hour:"2-digit",minute:"2-digit"}) + " WIB";
 }
 
 function renderAll(){
@@ -247,9 +246,8 @@ function renderAll(){
   document.getElementById("stVendor").textContent = num(late.length)+" / "+MONITORED.length;
   document.getElementById("stVendorSub").textContent = late.length ? "Belum: "+late.map(x=>x.v).join(", ") : "Semua sudah update ✓";
 
-  const lu = metaLastUpdate();
   document.getElementById("updLine").textContent =
-    "Data terakhir: " + (lu ? lu.toLocaleDateString("id-ID",{day:"numeric",month:"short",year:"numeric"}) + ", " + lu.toLocaleTimeString("id-ID",{hour:"2-digit",minute:"2-digit"}) + " WIB" : todayStr()) + " · 2DS terbit " + fmtDate(publishDate);
+    "Data live diperbarui " + nowWIB() + " · 2DS terbit " + fmtDate(publishDate);
   document.getElementById("srcLine").textContent =
     "Sumber: " + (metaVal("di_manifest_source")||"DI Manifest") + " · 2DS: " + (metaVal("twods_source_label")||"");
 
@@ -278,9 +276,9 @@ function renderAll(){
   // 3. Vendor belum update 2DS
   feed.push({ cls: late.length?"red":"green", title:(late.length?"🔴":"🟢")+" Vendor Belum Update 2DS — "+num(late.length)+" vendor",
     meta:"Data terbit "+fmtDate(publishDate)+" · yang sudah update: "+num(updated.length)+" vendor",
-    items: late.length ? late.map(x=>"<b>"+esc(x.v)+"</b> — terakhir update "+fmtDate(x.dt)+" <span class='pill'>telat</span>") :
+    items: late.length ? late.map(x=>"<b>"+esc(x.v)+"</b> — "+(x.dt? "terakhir update "+fmtDate(x.dt) : "tidak ada data update")+" <span class='pill'>telat</span>") :
       ["<span class='pill ok'>Semua 14 vendor sudah update ✓</span>"],
-    wa:"*ABNORMALITY TCH — 2DS BELUM UPDATE*\n"+todayStr()+"\n\nVendor belum update 2DS (data terbit "+fmtDate(publishDate)+"):\n"+(late.length? late.map((x,i)=>(i+1)+". "+x.v+" — terakhir "+fmtDate(x.dt)).join("\n") : "Semua 14 vendor sudah update. ✓")+"\n\nMohon segera update 2 Days Stock. Terima kasih." });
+    wa:"*ABNORMALITY TCH — 2DS BELUM UPDATE*\n"+todayStr()+"\n\nVendor belum update 2DS (data terbit "+fmtDate(publishDate)+"):\n"+(late.length? late.map((x,i)=>(i+1)+". "+x.v+" — terakhir "+(x.dt? fmtDate(x.dt) : "tidak ada data")).join("\n") : "Semua 14 vendor sudah update. ✓")+"\n\nMohon segera update 2 Days Stock. Terima kasih." });
 
   // 4. LMTP November
   feed.push({ cls: lmtpNov.open>0?"red":"green", title:"📦 LMTP November 2026 — "+num(lmtpNov.total)+" kasus",
